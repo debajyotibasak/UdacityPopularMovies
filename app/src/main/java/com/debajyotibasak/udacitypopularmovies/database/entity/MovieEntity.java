@@ -16,7 +16,6 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_N
 
 @Entity(tableName = TABLE_NAME)
 public class MovieEntity {
-
     @PrimaryKey
     @NonNull
     @SerializedName("id")

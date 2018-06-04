@@ -9,6 +9,7 @@ import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -35,9 +36,9 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy, int page) {
+    public LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy) {
         final MutableLiveData<ApiResponse<MoviesResponse>> liveData = new MutableLiveData<>();
-        Call<MoviesResponse> call = apiInterface.discoverMovies(sortBy, page);
+        Call<MoviesResponse> call = apiInterface.getMovies(sortBy, AppConstants.LANGUAGE, AppConstants.PAGE);
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {

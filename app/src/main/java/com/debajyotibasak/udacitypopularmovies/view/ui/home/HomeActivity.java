@@ -1,4 +1,4 @@
-package com.debajyotibasak.udacitypopularmovies.view;
+package com.debajyotibasak.udacitypopularmovies.view.ui.home;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
@@ -11,8 +11,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.adapter.MoviesAdapter;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
+import com.debajyotibasak.udacitypopularmovies.view.adapter.MoviesAdapter;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.SORT_BY_VOTE;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.SORT_BY_TOP_RATED;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -36,6 +37,8 @@ public class HomeActivity extends AppCompatActivity {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
+    private MoviesAdapter mAdapter;
+
     private void initViews() {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -44,7 +47,9 @@ public class HomeActivity extends AppCompatActivity {
     private void initData() {
         this.configureDagger();
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
+        mAdapter = new MoviesAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -54,21 +59,30 @@ public class HomeActivity extends AppCompatActivity {
         initData();
 
         showProgress();
-        homeViewModel.getMovies(SORT_BY_VOTE, 1).observe(this, moviesResponseApiResponse -> {
-            if (moviesResponseApiResponse != null) {
-                if (moviesResponseApiResponse.getResponse() != null) {
-                    if (moviesResponseApiResponse.getResponse().getResults() != null
-                            && !moviesResponseApiResponse.getResponse().getResults().isEmpty()) {
-                        List<MovieEntity> movieList = moviesResponseApiResponse.getResponse().getResults();
-                        MoviesAdapter adapter = new MoviesAdapter(this, movieList);
-                        recyclerView.setAdapter(adapter);
+
+        if (AppUtils.isNetworkAvailable(this)) {
+            homeViewModel.getMovies(SORT_BY_TOP_RATED).observe(this, moviesResponseApiResponse -> {
+                if (moviesResponseApiResponse != null) {
+                    if (moviesResponseApiResponse.getResponse() != null) {
+                        if (moviesResponseApiResponse.getResponse().getResults() != null
+                                && !moviesResponseApiResponse.getResponse().getResults().isEmpty()) {
+                            List<MovieEntity> movieList = moviesResponseApiResponse.getResponse().getResults();
+                            mAdapter.addMoviesList(movieList);
+                        }
+                    } else if (moviesResponseApiResponse.getT() != null) {
+                        Toast.makeText(this, "Some Error Occured", Toast.LENGTH_SHORT).show();
                     }
-                } else if (moviesResponseApiResponse.getT() != null) {
-                    Toast.makeText(this, "Some Error Occured", Toast.LENGTH_SHORT).show();
                 }
-            }
-            hideProgress();
-        });
+                hideProgress();
+            });
+        } else {
+            homeViewModel.getMoviesFromDb().observe(this, movieEntities -> {
+                if (movieEntities != null) {
+                    mAdapter.addMoviesList(movieEntities);
+                }
+                hideProgress();
+            });
+        }
 
     }
 

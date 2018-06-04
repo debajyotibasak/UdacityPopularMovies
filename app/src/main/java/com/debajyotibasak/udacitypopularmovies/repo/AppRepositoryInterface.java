@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface AppRepositoryInterface {
 
-    LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy, int page);
+    LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy);
 
     LiveData<List<MovieEntity>> getMoviesFromDb();
 }

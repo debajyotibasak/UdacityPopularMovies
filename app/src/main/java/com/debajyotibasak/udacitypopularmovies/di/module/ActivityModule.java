@@ -1,6 +1,6 @@
 package com.debajyotibasak.udacitypopularmovies.di.module;
 
-import com.debajyotibasak.udacitypopularmovies.view.HomeActivity;
+import com.debajyotibasak.udacitypopularmovies.view.ui.home.HomeActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

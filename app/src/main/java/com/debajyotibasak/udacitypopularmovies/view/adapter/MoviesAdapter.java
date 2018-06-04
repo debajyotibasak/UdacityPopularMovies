@@ -1,4 +1,4 @@
-package com.debajyotibasak.udacitypopularmovies.adapter;
+package com.debajyotibasak.udacitypopularmovies.view.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -21,9 +21,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     private List<MovieEntity> movieList;
     private Context context;
 
-    public MoviesAdapter(Context context, List<MovieEntity> movies) {
+    public MoviesAdapter(Context context) {
         this.context = context;
-        this.movieList = movies;
+    }
+
+    public void addMoviesList(List<MovieEntity> movieList){
+        this.movieList = movieList;
+        notifyDataSetChanged();
     }
 
     @NonNull

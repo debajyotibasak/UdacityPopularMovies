@@ -7,8 +7,7 @@ import android.arch.persistence.room.TypeConverters;
 import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListConvertor;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
-
-@Database(entities = {MovieEntity.class}, version = 1, exportSchema = false)
+@Database(entities = MovieEntity.class, version = 1, exportSchema = false)
 @TypeConverters(IntegerListConvertor.class)
 public abstract class MoviesDb extends RoomDatabase {
 

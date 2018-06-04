@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import com.debajyotibasak.udacitypopularmovies.di.interfaces.ViewModelKey;
 import com.debajyotibasak.udacitypopularmovies.factory.ViewModelFactory;
-import com.debajyotibasak.udacitypopularmovies.view.HomeViewModel;
+import com.debajyotibasak.udacitypopularmovies.view.ui.home.HomeViewModel;
 
 import dagger.Binds;
 import dagger.Module;

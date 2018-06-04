@@ -1,4 +1,4 @@
-package com.debajyotibasak.udacitypopularmovies.view;
+package com.debajyotibasak.udacitypopularmovies.view.ui.home;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -21,8 +21,8 @@ public class HomeViewModel extends ViewModel {
         this.moviesRepo = moviesRepo;
     }
 
-    LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy, int page) {
-        return moviesRepo.getMovies(sortBy, page);
+    LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy) {
+        return moviesRepo.getMovies(sortBy);
     }
 
     LiveData<List<MovieEntity>> getMoviesFromDb(){

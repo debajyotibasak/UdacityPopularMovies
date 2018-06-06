@@ -6,15 +6,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
+import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> {
 
@@ -25,7 +31,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         this.context = context;
     }
 
-    public void addMoviesList(List<MovieEntity> movieList){
+    public void addMoviesList(List<MovieEntity> movieList) {
         this.movieList = movieList;
         notifyDataSetChanged();
     }
@@ -33,7 +39,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_list_item, parent, false));
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_movie, parent, false));
     }
 
     @Override
@@ -48,11 +54,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.txv_movie_name)
-        TextView mTxvMovieName;
+        @BindView(R.id.imv_movie_poster)
+        ImageView mImvMovieImage;
+
+        @BindView(R.id.txv_movie_title)
+        TextView mTxvMovieTitle;
+
+        @BindView(R.id.txv_release_date)
+        TextView mTxvReleaseDate;
 
         @BindView(R.id.txv_movie_rating)
-        TextView mTxvMovieRating;
+        TextView mTxvRatings;
 
         public MyViewHolder(View view) {
             super(view);
@@ -63,12 +75,24 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
             final MovieEntity data = movieList.get(position);
 
-            if (data.getTitle() != null) {
-                mTxvMovieName.setText(data.getTitle());
+            if (data.getPosterPath() != null) {
+                Glide.with(context)
+                        .load(AppConstants.POSTER_BASE_PATH + data.getPosterPath())
+                        .apply(new RequestOptions().placeholder(android.R.color.holo_blue_bright).error(android.R.color.holo_blue_bright))
+                        .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                        .into(mImvMovieImage);
             }
 
-            if (data.getVoteCount() != null) {
-                mTxvMovieRating.setText(String.valueOf(data.getVoteCount()));
+            if (data.getTitle() != null) {
+                mTxvMovieTitle.setText(data.getTitle());
+            }
+
+            if (data.getReleaseDate() != null) {
+                mTxvReleaseDate.setText(AppUtils.convertDate(data.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
+            }
+
+            if (data.getVoteAverage() != null) {
+                mTxvRatings.setText(String.valueOf(data.getVoteAverage()));
             }
         }
     }

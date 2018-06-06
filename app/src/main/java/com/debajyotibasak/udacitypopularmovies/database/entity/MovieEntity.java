@@ -16,11 +16,11 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_N
 
 @Entity(tableName = TABLE_NAME)
 public class MovieEntity {
-    @PrimaryKey
-    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    private Integer _id;
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private Integer movieId;
     @SerializedName("vote_count")
     @Expose
     private Integer voteCount;
@@ -62,11 +62,12 @@ public class MovieEntity {
     @Expose
     private String releaseDate;
 
-    public MovieEntity(Integer id, Integer voteCount, Boolean video, Double voteAverage,
+    public MovieEntity(Integer _id, Integer movieId, Integer voteCount, Boolean video, Double voteAverage,
                        String title, Double popularity, String posterPath, String originalLanguage,
                        String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult,
                        String overview, String releaseDate) {
-        this.id = id;
+        this._id = _id;
+        this.movieId = movieId;
         this.voteCount = voteCount;
         this.video = video;
         this.voteAverage = voteAverage;
@@ -83,7 +84,11 @@ public class MovieEntity {
     }
 
     public Integer getId() {
-        return id;
+        return _id;
+    }
+
+    public Integer getMovieId() {
+        return movieId;
     }
 
     public Integer getVoteCount() {

@@ -46,8 +46,7 @@ public class AppRepository implements AppRepositoryInterface {
                     liveData.setValue(new ApiResponse<>(response.body()));
                     if (!response.body().getResults().isEmpty()) {
                         liveData.observeForever(moviesResponseApiResponse ->
-                                executor.execute(() ->
-                                        moviesDao.saveToDb(response.body().getResults())));
+                                executor.execute(() -> moviesDao.saveToDb(response.body().getResults())));
                     } else {
                         liveData.setValue(null);
                     }

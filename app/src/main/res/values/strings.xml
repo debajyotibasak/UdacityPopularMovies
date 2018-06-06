@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">UdacityPopularMovies</string>
+    <string name="txt_movies">Movies</string>
+    <string name="txt_empty_string" />
+    <string name="txt_sort">Sort</string>
+    <string name="txt_some_error_occured">Some Error Occured</string>
 </resources>

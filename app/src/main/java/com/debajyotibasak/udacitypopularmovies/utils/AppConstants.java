@@ -14,4 +14,8 @@ public class AppConstants {
     public static final String LANGUAGE = "en-US";
     public static final int PAGE = 1;
 
+    // Date Formats
+    public static final String DF1 = "yyyy-MM-dd";
+    public static final String DF2 = "MMM dd, yyyy";
+
 }

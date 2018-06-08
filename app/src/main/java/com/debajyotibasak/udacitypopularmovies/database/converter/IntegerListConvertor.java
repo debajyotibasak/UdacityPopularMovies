@@ -16,8 +16,7 @@ public class IntegerListConvertor {
             return (null);
         }
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Integer>>() {
-        }.getType();
+        Type type = new TypeToken<List<Integer>>() {}.getType();
         return gson.toJson(genreIdList, type);
     }
 

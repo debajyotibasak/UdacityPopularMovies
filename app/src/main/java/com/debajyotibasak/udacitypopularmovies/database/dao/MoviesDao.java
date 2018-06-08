@@ -28,6 +28,6 @@ public interface MoviesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void saveGenresToDb(List<GenreEntity> genreList);
 
-    @Query("SELECT * FROM genres where genreId IN (:genreIds)")
+    @Query("SELECT * FROM genres WHERE genreId IN (:genreIds)")
     LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds);
 }

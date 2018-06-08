@@ -1,6 +1,7 @@
 package com.debajyotibasak.udacitypopularmovies.view.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,12 +16,16 @@ import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
+import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailActivity;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> {
 
@@ -66,12 +71,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         @BindView(R.id.txv_movie_rating)
         TextView mTxvRatings;
 
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
 
-        public void onBind(final int position) {
+        void onBind(final int position) {
 
             final MovieEntity data = movieList.get(position);
 
@@ -94,6 +99,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             if (data.getVoteAverage() != null) {
                 mTxvRatings.setText(String.valueOf(data.getVoteAverage()));
             }
+        }
+
+        @OnClick
+        void onClick(View view) {
+            MovieEntity movieEntity = movieList.get(getAdapterPosition());
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra(MOVIE_PARCELABLE, movieEntity);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         }
     }
 }

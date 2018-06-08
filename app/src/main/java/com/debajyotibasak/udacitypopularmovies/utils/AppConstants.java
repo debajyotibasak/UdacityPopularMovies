@@ -16,6 +16,7 @@ public class AppConstants {
     public static final String LANGUAGE = "en-US";
     public static final String PREF_FILTER = "pref_filter";
     public static final int PAGE = 1;
+    public static final String MOVIE_PARCELABLE = "movie_parcelable";
 
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";

@@ -9,25 +9,22 @@
         android:id="@+id/imv_back_drop"
         android:layout_width="0dp"
         android:layout_height="200dp"
+        android:scaleType="fitXY"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/colorAccent" />
+        tools:srcCompat="@color/colorAccent" />
 
     <ImageView
         android:id="@+id/imv_poster"
         android:layout_width="150dp"
         android:layout_height="180dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toTopOf="@+id/guideline_poster_top"
-        app:srcCompat="@color/colorPrimary" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline_poster_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="140dp" />
+        app:layout_constraintTop_toBottomOf="@+id/imv_back_drop"
+        tools:srcCompat="@color/colorPrimary" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline_begin"
@@ -48,25 +45,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/roboto_bold"
         android:text="TextView"
         android:textColor="@color/grey_700"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toEndOf="@+id/imv_poster"
         app:layout_constraintTop_toBottomOf="@+id/imv_back_drop"
         tools:text="Jurassic World : Fallen Kingdom" />
-
-    <ImageView
-        android:id="@+id/imv_star"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/txv_ratings"
-        app:layout_constraintStart_toEndOf="@+id/imv_poster"
-        app:layout_constraintTop_toBottomOf="@+id/txv_ratings"
-        app:srcCompat="@drawable/ic_star_grey" />
 
     <TextView
         android:id="@+id/txv_ratings"
@@ -74,10 +61,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/grey_700"
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/imv_star"
-        app:layout_constraintTop_toBottomOf="@+id/txv_title"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/rv_genres"
         tools:text="9.9" />
 
     <android.support.constraint.Barrier
@@ -86,72 +74,60 @@
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="imv_poster,txv_ratings"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteY="658dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_genres"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
-        app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toTopOf="@+id/barrier_poster_rating_bottom" />
-
-    <TextView
-        android:id="@+id/txv_release"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto"
-        android:text="Release"
-        android:textAllCaps="true"
-        android:textColor="@color/grey_500"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toBottomOf="@+id/divider_genres" />
+        app:layout_constraintStart_toEndOf="@+id/imv_poster"
+        app:layout_constraintTop_toBottomOf="@+id/txv_release_date" />
 
     <TextView
         android:id="@+id/txv_release_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:fontFamily="@font/roboto"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toBottomOf="@+id/txv_release"
+        app:layout_constraintStart_toEndOf="@+id/imv_poster"
+        app:layout_constraintTop_toBottomOf="@+id/txv_title"
         tools:text="July 7, 2017" />
 
     <TextView
-        android:id="@+id/txv_plot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Plot"
-        android:textAlignment="textEnd"
-        android:textAllCaps="true"
-        android:textColor="@color/grey_500"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toBottomOf="@+id/txv_release_date" />
-
-    <TextView
-        android:id="@+id/txv_plot_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/txv_plot_details"
+        android:layout_width="371dp"
+        android:layout_height="16dp"
         android:layout_marginBottom="24dp"
+        android:layout_marginTop="16dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-        app:layout_constraintTop_toBottomOf="@+id/txv_plot" />
+        app:layout_constraintTop_toBottomOf="@+id/divider_genres" />
 
     <View
         android:id="@+id/divider_genres"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:background="@color/grey_300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_genres" />
+        app:layout_constraintTop_toTopOf="@+id/barrier_poster_rating_bottom" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/txv_ratings"
+        app:layout_constraintStart_toEndOf="@+id/imv_poster"
+        app:layout_constraintTop_toBottomOf="@+id/txv_ratings"
+        app:srcCompat="@drawable/ic_star_grey" />
 
 </android.support.constraint.ConstraintLayout>

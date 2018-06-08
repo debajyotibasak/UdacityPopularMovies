@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
@@ -23,6 +24,10 @@ public class HomeViewModel extends ViewModel {
 
     LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy) {
         return moviesRepo.getMovies(sortBy);
+    }
+
+    LiveData<ApiResponse<GenreResponse>> getGenres() {
+        return moviesRepo.getGenres();
     }
 
     LiveData<List<MovieEntity>> getMoviesFromDb(){

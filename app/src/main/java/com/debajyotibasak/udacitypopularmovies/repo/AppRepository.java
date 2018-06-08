@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 
 import com.debajyotibasak.udacitypopularmovies.api.ApiInterface;
 import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
+import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 
@@ -46,7 +48,10 @@ public class AppRepository implements AppRepositoryInterface {
                     liveData.setValue(new ApiResponse<>(response.body()));
                     if (!response.body().getResults().isEmpty()) {
                         liveData.observeForever(moviesResponseApiResponse ->
-                                executor.execute(() -> moviesDao.saveToDb(response.body().getResults())));
+                                executor.execute(() -> {
+                                    moviesDao.deleteMovies();
+                                    moviesDao.saveToDb(response.body().getResults());
+                                }));
                     } else {
                         liveData.setValue(null);
                     }
@@ -65,5 +70,39 @@ public class AppRepository implements AppRepositoryInterface {
     @Override
     public LiveData<List<MovieEntity>> getMoviesFromDb() {
         return moviesDao.loadFromDb();
+    }
+
+    @Override
+    public LiveData<ApiResponse<GenreResponse>> getGenres() {
+        final MutableLiveData<ApiResponse<GenreResponse>> liveData = new MutableLiveData<>();
+        Call<GenreResponse> call = apiInterface.getGenres(AppConstants.LANGUAGE);
+        call.enqueue(new Callback<GenreResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<GenreResponse> call, @NonNull Response<GenreResponse> response) {
+                if (response.isSuccessful() && response.body().getGenres() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body()));
+                    if (!response.body().getGenres().isEmpty()) {
+                        liveData.observeForever(apiResponse ->
+                                executor.execute(() -> {
+                                    moviesDao.saveGenresToDb(response.body().getGenres());
+                                }));
+                    } else {
+                        liveData.setValue(null);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GenreResponse> call, @NonNull Throwable t) {
+                liveData.setValue(new ApiResponse<>(t));
+            }
+        });
+
+        return liveData;
+    }
+
+    @Override
+    public LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds) {
+        return moviesDao.getGenresById(genreIds);
     }
 }

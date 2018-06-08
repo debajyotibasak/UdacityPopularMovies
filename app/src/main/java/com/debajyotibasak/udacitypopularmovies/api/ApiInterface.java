@@ -1,5 +1,6 @@
 package com.debajyotibasak.udacitypopularmovies.api;
 
+import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 
@@ -14,4 +15,7 @@ public interface ApiInterface {
     Call<MoviesResponse> getMovies(@Path(value="type", encoded=true) String type,
                                     @Query("language") String language,
                                     @Query("page") int page);
+
+    @GET("genre/movie/list")
+    Call<GenreResponse> getGenres(@Query("language") String language);
 }

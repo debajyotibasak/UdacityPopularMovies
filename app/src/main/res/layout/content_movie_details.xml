@@ -18,7 +18,7 @@
 
     <ImageView
         android:id="@+id/imv_poster"
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="180dp"
         android:layout_marginTop="20dp"
         android:scaleType="fitXY"
@@ -63,7 +63,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto"
         android:textColor="@color/grey_700"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/rv_genres"
         tools:text="9.9" />
@@ -80,7 +80,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_genres"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
@@ -100,8 +100,8 @@
 
     <TextView
         android:id="@+id/txv_plot_details"
-        android:layout_width="371dp"
-        android:layout_height="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_marginTop="16dp"
         android:text="TextView"

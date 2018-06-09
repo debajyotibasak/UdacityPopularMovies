@@ -3,8 +3,6 @@ package com.debajyotibasak.udacitypopularmovies.database.entity;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListConvertor;
 import com.google.gson.annotations.Expose;
@@ -16,7 +14,7 @@ import java.util.List;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_NAME;
 
 @Entity(tableName = TABLE_NAME)
-public class MovieEntity implements Parcelable {
+public class MovieEntity {
     @PrimaryKey(autoGenerate = true)
     private Integer _id;
     @SerializedName("id")
@@ -49,7 +47,7 @@ public class MovieEntity implements Parcelable {
     @SerializedName("genre_ids")
     @Expose
     @TypeConverters(IntegerListConvertor.class)
-    private List<Integer> genreIds;
+    private List<Integer> genreIds = new ArrayList<>();
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
@@ -142,104 +140,5 @@ public class MovieEntity implements Parcelable {
 
     public String getReleaseDate() {
         return releaseDate;
-    }
-
-    public MovieEntity(Parcel in) {
-        if (in.readByte() == 0) {
-            _id = null;
-        } else {
-            _id = in.readInt();
-        }
-        if (in.readByte() == 0) {
-            movieId = null;
-        } else {
-            movieId = in.readInt();
-        }
-        if (in.readByte() == 0) {
-            voteCount = null;
-        } else {
-            voteCount = in.readInt();
-        }
-        byte tmpVideo = in.readByte();
-        video = tmpVideo == 0 ? null : tmpVideo == 1;
-        if (in.readByte() == 0) {
-            voteAverage = null;
-        } else {
-            voteAverage = in.readDouble();
-        }
-        title = in.readString();
-        if (in.readByte() == 0) {
-            popularity = null;
-        } else {
-            popularity = in.readDouble();
-        }
-        posterPath = in.readString();
-        originalLanguage = in.readString();
-        originalTitle = in.readString();
-        backdropPath = in.readString();
-        byte tmpAdult = in.readByte();
-        adult = tmpAdult == 0 ? null : tmpAdult == 1;
-        overview = in.readString();
-        releaseDate = in.readString();
-    }
-
-    public static final Creator<MovieEntity> CREATOR = new Creator<MovieEntity>() {
-        @Override
-        public MovieEntity createFromParcel(Parcel in) {
-            return new MovieEntity(in);
-        }
-
-        @Override
-        public MovieEntity[] newArray(int size) {
-            return new MovieEntity[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        if (_id == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeInt(_id);
-        }
-        if (movieId == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeInt(movieId);
-        }
-        if (voteCount == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeInt(voteCount);
-        }
-        parcel.writeByte((byte) (video == null ? 0 : video ? 1 : 2));
-        if (voteAverage == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(voteAverage);
-        }
-        parcel.writeString(title);
-        if (popularity == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(popularity);
-        }
-        parcel.writeString(posterPath);
-        parcel.writeString(originalLanguage);
-        parcel.writeString(originalTitle);
-        parcel.writeString(backdropPath);
-        parcel.writeByte((byte) (adult == null ? 0 : adult ? 1 : 2));
-        parcel.writeString(overview);
-        parcel.writeString(releaseDate);
     }
 }

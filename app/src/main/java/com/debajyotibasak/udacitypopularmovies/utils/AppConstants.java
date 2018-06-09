@@ -17,6 +17,7 @@ public class AppConstants {
     public static final String PREF_FILTER = "pref_filter";
     public static final int PAGE = 1;
     public static final String MOVIE_PARCELABLE = "movie_parcelable";
+    public static final String MOVIE_IMAGE_TRANSITION = "movie_image_transition";
 
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";

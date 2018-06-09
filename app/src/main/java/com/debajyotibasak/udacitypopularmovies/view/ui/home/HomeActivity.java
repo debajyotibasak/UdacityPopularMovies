@@ -2,11 +2,13 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.home;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,12 +25,17 @@ import android.widget.Toast;
 
 import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.interfaces.MovieItemClickListener;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.GridSpacingItemDecoration;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.MoviesAdapter;
+import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailActivity;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,7 +44,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 
-public class HomeActivity extends AppCompatActivity {
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
+
+public class HomeActivity extends AppCompatActivity implements MovieItemClickListener {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -105,7 +115,7 @@ public class HomeActivity extends AppCompatActivity {
                     if (apiResponse.getResponse().getGenres() == null || apiResponse.getResponse().getGenres().isEmpty()) {
                         Toast.makeText(this, R.string.txt_some_error_occured, Toast.LENGTH_SHORT).show();
                     }
-                } else if(apiResponse.getT() != null) {
+                } else if (apiResponse.getT() != null) {
                     Toast.makeText(this, R.string.txt_some_error_occured, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -216,6 +226,24 @@ public class HomeActivity extends AppCompatActivity {
 
         dialog.setCancelable(true);
         dialog.show();
+    }
+
+    @Override
+    public void onMovieItemClick(int position, MovieEntity movieEntity, ImageView shareImageView, String transitionName) {
+        Intent intent = new Intent(this, DetailActivity.class);
+        Gson gson = new Gson();
+        Type type = new TypeToken<MovieEntity>() {
+        }.getType();
+        String movieDetails = gson.toJson(movieEntity, type);
+        intent.putExtra(MOVIE_PARCELABLE, movieDetails);
+        intent.putExtra(MOVIE_IMAGE_TRANSITION, transitionName);
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                shareImageView,
+                transitionName);
+
+        startActivity(intent, options.toBundle());
     }
 
     private int dpToPx() {

@@ -4,4 +4,5 @@
     <string name="txt_empty_string" />
     <string name="txt_sort">Sort</string>
     <string name="txt_some_error_occured">Some Error Occurred</string>
+    <string name="collasping_image">Collasping Image</string>
 </resources>

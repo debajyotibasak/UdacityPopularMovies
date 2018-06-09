@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -67,6 +68,9 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.txv_plot_details)
     TextView mTxvPlotDetails;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     private GenreAdapter genreAdapter;
 
     private void initViews() {
@@ -78,6 +82,11 @@ public class DetailActivity extends AppCompatActivity {
     private void initData() {
         this.configureDagger();
         detailViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailViewModel.class);
+        setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         genreAdapter = new GenreAdapter(this);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
         flowLayoutManager.setAutoMeasureEnabled(true);
@@ -134,6 +143,7 @@ public class DetailActivity extends AppCompatActivity {
                 })
                 .into(mImvPoster);
 
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mTxvMovieTitle.setText(movieEntity.getTitle());
         mTxvRating.setText(String.valueOf(movieEntity.getVoteAverage()));
         mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));

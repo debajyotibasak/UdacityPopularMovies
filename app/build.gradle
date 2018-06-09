@@ -20,6 +20,7 @@ android {
     }
     buildTypes.each {
         it.buildConfigField('String', 'ApiKey', THE_MOVIE_DB_API_KEY)
+        // Put your key in the gradle.properties (Project Properties)
     }
     compileOptions {
         targetCompatibility 1.8

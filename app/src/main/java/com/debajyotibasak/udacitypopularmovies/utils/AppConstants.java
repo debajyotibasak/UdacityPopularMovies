@@ -22,5 +22,6 @@ public class AppConstants {
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";
     public static final String DF2 = "MMM dd, yyyy";
+    public static final String DF3 = "yyyy";
 
 }

@@ -101,7 +101,9 @@ public class DetailActivity extends AppCompatActivity {
 
         Glide.with(this)
                 .load(BACKDROP_BASE_PATH + movieEntity.getBackdropPath())
-                .apply(new RequestOptions().placeholder(android.R.color.holo_blue_bright).error(android.R.color.holo_blue_bright))
+                .apply(new RequestOptions()
+                        .placeholder(R.color.colorAccent)
+                        .error(R.color.colorAccent))
                 .into(mImvBackDrop);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -112,8 +114,8 @@ public class DetailActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
                 .apply(new RequestOptions()
-                        .placeholder(android.R.color.holo_blue_bright)
-                        .error(android.R.color.holo_blue_bright)
+                        .placeholder(R.color.colorAccent)
+                        .error(R.color.colorAccent)
                         .dontAnimate())
                 .apply(RequestOptions
                         .bitmapTransform(new RoundedCornersTransformation(25, 0)))

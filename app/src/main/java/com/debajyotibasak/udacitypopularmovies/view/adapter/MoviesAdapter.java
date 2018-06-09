@@ -86,7 +86,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             if (data.getPosterPath() != null) {
                 Glide.with(context)
                         .load(AppConstants.POSTER_BASE_PATH + data.getPosterPath())
-                        .apply(new RequestOptions().placeholder(android.R.color.holo_blue_bright).error(android.R.color.holo_blue_bright))
+                        .apply(new RequestOptions()
+                                .placeholder(R.color.colorAccent)
+                                .error(R.color.colorAccent))
                         .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
                         .into(mImvMovieImage);
             }
@@ -96,7 +98,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
             }
 
             if (data.getReleaseDate() != null) {
-                mTxvReleaseDate.setText(AppUtils.convertDate(data.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
+                mTxvReleaseDate.setText(AppUtils.convertDate(data.getReleaseDate(), AppConstants.DF1, AppConstants.DF3));
             }
 
             if (data.getVoteAverage() != null) {

@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +38,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,6 +47,7 @@ import dagger.android.AndroidInjection;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.PREF_FIRST_TIME;
 
 public class HomeActivity extends AppCompatActivity implements MovieItemClickListener {
 
@@ -66,6 +68,8 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     TextView txvToolbar;
 
     private MoviesAdapter mAdapter;
+
+    Handler mHandler = new Handler(Looper.getMainLooper());
 
     private void initViews() {
         setContentView(R.layout.activity_main);
@@ -93,59 +97,54 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         initViews();
         initData();
 
-        getGenres();
+        if (!SharedPreferenceHelper.contains(AppConstants.PREF_FIRST_TIME)) {
+            if (!SharedPreferenceHelper.getSharedPreferenceBoolean(PREF_FIRST_TIME, false)) {
+                SharedPreferenceHelper.setSharedPreferenceBoolean(AppConstants.PREF_FIRST_TIME, true);
+                if (AppUtils.isNetworkAvailable()) {
+                    homeViewModel.getGenres().observe(this, genreResponseComplete -> {
+                        //noinspection ConstantConditions
+                        if (!genreResponseComplete) {
+                            Toast.makeText(this, "Some Error Occured", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "Some Error Occured", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
 
-        if (SharedPreferenceHelper.contains(this, AppConstants.PREF_FILTER)) {
-            if (SharedPreferenceHelper.getSharedPreferenceString(this, AppConstants.PREF_FILTER, null)
-                    .equals(AppConstants.SORT_BY_TOP_RATED)) {
-                loadMovies(AppConstants.SORT_BY_TOP_RATED);
-            } else if (SharedPreferenceHelper.getSharedPreferenceString(this, AppConstants.PREF_FILTER, null)
+        if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
+            if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
+                loadMovies(AppConstants.SORT_BY_TOP_RATED, 2);
+            } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null)
                     .equals(AppConstants.SORT_BY_POPULAR)) {
-                loadMovies(AppConstants.SORT_BY_POPULAR);
+                loadMovies(AppConstants.SORT_BY_POPULAR, 2);
             }
         } else {
-            loadMovies(AppConstants.SORT_BY_POPULAR);
+            SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
+            loadMovies(AppConstants.SORT_BY_POPULAR, 1);
         }
     }
 
-    private void getGenres() {
-        homeViewModel.getGenres().observe(this, apiResponse -> {
-            if (apiResponse != null) {
-                if (apiResponse.getResponse() != null) {
-                    if (apiResponse.getResponse().getGenres() == null || apiResponse.getResponse().getGenres().isEmpty()) {
-                        Toast.makeText(this, R.string.txt_some_error_occured, Toast.LENGTH_SHORT).show();
+    private void loadMovies(String sort, int loadingIdentifer) {
+        if (AppUtils.isNetworkAvailable()) {
+            if (loadingIdentifer == 1) {
+                showProgress();
+                homeViewModel.getMoviesData(sort, true).observe(this, movieList -> mHandler.postDelayed(() -> {
+                    if (movieList != null) {
+                        mAdapter.addMoviesList(movieList);
                     }
-                } else if (apiResponse.getT() != null) {
-                    Toast.makeText(this, R.string.txt_some_error_occured, Toast.LENGTH_SHORT).show();
-                }
+                    hideProgress();
+                }, 500));
+            } else if (loadingIdentifer == 2) {
+                homeViewModel.getMoviesData(sort, false).observe(this, movieList -> {
+                    if (movieList != null) {
+                        mAdapter.addMoviesList(movieList);
+                    }
+                });
             }
-        });
-    }
-
-    private void loadMovies(String sort) {
-        showProgress();
-        if (AppUtils.isNetworkAvailable(this)) {
-            homeViewModel.getMovies(sort).observe(this, moviesResponseApiResponse -> {
-                if (moviesResponseApiResponse != null) {
-                    if (moviesResponseApiResponse.getResponse() != null) {
-                        if (moviesResponseApiResponse.getResponse().getResults() != null
-                                && !moviesResponseApiResponse.getResponse().getResults().isEmpty()) {
-                            List<MovieEntity> movieList = moviesResponseApiResponse.getResponse().getResults();
-                            mAdapter.addMoviesList(movieList);
-                        }
-                    } else if (moviesResponseApiResponse.getT() != null) {
-                        Toast.makeText(this, R.string.txt_some_error_occured, Toast.LENGTH_SHORT).show();
-                    }
-                }
-                hideProgress();
-            });
         } else {
-            homeViewModel.getMoviesFromDb().observe(this, movieEntities -> {
-                if (movieEntities != null) {
-                    mAdapter.addMoviesList(movieEntities);
-                }
-                hideProgress();
-            });
+            homeViewModel.getMoviesFromDb().observe(this, movieEntities -> mAdapter.addMoviesList(movieEntities));
         }
     }
 
@@ -191,13 +190,11 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         ImageView imvTopRated = view.findViewById(R.id.imv_top_rated);
         ImageView close = view.findViewById(R.id.imv_close);
 
-        if (SharedPreferenceHelper.contains(this, AppConstants.PREF_FILTER)) {
-            if (SharedPreferenceHelper.getSharedPreferenceString(this, AppConstants.PREF_FILTER, null)
-                    .equals(AppConstants.SORT_BY_TOP_RATED)) {
+        if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
+            if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
                 imvTopRated.setVisibility(View.VISIBLE);
                 imvPopular.setVisibility(View.GONE);
-            } else if (SharedPreferenceHelper.getSharedPreferenceString(this, AppConstants.PREF_FILTER, null)
-                    .equals(AppConstants.SORT_BY_POPULAR)) {
+            } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
                 imvTopRated.setVisibility(View.GONE);
                 imvPopular.setVisibility(View.VISIBLE);
             }
@@ -207,18 +204,18 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         }
 
         txvPopular.setOnClickListener(v -> {
-            SharedPreferenceHelper.setSharedPreferenceString(this, AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
+            SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
             imvPopular.setVisibility(View.VISIBLE);
             imvTopRated.setVisibility(View.GONE);
-            loadMovies(AppConstants.SORT_BY_POPULAR);
+            loadMovies(AppConstants.SORT_BY_POPULAR, 1);
             dialog.dismiss();
         });
 
         txvTopRated.setOnClickListener(v -> {
-            SharedPreferenceHelper.setSharedPreferenceString(this, AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
+            SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
             imvPopular.setVisibility(View.GONE);
             imvTopRated.setVisibility(View.VISIBLE);
-            loadMovies(AppConstants.SORT_BY_TOP_RATED);
+            loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
             dialog.dismiss();
         });
 

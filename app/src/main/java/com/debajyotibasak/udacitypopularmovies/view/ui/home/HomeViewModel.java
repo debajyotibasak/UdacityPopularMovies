@@ -3,12 +3,10 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.home;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
-import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
-import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,19 +16,19 @@ public class HomeViewModel extends ViewModel {
     private AppRepository moviesRepo;
 
     @Inject
-    public HomeViewModel(AppRepository moviesRepo) {
+    HomeViewModel(AppRepository moviesRepo) {
         this.moviesRepo = moviesRepo;
     }
 
-    LiveData<ApiResponse<MoviesResponse>> getMovies(String sortBy) {
-        return moviesRepo.getMovies(sortBy);
-    }
-
-    LiveData<ApiResponse<GenreResponse>> getGenres() {
-        return moviesRepo.getGenres();
-    }
-
-    LiveData<List<MovieEntity>> getMoviesFromDb(){
+    LiveData<List<MovieEntity>> getMoviesFromDb() {
         return moviesRepo.getMoviesFromDb();
+    }
+
+    LiveData<List<MovieEntity>> getMoviesData(String sortBy, boolean doForceLoad) {
+        return moviesRepo.getMoviesData(sortBy, doForceLoad);
+    }
+
+    LiveData<Boolean> getGenres() {
+        return moviesRepo.getGenres();
     }
 }

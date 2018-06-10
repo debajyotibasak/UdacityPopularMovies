@@ -4,11 +4,13 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
+import com.debajyotibasak.udacitypopularmovies.database.converter.DateConverter;
 import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListConvertor;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_NAME;
@@ -47,7 +49,7 @@ public class MovieEntity {
     @SerializedName("genre_ids")
     @Expose
     @TypeConverters(IntegerListConvertor.class)
-    private List<Integer> genreIds = new ArrayList<>();
+    private List<Integer> genreIds;
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;

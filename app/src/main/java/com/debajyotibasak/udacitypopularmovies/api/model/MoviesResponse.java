@@ -1,5 +1,7 @@
 package com.debajyotibasak.udacitypopularmovies.api.model;
 
+import android.arch.persistence.room.Ignore;
+
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -7,7 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class MoviesResponse {
-
     @SerializedName("page")
     @Expose
     private Integer page;
@@ -19,6 +20,7 @@ public class MoviesResponse {
     private Integer totalPages;
     @SerializedName("results")
     @Expose
+    @Ignore
     private List<MovieEntity> results = null;
 
     public MoviesResponse(Integer page, Integer totalResults, Integer totalPages, List<MovieEntity> results) {

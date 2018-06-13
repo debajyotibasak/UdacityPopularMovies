@@ -131,6 +131,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                         break;
                     case ERROR:
                         hideProgress();
+
                         //TODO: If No network show diff error
                         Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
                         break;

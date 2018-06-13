@@ -3,6 +3,7 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.home;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,7 +30,6 @@ import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.interfaces.MovieItemClickListener;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
-import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.GridSpacingItemDecoration;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.MoviesAdapter;
@@ -47,7 +47,6 @@ import dagger.android.AndroidInjection;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.PREF_FIRST_TIME;
 
 public class HomeActivity extends AppCompatActivity implements MovieItemClickListener {
 
@@ -69,8 +68,6 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
 
     private MoviesAdapter mAdapter;
 
-    Handler mHandler = new Handler(Looper.getMainLooper());
-
     private void initViews() {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -84,9 +81,15 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         txvToolbar.setText(R.string.txt_movies);
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         mAdapter = new MoviesAdapter(this);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(), true));
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(), true));
+        } else {
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.addItemDecoration(new GridSpacingItemDecoration(4, dpToPx(), true));
+        }
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
     }
@@ -96,22 +99,6 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         super.onCreate(savedInstanceState);
         initViews();
         initData();
-
-        if (!SharedPreferenceHelper.contains(AppConstants.PREF_FIRST_TIME)) {
-            if (!SharedPreferenceHelper.getSharedPreferenceBoolean(PREF_FIRST_TIME, false)) {
-                SharedPreferenceHelper.setSharedPreferenceBoolean(AppConstants.PREF_FIRST_TIME, true);
-                if (AppUtils.isNetworkAvailable()) {
-                    homeViewModel.getGenres().observe(this, genreResponseComplete -> {
-                        //noinspection ConstantConditions
-                        if (!genreResponseComplete) {
-                            Toast.makeText(this, "Some Error Occured", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(this, "Some Error Occured", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
 
         if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
             if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
@@ -127,25 +114,29 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     }
 
     private void loadMovies(String sort, int loadingIdentifer) {
-        if (AppUtils.isNetworkAvailable()) {
-            if (loadingIdentifer == 1) {
-                showProgress();
-                homeViewModel.getMoviesData(sort, true).observe(this, movieList -> mHandler.postDelayed(() -> {
-                    if (movieList != null) {
-                        mAdapter.addMoviesList(movieList);
-                    }
-                    hideProgress();
-                }, 500));
-            } else if (loadingIdentifer == 2) {
-                homeViewModel.getMoviesData(sort, false).observe(this, movieList -> {
-                    if (movieList != null) {
-                        mAdapter.addMoviesList(movieList);
-                    }
-                });
+
+        boolean forceLoad = loadingIdentifer == 1;
+
+        homeViewModel.loadMovies(forceLoad, sort).observe(this, movieResource -> {
+            if (movieResource != null) {
+                switch (movieResource.getStatus()) {
+                    case SUCCESS:
+                        hideProgress();
+                        if (movieResource.getResponse() != null) {
+                            mAdapter.addMoviesList(movieResource.getResponse());
+                        }
+                        break;
+                    case LOADING:
+                        showProgress();
+                        break;
+                    case ERROR:
+                        hideProgress();
+                        //TODO: If No network show diff error
+                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
-        } else {
-            homeViewModel.getMoviesFromDb().observe(this, movieEntities -> mAdapter.addMoviesList(movieEntities));
-        }
+        });
     }
 
     private void hideProgress() {

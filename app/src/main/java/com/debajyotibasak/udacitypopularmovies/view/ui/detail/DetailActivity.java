@@ -9,8 +9,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -149,9 +151,25 @@ public class DetailActivity extends AppCompatActivity {
         mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
         mTxvPlotDetails.setText(movieEntity.getOverview());
 
-        detailViewModel.getGenresById(movieEntity.getGenreIds()).observe(this, genreEntities -> {
-            if (genreEntities != null) {
-                genreAdapter.addGenres(genreEntities);
+        detailViewModel.getGenresById(movieEntity.getGenreIds()).observe(this, genreResource -> {
+            if (genreResource != null) {
+                switch (genreResource.getStatus()) {
+                    case SUCCESS:
+                        mRvGenres.setVisibility(View.VISIBLE);
+                        if (genreResource.getResponse() != null) {
+                            genreAdapter.addGenres(genreResource.getResponse());
+                        }
+                        break;
+                    case LOADING:
+                        mRvGenres.setVisibility(View.GONE);
+                        break;
+                    case ERROR:
+                        mRvGenres.setVisibility(View.GONE);
+                        //TODO: If No network show diff error
+                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+
             }
         });
     }

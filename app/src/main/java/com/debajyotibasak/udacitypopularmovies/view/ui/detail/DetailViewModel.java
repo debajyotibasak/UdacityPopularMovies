@@ -3,8 +3,10 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.detail;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
+import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 
 import java.util.List;
 
@@ -19,8 +21,12 @@ public class DetailViewModel extends ViewModel {
         this.moviesRepo = moviesRepo;
     }
 
-    LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds) {
-        return moviesRepo.getGenresById(genreIds);
+//    LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds) {
+//        return moviesRepo.getGenresById(genreIds);
+//    }
+
+    LiveData<Resource<List<GenreEntity>>> getGenresById(List<Integer> genreIds){
+        return moviesRepo.loadGenres(genreIds);
     }
 
 }

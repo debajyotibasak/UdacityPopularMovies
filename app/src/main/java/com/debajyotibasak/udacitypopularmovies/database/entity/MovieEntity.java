@@ -62,11 +62,13 @@ public class MovieEntity {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
+    @TypeConverters(DateConverter.class)
+    private Date createdAt;
 
     public MovieEntity(Integer _id, Integer movieId, Integer voteCount, Boolean video, Double voteAverage,
                        String title, Double popularity, String posterPath, String originalLanguage,
                        String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult,
-                       String overview, String releaseDate) {
+                       String overview, String releaseDate, Date createdAt) {
         this._id = _id;
         this.movieId = movieId;
         this.voteCount = voteCount;
@@ -82,6 +84,7 @@ public class MovieEntity {
         this.adult = adult;
         this.overview = overview;
         this.releaseDate = releaseDate;
+        this.createdAt = createdAt;
     }
 
     public Integer getId() {
@@ -142,5 +145,13 @@ public class MovieEntity {
 
     public String getReleaseDate() {
         return releaseDate;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

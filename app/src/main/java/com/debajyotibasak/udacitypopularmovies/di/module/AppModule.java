@@ -10,6 +10,7 @@ import com.debajyotibasak.udacitypopularmovies.database.MoviesDb;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.di.interfaces.ApplicationContext;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
+import com.debajyotibasak.udacitypopularmovies.utils.LiveDataCallAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -77,11 +78,12 @@ public class AppModule {
     }
 
     @Provides
-    Retrofit provideRetrofit(OkHttpClient okHttpClient, Gson gson) {
+    Retrofit provideRetrofit(OkHttpClient okHttpClient, Gson gson, LiveDataCallAdapterFactory liveDataCallAdapterFactory) {
         return new Retrofit.Builder()
                 .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(liveDataCallAdapterFactory)
                 .build();
     }
 
@@ -105,6 +107,11 @@ public class AppModule {
     @Provides
     public AuthenticationInterceptor authenticationInterceptor() {
         return new AuthenticationInterceptor();
+    }
+
+    @Provides
+    public LiveDataCallAdapterFactory liveDataCallAdapterFactory() {
+        return new LiveDataCallAdapterFactory();
     }
 
 }

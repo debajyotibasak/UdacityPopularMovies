@@ -1,29 +1,27 @@
 package com.debajyotibasak.udacitypopularmovies.repo;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.debajyotibasak.udacitypopularmovies.MoviesApp;
 import com.debajyotibasak.udacitypopularmovies.api.ApiInterface;
+import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
-import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
+import com.debajyotibasak.udacitypopularmovies.utils.Resource;
+import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 @Singleton
 public class AppRepository implements AppRepositoryInterface {
@@ -40,74 +38,73 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public LiveData<Boolean> getGenres() {
-        final MutableLiveData<Boolean> liveData = new MutableLiveData<>();
-        apiInterface.getGenres(AppConstants.LANGUAGE).enqueue(new Callback<GenreResponse>() {
+    public LiveData<Resource<List<GenreEntity>>> loadGenres(List<Integer> genreIds) {
+        return new NetworkBoundResource<List<GenreEntity>, GenreResponse>(executor) {
             @Override
-            public void onResponse(@NonNull Call<GenreResponse> call, @NonNull Response<GenreResponse> response) {
-                if (response.isSuccessful() && response.body().getGenres() != null) {
-                    if (!response.body().getGenres().isEmpty()) {
-                        liveData.setValue(true);
-                        liveData.observeForever(apiResponse -> executor.execute(() -> moviesDao.saveGenresToDb(response.body().getGenres())));
-                    } else {
-                        liveData.setValue(false);
-                    }
-                }
+            protected void saveCallResult(@NonNull GenreResponse item) {
+                moviesDao.saveGenresToDb(item.getGenres());
             }
 
             @Override
-            public void onFailure(@NonNull Call<GenreResponse> call, @NonNull Throwable t) {
-                liveData.setValue(false);
+            protected boolean shouldFetch(@Nullable List<GenreEntity> data) {
+                return data == null || data.isEmpty();
             }
-        });
-        return liveData;
-    }
 
-
-    @Override
-    public LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds) {
-        return moviesDao.getGenresById(genreIds);
-    }
-
-    // Movie Loading Logic
-
-    @Override
-    public LiveData<List<MovieEntity>> getMoviesData(String sortBy, boolean doForceLoad) {
-        refreshMovies(sortBy, doForceLoad);
-        return moviesDao.loadFromDb();
-    }
-
-    private void refreshMovies(String sortBy, boolean doForceLoad) {
-        executor.execute(() -> {
-            boolean moviesExists = false;
-            if (MoviesApp.getDateInserted() != null) {
-                moviesExists = AppUtils.minutesBetween(new Date(), MoviesApp.getDateInserted()) < AppConstants.FRESH_TIMEOUT_IN_MINUTES;
-            }
-            if ((!moviesExists && doForceLoad) || !moviesExists || doForceLoad) {
-                loadMovie(sortBy);
-            }
-        });
-    }
-
-    private void loadMovie(String sortBy) {
-        apiInterface.getMovies(sortBy, AppConstants.LANGUAGE, AppConstants.PAGE).enqueue(new Callback<MoviesResponse>() {
+            @NonNull
             @Override
-            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                MoviesApp.setDateInserted(new Date());
-                executor.execute(() -> {
-                    moviesDao.deleteMovies();
-                    moviesDao.saveToDb(response.body().getResults());
-                });
+            protected LiveData<List<GenreEntity>> loadFromDb() {
+                return moviesDao.getGenresById(genreIds);
             }
 
+            @NonNull
             @Override
-            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
+            protected LiveData<ApiResponse<GenreResponse>> createCall() {
+                return apiInterface.getGenres(AppConstants.LANGUAGE);
             }
-        });
+        }.asLiveData();
     }
 
     @Override
-    public LiveData<List<MovieEntity>> getMoviesFromDb() {
-        return moviesDao.loadFromDb();
+    public LiveData<Resource<List<MovieEntity>>> loadMovies(boolean forceLoad, String sortBy) {
+        return new NetworkBoundResource<List<MovieEntity>, MoviesResponse>(executor) {
+            @Override
+            protected void saveCallResult(@NonNull MoviesResponse item) {
+                SharedPreferenceHelper.setSharedPreferenceLong(AppConstants.DATA_SAVED_TIME, new Date(System.currentTimeMillis()).getTime());
+                moviesDao.deleteMovies();
+                moviesDao.saveMoviesToDb(item.getResults());
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<MovieEntity> data) {
+                return (((data == null || data.isEmpty()) && forceLoad && shouldFetchData(new Date(System.currentTimeMillis()).getTime()))
+                        || (data == null || data.isEmpty())
+                        || forceLoad
+                        || shouldFetchData(new Date(System.currentTimeMillis()).getTime()));
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<MovieEntity>> loadFromDb() {
+                return moviesDao.loadFromDb();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<MoviesResponse>> createCall() {
+                return apiInterface.getMovies(sortBy, AppConstants.LANGUAGE, AppConstants.PAGE);
+            }
+        }.asLiveData();
+    }
+
+    private Boolean shouldFetchData(Long time) {
+        boolean shouldFetch;
+        long savedTime;
+        if (SharedPreferenceHelper.contains(AppConstants.DATA_SAVED_TIME)) {
+            savedTime = SharedPreferenceHelper.getSharedPreferenceLong(AppConstants.DATA_SAVED_TIME, 0L);
+            shouldFetch = (time - savedTime) > TimeUnit.MINUTES.toMillis(AppConstants.FRESH_TIMEOUT_IN_MINUTES);
+        } else {
+            shouldFetch = false;
+        }
+        return shouldFetch;
     }
 }

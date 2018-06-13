@@ -1,6 +1,5 @@
 package com.debajyotibasak.udacitypopularmovies.utils;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.debajyotibasak.udacitypopularmovies.MoviesApp;
@@ -29,6 +28,18 @@ public class SharedPreferenceHelper {
     public static boolean getSharedPreferenceBoolean(String key, boolean defValue) {
         SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
         return settings.getBoolean(key, defValue);
+    }
+
+    public static void setSharedPreferenceLong(String key, long value) {
+        SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(key, value);
+        editor.apply();
+    }
+
+    public static long getSharedPreferenceLong(String key, long defValue) {
+        SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
+        return settings.getLong(key, defValue);
     }
 
     public static boolean contains(String key) {

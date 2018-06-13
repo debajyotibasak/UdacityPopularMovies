@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
+import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 
 import java.util.Date;
 import java.util.List;
@@ -20,7 +21,7 @@ public class HomeViewModel extends ViewModel {
         this.moviesRepo = moviesRepo;
     }
 
-    LiveData<List<MovieEntity>> getMoviesFromDb() {
+    /*LiveData<List<MovieEntity>> getMoviesFromDb() {
         return moviesRepo.getMoviesFromDb();
     }
 
@@ -30,5 +31,9 @@ public class HomeViewModel extends ViewModel {
 
     LiveData<Boolean> getGenres() {
         return moviesRepo.getGenres();
+    }*/
+
+    LiveData<Resource<List<MovieEntity>>> loadMovies(boolean forceLoad, String sortBy){
+        return moviesRepo.loadMovies(forceLoad, sortBy);
     }
 }

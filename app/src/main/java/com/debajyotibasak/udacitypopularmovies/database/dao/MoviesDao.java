@@ -20,7 +20,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface MoviesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveToDb(List<MovieEntity> movieList);
+    void saveMoviesToDb(List<MovieEntity> movieList);
 
     @Query("SELECT * FROM movies ORDER BY _id ASC")
     LiveData<List<MovieEntity>> loadFromDb();

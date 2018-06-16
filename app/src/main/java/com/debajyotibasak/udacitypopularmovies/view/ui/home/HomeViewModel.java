@@ -21,18 +21,6 @@ public class HomeViewModel extends ViewModel {
         this.moviesRepo = moviesRepo;
     }
 
-    /*LiveData<List<MovieEntity>> getMoviesFromDb() {
-        return moviesRepo.getMoviesFromDb();
-    }
-
-    LiveData<List<MovieEntity>> getMoviesData(String sortBy, boolean doForceLoad) {
-        return moviesRepo.getMoviesData(sortBy, doForceLoad);
-    }
-
-    LiveData<Boolean> getGenres() {
-        return moviesRepo.getGenres();
-    }*/
-
     LiveData<Resource<List<MovieEntity>>> loadMovies(boolean forceLoad, String sortBy){
         return moviesRepo.loadMovies(forceLoad, sortBy);
     }

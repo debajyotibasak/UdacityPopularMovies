@@ -1,14 +1,23 @@
 package com.debajyotibasak.udacitypopularmovies.view.ui.detail;
 
+import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -96,6 +105,7 @@ public class DetailActivity extends AppCompatActivity {
         mRvGenres.setAdapter(genreAdapter);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,11 +120,17 @@ public class DetailActivity extends AppCompatActivity {
         }.getType();
         MovieEntity movieEntity = gson.fromJson(movieItemJson, type);
 
+        supportPostponeEnterTransition();
+
+        Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.movie_placeholder);
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
+        roundedBitmapDrawable.setCornerRadius(25F);
+
         Glide.with(this)
                 .load(BACKDROP_BASE_PATH + movieEntity.getBackdropPath())
                 .apply(new RequestOptions()
-                        .placeholder(R.color.colorAccent)
-                        .error(R.color.colorAccent))
+                        .placeholder(R.drawable.movie_detail_placeholder)
+                        .error(R.drawable.movie_detail_placeholder))
                 .into(mImvBackDrop);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -125,9 +141,11 @@ public class DetailActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
                 .apply(new RequestOptions()
-                        .placeholder(R.color.colorAccent)
-                        .error(R.color.colorAccent)
-                        .dontAnimate())
+                        .placeholder(roundedBitmapDrawable)
+                        .error(roundedBitmapDrawable)
+                        .dontAnimate()
+                        .dontTransform()
+                        .onlyRetrieveFromCache(true))
                 .apply(RequestOptions
                         .bitmapTransform(new RoundedCornersTransformation(25, 0)))
                 .listener(new RequestListener<Drawable>() {
@@ -144,6 +162,56 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 })
                 .into(mImvPoster);
+
+        TransitionSet set = new TransitionSet();
+        set.addTransition(new ChangeImageTransform());
+        set.addTransition(new ChangeBounds());
+        set.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                Glide.with(DetailActivity.this)
+                        .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
+                        .apply(new RequestOptions()
+                                .placeholder(roundedBitmapDrawable)
+                                .error(roundedBitmapDrawable)
+                                .dontAnimate()
+                                .dontTransform()
+                                .onlyRetrieveFromCache(false))
+                        .apply(RequestOptions
+                                .bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                supportStartPostponedEnterTransition();
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                supportStartPostponedEnterTransition();
+                                return false;
+                            }
+                        })
+                        .into(mImvPoster);
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+            }
+        });
+        getWindow().setSharedElementEnterTransition(set);
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mTxvMovieTitle.setText(movieEntity.getTitle());

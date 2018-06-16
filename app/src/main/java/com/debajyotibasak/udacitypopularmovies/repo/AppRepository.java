@@ -12,6 +12,7 @@ import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
+import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 
@@ -103,6 +104,10 @@ public class AppRepository implements AppRepositoryInterface {
             savedTime = SharedPreferenceHelper.getSharedPreferenceLong(AppConstants.DATA_SAVED_TIME, 0L);
             shouldFetch = (time - savedTime) > TimeUnit.MINUTES.toMillis(AppConstants.FRESH_TIMEOUT_IN_MINUTES);
         } else {
+            shouldFetch = false;
+        }
+
+        if (!AppUtils.isNetworkAvailable()) {
             shouldFetch = false;
         }
         return shouldFetch;

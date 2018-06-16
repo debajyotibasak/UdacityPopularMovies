@@ -1,7 +1,12 @@
 package com.debajyotibasak.udacitypopularmovies.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
@@ -87,13 +93,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
             final MovieEntity data = movieList.get(position);
 
+            Bitmap placeholder = BitmapFactory.decodeResource(context.getResources(), R.drawable.movie_placeholder);
+            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), placeholder);
+            roundedBitmapDrawable.setCornerRadius(25F);
+
             if (data.getPosterPath() != null) {
                 Glide.with(context)
                         .load(AppConstants.POSTER_BASE_PATH + data.getPosterPath())
                         .apply(new RequestOptions()
-                                .placeholder(R.color.colorAccent)
-                                .error(R.color.colorAccent))
-                        .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                .placeholder(roundedBitmapDrawable)
+                                .error(roundedBitmapDrawable))
+                        .apply(RequestOptions
+                                .bitmapTransform(new RoundedCornersTransformation(25, 0)))
                         .into(mImvMovieImage);
             }
 

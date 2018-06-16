@@ -7,9 +7,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,15 +20,16 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.interfaces.MovieItemClickListener;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
+import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.GridSpacingItemDecoration;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.MoviesAdapter;
@@ -43,6 +43,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import dagger.android.AndroidInjection;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
@@ -65,6 +66,15 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
 
     @BindView(R.id.txv_toolbar_title)
     TextView txvToolbar;
+
+    @BindView(android.R.id.content)
+    View snackBarView;
+
+    @BindView(R.id.no_internet_layout)
+    View noInternet;
+
+    @BindView(R.id.btn_refresh)
+    Button btnRefesh;
 
     private MoviesAdapter mAdapter;
 
@@ -99,7 +109,11 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         super.onCreate(savedInstanceState);
         initViews();
         initData();
+        loadFromSharedPrefs();
+    }
 
+    private void loadFromSharedPrefs() {
+        noInternet.setVisibility(View.GONE);
         if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
             if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
                 loadMovies(AppConstants.SORT_BY_TOP_RATED, 2);
@@ -131,9 +145,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                         break;
                     case ERROR:
                         hideProgress();
-
-                        //TODO: If No network show diff error
-                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                        checkNetConnectivity();
                         break;
                 }
             }
@@ -143,11 +155,13 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     private void hideProgress() {
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+        noInternet.setVisibility(View.GONE);
     }
 
     private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
     }
 
     private void configureDagger() {
@@ -196,19 +210,27 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         }
 
         txvPopular.setOnClickListener(v -> {
-            SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
-            imvPopular.setVisibility(View.VISIBLE);
-            imvTopRated.setVisibility(View.GONE);
-            loadMovies(AppConstants.SORT_BY_POPULAR, 1);
             dialog.dismiss();
+            if (AppUtils.isNetworkAvailable()) {
+                SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
+                imvPopular.setVisibility(View.VISIBLE);
+                imvTopRated.setVisibility(View.GONE);
+                loadMovies(AppConstants.SORT_BY_POPULAR, 1);
+            } else {
+                AppUtils.setSnackBar(snackBarView, "No Internet Connection, Try Again Later!");
+            }
         });
 
         txvTopRated.setOnClickListener(v -> {
-            SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
-            imvPopular.setVisibility(View.GONE);
-            imvTopRated.setVisibility(View.VISIBLE);
-            loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
             dialog.dismiss();
+            if (AppUtils.isNetworkAvailable()) {
+                SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
+                imvPopular.setVisibility(View.GONE);
+                imvTopRated.setVisibility(View.VISIBLE);
+                loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
+            } else {
+                AppUtils.setSnackBar(snackBarView, "No Internet Connection, Try Again Later!");
+            }
         });
 
         close.setOnClickListener(view1 -> dialog.dismiss());
@@ -227,16 +249,36 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         intent.putExtra(MOVIE_PARCELABLE, movieDetails);
         intent.putExtra(MOVIE_IMAGE_TRANSITION, transitionName);
 
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                this,
-                shareImageView,
-                transitionName);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    this,
+                    shareImageView,
+                    transitionName);
+            startActivity(intent, options.toBundle());
+        } else {
+            startActivity(intent);
+        }
 
-        startActivity(intent, options.toBundle());
     }
 
     private int dpToPx() {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
+    }
+
+    @OnClick(R.id.btn_refresh)
+    public void buttonRefresh() {
+        if (AppUtils.isNetworkAvailable()) {
+            loadFromSharedPrefs();
+        } else {
+            checkNetConnectivity();
+        }
+    }
+
+    public void checkNetConnectivity() {
+        if (!AppUtils.isNetworkAvailable()) {
+            noInternet.setVisibility(View.VISIBLE);
+            AppUtils.setSnackBar(snackBarView, "No Internet Connection, Please Try Again Later");
+        }
     }
 }

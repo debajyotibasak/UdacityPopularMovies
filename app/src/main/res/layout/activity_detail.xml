@@ -32,6 +32,7 @@
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 android:visibility="visible"
+                android:src="@drawable/movie_detail_placeholder"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.7" />
 

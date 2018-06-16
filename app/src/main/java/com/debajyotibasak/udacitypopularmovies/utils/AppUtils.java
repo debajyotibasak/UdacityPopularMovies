@@ -3,12 +3,12 @@ package com.debajyotibasak.udacitypopularmovies.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.TextView;
 
 import com.debajyotibasak.udacitypopularmovies.MoviesApp;
-
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
-import org.joda.time.Minutes;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,9 +35,11 @@ public class AppUtils {
         return df.format(newDate);
     }
 
-    public static int minutesBetween(Date date1, Date date2) {
-        return Minutes.minutesBetween(
-                new LocalDate(date1.getTime()),
-                new LocalDate(date2.getTime())).getMinutes();
+    public static void setSnackBar(View view, String msg) {
+        Snackbar snackbar = Snackbar.make(view, msg, Snackbar.LENGTH_LONG);
+        snackbar.show();
+        View view1 = snackbar.getView();
+        TextView txv = view1.findViewById(android.support.design.R.id.snackbar_text);
+        txv.setGravity(Gravity.CENTER_HORIZONTAL);
     }
 }

@@ -77,9 +77,6 @@ dependencies {
     // Flow Layout
     implementation 'com.xiaofeng.android:flowlayoutmanager:1.2.3.2'
 
-    // Joda Time
-    implementation 'joda-time:joda-time:2.10'
-
     // Testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

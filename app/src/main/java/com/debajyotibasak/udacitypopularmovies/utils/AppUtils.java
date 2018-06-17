@@ -14,12 +14,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class AppUtils {
 
     public static boolean isNetworkAvailable() {
         ConnectivityManager cn = (ConnectivityManager) MoviesApp.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo nf = cn.getActiveNetworkInfo();
+        NetworkInfo nf = Objects.requireNonNull(cn).getActiveNetworkInfo();
         return nf != null && nf.isConnected();
     }
 

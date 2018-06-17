@@ -281,7 +281,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         }
     }
 
-    public void checkNetConnectivity() {
+    private void checkNetConnectivity() {
         if (!AppUtils.isNetworkAvailable()) {
             noInternet.setVisibility(View.VISIBLE);
             AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));

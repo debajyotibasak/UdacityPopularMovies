@@ -7,7 +7,6 @@ import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;

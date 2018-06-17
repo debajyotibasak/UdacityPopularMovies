@@ -2,19 +2,16 @@ package com.debajyotibasak.udacitypopularmovies.di.module;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
-import android.content.Context;
 
 import com.debajyotibasak.udacitypopularmovies.api.ApiInterface;
 import com.debajyotibasak.udacitypopularmovies.api.interceptors.AuthenticationInterceptor;
 import com.debajyotibasak.udacitypopularmovies.database.MoviesDb;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
-import com.debajyotibasak.udacitypopularmovies.di.interfaces.ApplicationContext;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 import com.debajyotibasak.udacitypopularmovies.utils.LiveDataCallAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.File;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -22,7 +19,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -30,7 +26,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BASE_URL;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.DB_NAME;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.HTTP_CACHE;
 
 @Module(includes = ViewModelModule.class)
 public class AppModule {

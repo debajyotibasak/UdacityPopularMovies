@@ -18,18 +18,6 @@ public class SharedPreferenceHelper {
         return settings.getString(key, defValue);
     }
 
-    public static void setSharedPreferenceBoolean(String key, boolean value) {
-        SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean(key, value);
-        editor.apply();
-    }
-
-    public static boolean getSharedPreferenceBoolean(String key, boolean defValue) {
-        SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
-        return settings.getBoolean(key, defValue);
-    }
-
     public static void setSharedPreferenceLong(String key, long value) {
         SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
         SharedPreferences.Editor editor = settings.edit();

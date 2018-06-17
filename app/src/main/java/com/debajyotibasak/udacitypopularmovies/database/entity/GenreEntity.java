@@ -8,7 +8,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_GENRES;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_NAME;
 
 @Entity(tableName = TABLE_GENRES)
 public class GenreEntity {

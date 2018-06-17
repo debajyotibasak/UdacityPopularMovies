@@ -1,12 +1,10 @@
 package com.debajyotibasak.udacitypopularmovies.di.component;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.debajyotibasak.udacitypopularmovies.MoviesApp;
 import com.debajyotibasak.udacitypopularmovies.di.module.ActivityModule;
 import com.debajyotibasak.udacitypopularmovies.di.module.AppModule;
-import com.debajyotibasak.udacitypopularmovies.di.module.ContextModule;
 
 import javax.inject.Singleton;
 

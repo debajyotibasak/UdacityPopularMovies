@@ -6,8 +6,6 @@ import android.content.Context;
 
 import com.debajyotibasak.udacitypopularmovies.di.component.DaggerAppComponent;
 
-import java.util.Date;
-
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
@@ -20,7 +18,6 @@ public class MoviesApp extends Application implements HasActivityInjector {
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     public static Context context;
-    public static Date dateInserted;
 
     @Override
     public void onCreate() {
@@ -34,7 +31,7 @@ public class MoviesApp extends Application implements HasActivityInjector {
         return dispatchingAndroidInjector;
     }
 
-    private void initDagger(){
+    private void initDagger() {
         DaggerAppComponent.builder()
                 .application(this)
                 .build()
@@ -43,13 +40,5 @@ public class MoviesApp extends Application implements HasActivityInjector {
 
     public static Context getContext() {
         return context;
-    }
-
-    public static Date getDateInserted() {
-        return dateInserted;
-    }
-
-    public static void setDateInserted(Date dateInserted) {
-        MoviesApp.dateInserted = dateInserted;
     }
 }

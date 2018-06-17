@@ -34,11 +34,7 @@ import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.GenreAdapter;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.xiaofeng.flowlayoutmanager.FlowLayoutManager;
-
-import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 
@@ -82,7 +78,13 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    @BindView(android.R.id.content)
+    View snackBarView;
+
     private GenreAdapter genreAdapter;
+    private MovieEntity movieEntity;
+    private String transitionName;
+    private RoundedBitmapDrawable roundedBitmapDrawable;
 
     private void initViews() {
         setContentView(R.layout.activity_detail);
@@ -105,7 +107,6 @@ public class DetailActivity extends AppCompatActivity {
         mRvGenres.setAdapter(genreAdapter);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,17 +114,22 @@ public class DetailActivity extends AppCompatActivity {
         initData();
 
         Bundle extras = getIntent().getExtras();
-
-        String movieItemJson = extras.getString(MOVIE_PARCELABLE);
-        Gson gson = new Gson();
-        Type type = new TypeToken<MovieEntity>() {
-        }.getType();
-        MovieEntity movieEntity = gson.fromJson(movieItemJson, type);
+        if (extras != null) {
+            movieEntity = (MovieEntity) extras.getSerializable(MOVIE_PARCELABLE);
+            transitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
+        }
 
         supportPostponeEnterTransition();
 
+        populateUi(movieEntity, transitionName);
+
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void populateUi(MovieEntity movieEntity, String transitionName) {
         Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.movie_placeholder);
-        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
+        roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
         roundedBitmapDrawable.setCornerRadius(25F);
 
         Glide.with(this)
@@ -134,34 +140,10 @@ public class DetailActivity extends AppCompatActivity {
                 .into(mImvBackDrop);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String imageTransitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
-            mImvPoster.setTransitionName(imageTransitionName);
+            mImvPoster.setTransitionName(transitionName);
         }
 
-        Glide.with(this)
-                .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
-                .apply(new RequestOptions()
-                        .placeholder(roundedBitmapDrawable)
-                        .error(roundedBitmapDrawable)
-                        .dontAnimate()
-                        .dontTransform()
-                        .onlyRetrieveFromCache(true))
-                .apply(RequestOptions
-                        .bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        supportStartPostponedEnterTransition();
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        supportStartPostponedEnterTransition();
-                        return false;
-                    }
-                })
-                .into(mImvPoster);
+        loadPosterImage(true);
 
         TransitionSet set = new TransitionSet();
         set.addTransition(new ChangeImageTransform());
@@ -173,30 +155,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onTransitionEnd(Transition transition) {
-                Glide.with(DetailActivity.this)
-                        .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
-                        .apply(new RequestOptions()
-                                .placeholder(roundedBitmapDrawable)
-                                .error(roundedBitmapDrawable)
-                                .dontAnimate()
-                                .dontTransform()
-                                .onlyRetrieveFromCache(false))
-                        .apply(RequestOptions
-                                .bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                supportStartPostponedEnterTransition();
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                supportStartPostponedEnterTransition();
-                                return false;
-                            }
-                        })
-                        .into(mImvPoster);
+                loadPosterImage(false);
             }
 
             @Override
@@ -211,9 +170,9 @@ public class DetailActivity extends AppCompatActivity {
             public void onTransitionResume(Transition transition) {
             }
         });
+
         getWindow().setSharedElementEnterTransition(set);
 
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mTxvMovieTitle.setText(movieEntity.getTitle());
         mTxvRating.setText(String.valueOf(movieEntity.getVoteAverage()));
         mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
@@ -233,13 +192,38 @@ public class DetailActivity extends AppCompatActivity {
                         break;
                     case ERROR:
                         mRvGenres.setVisibility(View.GONE);
-                        //TODO: If No network show diff error
-                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
 
             }
         });
+    }
+
+    private void loadPosterImage(boolean retrieveFromCache) {
+        Glide.with(this)
+                .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
+                .apply(new RequestOptions()
+                        .placeholder(roundedBitmapDrawable)
+                        .error(roundedBitmapDrawable)
+                        .dontAnimate()
+                        .dontTransform()
+                        .onlyRetrieveFromCache(retrieveFromCache))
+                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+                })
+                .into(mImvPoster);
     }
 
     private void configureDagger() {

@@ -9,6 +9,7 @@ import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListCon
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_NAME;
 
 @Entity(tableName = TABLE_NAME)
-public class MovieEntity {
+public class MovieEntity implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Integer _id;
     @SerializedName("id")

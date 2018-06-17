@@ -34,10 +34,7 @@ import com.debajyotibasak.udacitypopularmovies.utils.GridSpacingItemDecoration;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.MoviesAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailActivity;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -92,15 +89,10 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         txvToolbar.setText(R.string.txt_movies);
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         mAdapter = new MoviesAdapter(this);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-            recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(), true));
-        } else {
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
-            recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.addItemDecoration(new GridSpacingItemDecoration(4, dpToPx(), true));
-        }
+        int recyclerViewSpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 2 : 4;
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, recyclerViewSpanCount);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(recyclerViewSpanCount, dpToPx(), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
     }
@@ -115,16 +107,23 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
 
     private void loadFromSharedPrefs() {
         noInternet.setVisibility(View.GONE);
-        if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
-            if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
-                loadMovies(AppConstants.SORT_BY_TOP_RATED, 2);
-            } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null)
-                    .equals(AppConstants.SORT_BY_POPULAR)) {
-                loadMovies(AppConstants.SORT_BY_POPULAR, 2);
-            }
-        } else {
-            SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
-            loadMovies(AppConstants.SORT_BY_POPULAR, 1);
+
+        int loadingIdentifier = SharedPreferenceHelper.contains(AppConstants.PREF_FILTER) ? 2 : 1;
+
+        switch (loadingIdentifier) {
+            case 1:
+                SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
+                loadMovies(AppConstants.SORT_BY_POPULAR, loadingIdentifier);
+                break;
+            case 2:
+                if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
+                    loadMovies(AppConstants.SORT_BY_TOP_RATED, 2);
+                } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
+                    loadMovies(AppConstants.SORT_BY_POPULAR, 2);
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -197,17 +196,24 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         ImageView imvTopRated = view.findViewById(R.id.imv_top_rated);
         ImageView close = view.findViewById(R.id.imv_close);
 
-        if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
-            if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
-                imvTopRated.setVisibility(View.VISIBLE);
-                imvPopular.setVisibility(View.GONE);
-            } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
-                imvTopRated.setVisibility(View.GONE);
+        int filterIdentifier = SharedPreferenceHelper.contains(AppConstants.PREF_FILTER) ? 2 : 1;
+
+        switch (filterIdentifier) {
+            case 1:
                 imvPopular.setVisibility(View.VISIBLE);
-            }
-        } else {
-            imvPopular.setVisibility(View.VISIBLE);
-            imvTopRated.setVisibility(View.GONE);
+                imvTopRated.setVisibility(View.GONE);
+                break;
+            case 2:
+                if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
+                    imvTopRated.setVisibility(View.VISIBLE);
+                    imvPopular.setVisibility(View.GONE);
+                } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
+                    imvTopRated.setVisibility(View.GONE);
+                    imvPopular.setVisibility(View.VISIBLE);
+                }
+                break;
+            default:
+                break;
         }
 
         txvPopular.setOnClickListener(v -> {
@@ -218,7 +224,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                 imvTopRated.setVisibility(View.GONE);
                 loadMovies(AppConstants.SORT_BY_POPULAR, 1);
             } else {
-                AppUtils.setSnackBar(snackBarView, "No Internet Connection, Try Again Later!");
+                AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
             }
         });
 
@@ -230,7 +236,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                 imvTopRated.setVisibility(View.VISIBLE);
                 loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
             } else {
-                AppUtils.setSnackBar(snackBarView, "No Internet Connection, Try Again Later!");
+                AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
             }
         });
 
@@ -243,12 +249,11 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     @Override
     public void onMovieItemClick(int position, MovieEntity movieEntity, ImageView shareImageView, String transitionName) {
         Intent intent = new Intent(this, DetailActivity.class);
-        Gson gson = new Gson();
-        Type type = new TypeToken<MovieEntity>() {
-        }.getType();
-        String movieDetails = gson.toJson(movieEntity, type);
-        intent.putExtra(MOVIE_PARCELABLE, movieDetails);
-        intent.putExtra(MOVIE_IMAGE_TRANSITION, transitionName);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(MOVIE_PARCELABLE, movieEntity);
+        bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
+        intent.putExtras(bundle);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -279,7 +284,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     public void checkNetConnectivity() {
         if (!AppUtils.isNetworkAvailable()) {
             noInternet.setVisibility(View.VISIBLE);
-            AppUtils.setSnackBar(snackBarView, "No Internet Connection, Please Try Again Later");
+            AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
         }
     }
 }

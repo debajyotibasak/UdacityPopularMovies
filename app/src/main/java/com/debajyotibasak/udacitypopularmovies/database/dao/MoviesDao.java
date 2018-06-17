@@ -33,13 +33,4 @@ public interface MoviesDao {
 
     @Query("SELECT * FROM genres WHERE genreId IN (:genreIds)")
     LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds);
-
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    void saveResponseToDb(MoviesResponse moviesResponse);
-//
-//    @Query("DELETE FROM api_response_details")
-//    void deleteResponse();
-
-//    @Query("SELECT * FROM api_response_details WHERE lastRefresh > :lastRefreshMax")
-//    MoviesResponse hasMovie(Date lastRefreshMax);
 }

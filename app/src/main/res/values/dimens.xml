@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="height_app_bar">220dp</dimen>
+    <dimen name="min_height">0dp</dimen>
+    <dimen name="min_width">0dp</dimen>
+    <dimen name="filter_imv_close">24dp</dimen>
+    <dimen name="check">30dp</dimen>
+    <dimen name="poster_width">120dp</dimen>
+    <dimen name="poster_height">180dp</dimen>
+    <dimen name="detail_rating">20dp</dimen>
+    <dimen name="heading_view_width">5dp</dimen>
+    <dimen name="item_movie_poster_height">200dp</dimen>
+    <dimen name="item_rating">10dp</dimen>
+    <dimen name="no_internet">100dp</dimen>
+    <dimen name="refresh_height">40dp</dimen>
+
+    // Margin
+    <dimen name="margin_2">2dp</dimen>
+    <dimen name="margin_4">4dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_20">20dp</dimen>
+    <dimen name="margin_24">24dp</dimen>
+    <dimen name="margin_32">32dp</dimen>
+
+    // Text Size
+    <dimen name="txt_12">12sp</dimen>
+    <dimen name="txt_16">16sp</dimen>
+    <dimen name="txt_14">14sp</dimen>
+    <dimen name="txt_18">18sp</dimen>
+    <dimen name="txt_20">20sp</dimen>
+    <dimen name="txt_24">24sp</dimen>
+</resources>

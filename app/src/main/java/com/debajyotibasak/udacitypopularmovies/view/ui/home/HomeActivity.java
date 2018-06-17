@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -74,7 +75,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     View noInternet;
 
     @BindView(R.id.btn_refresh)
-    Button btnRefesh;
+    Button btnRefresh;
 
     private MoviesAdapter mAdapter;
 
@@ -127,9 +128,9 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         }
     }
 
-    private void loadMovies(String sort, int loadingIdentifer) {
+    private void loadMovies(String sort, int loadingIdentifier) {
 
-        boolean forceLoad = loadingIdentifer == 1;
+        boolean forceLoad = loadingIdentifier == 1;
 
         homeViewModel.loadMovies(forceLoad, sort).observe(this, movieResource -> {
             if (movieResource != null) {
@@ -187,7 +188,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         View view = View.inflate(this, R.layout.bottom_sheet_filter, null);
 
         BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(view);
 
         TextView txvPopular = view.findViewById(R.id.txv_popular);

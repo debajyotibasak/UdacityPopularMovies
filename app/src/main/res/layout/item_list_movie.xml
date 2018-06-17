@@ -8,23 +8,24 @@
 
     <ImageView
         android:id="@+id/imv_movie_poster"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/min_width"
+        android:layout_height="@dimen/item_movie_poster_height"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/colorAccent" />
+        app:srcCompat="@color/colorAccent"
+        android:contentDescription="@string/list_movie_poster" />
 
     <TextView
         android:id="@+id/txv_movie_title"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/min_width"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/margin_8"
         android:fontFamily="@font/worksans_bold"
         android:textAllCaps="false"
         android:textColor="@color/grey_700"
-        android:textSize="16sp"
+        android:textSize="@dimen/txt_16"
         android:textStyle="bold"
         android:typeface="normal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,11 +38,11 @@
         android:id="@+id/txv_release_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_4"
         android:fontFamily="@font/worksans_regular"
         android:textColor="@color/grey_700"
-        android:textSize="12sp"
+        android:textSize="@dimen/txt_12"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/txv_movie_rating"
@@ -55,11 +56,11 @@
         android:id="@+id/txv_movie_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_4"
         android:fontFamily="@font/worksans_regular"
         android:textColor="@color/grey_700"
-        android:textSize="12sp"
+        android:textSize="@dimen/txt_12"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,11 +71,12 @@
 
     <ImageView
         android:id="@+id/imv_star"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_marginEnd="2dp"
+        android:layout_width="@dimen/item_rating"
+        android:layout_height="@dimen/item_rating"
+        android:layout_marginEnd="@dimen/margin_2"
         app:layout_constraintBottom_toTopOf="@+id/txv_movie_rating"
         app:layout_constraintEnd_toStartOf="@+id/txv_movie_rating"
         app:layout_constraintTop_toBottomOf="@+id/txv_movie_rating"
-        app:srcCompat="@drawable/ic_star_grey" />
+        app:srcCompat="@drawable/ic_star_grey"
+        android:contentDescription="@string/item_rating_star" />
 </android.support.constraint.ConstraintLayout>

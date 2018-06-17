@@ -21,7 +21,7 @@ public class MoviesResponse {
     @SerializedName("results")
     @Expose
     @Ignore
-    private List<MovieEntity> results = null;
+    private List<MovieEntity> results;
 
     public MoviesResponse(Integer page, Integer totalResults, Integer totalPages, List<MovieEntity> results) {
         this.page = page;

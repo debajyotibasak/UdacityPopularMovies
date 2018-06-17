@@ -3,6 +3,22 @@
     <string name="txt_movies">Movies</string>
     <string name="txt_empty_string" />
     <string name="txt_sort">Sort</string>
-    <string name="txt_some_error_occured">Some Error Occurred</string>
+    <string name="error_no_internet">No Internet Connectivity. Try Refreshing!</string>
     <string name="collasping_image">Collasping Image</string>
+    <string name="txt_refresh">Refresh</string>
+    <string name="txt_filter">Filter</string>
+    <string name="txt_popular">Popular</string>
+    <string name="txt_top_rated">Top Rated</string>
+    <string name="txt_plot">Plot</string>
+
+    // Accessibility
+    <string name="no_internet">No internet</string>
+    <string name="close_button_filter">close_button_filter</string>
+    <string name="check_imv_popular">check_imv_popular</string>
+    <string name="check_imv_top_rated">check_imv_top_rated</string>
+    <string name="detail_movie_poster">detail_movie_poster</string>
+    <string name="rating">Rating</string>
+    <string name="list_movie_poster">list_movie_poster</string>
+    <string name="item_rating_star">item_rating_star</string>
+
 </resources>

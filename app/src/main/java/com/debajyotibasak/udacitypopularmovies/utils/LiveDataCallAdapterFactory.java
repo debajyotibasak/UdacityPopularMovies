@@ -11,10 +11,6 @@ import java.lang.reflect.Type;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 
-/**
- * Created by debajyotibasak on 12/03/18.
- */
-
 public class LiveDataCallAdapterFactory extends CallAdapter.Factory {
 
     @Override

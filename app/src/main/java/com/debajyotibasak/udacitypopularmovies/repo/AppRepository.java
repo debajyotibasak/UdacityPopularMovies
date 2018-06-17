@@ -12,13 +12,13 @@ import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
+import com.debajyotibasak.udacitypopularmovies.utils.AppExecutor;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -29,10 +29,10 @@ public class AppRepository implements AppRepositoryInterface {
 
     private final ApiInterface apiInterface;
     private final MoviesDao moviesDao;
-    private final Executor executor;
+    private final AppExecutor executor;
 
     @Inject
-    public AppRepository(ApiInterface apiInterface, MoviesDao moviesDao, Executor executor) {
+    public AppRepository(ApiInterface apiInterface, MoviesDao moviesDao, /*Executor executor*/AppExecutor executor) {
         this.apiInterface = apiInterface;
         this.moviesDao = moviesDao;
         this.executor = executor;

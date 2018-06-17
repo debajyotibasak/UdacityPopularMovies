@@ -8,11 +8,12 @@ import com.debajyotibasak.udacitypopularmovies.api.interceptors.AuthenticationIn
 import com.debajyotibasak.udacitypopularmovies.database.MoviesDb;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
+import com.debajyotibasak.udacitypopularmovies.utils.AppExecutor;
 import com.debajyotibasak.udacitypopularmovies.utils.LiveDataCallAdapterFactory;
+import com.debajyotibasak.udacitypopularmovies.utils.MainThreadExecutor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
@@ -30,6 +31,21 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.DB_NAME
 @Module(includes = ViewModelModule.class)
 public class AppModule {
 
+    // --- REPOSITORY INJECTION ---
+
+    @Provides
+    @Singleton
+    AppRepository provideAppRepository(ApiInterface apiInterface, MoviesDao moviesDao, AppExecutor executor) {
+        return new AppRepository(apiInterface, moviesDao, executor);
+    }
+
+    // --- EXECUTOR INJECTION ---
+
+    @Provides
+    AppExecutor provideAppExecutor() {
+        return new AppExecutor(Executors.newSingleThreadExecutor(), new MainThreadExecutor());
+    }
+
     // --- DATABASE INJECTION ---
 
     @Provides
@@ -46,30 +62,12 @@ public class AppModule {
         return database.moviesDao();
     }
 
-    // --- REPOSITORY INJECTION ---
-
-    @Provides
-    Executor provideExecutor() {
-        return Executors.newSingleThreadExecutor();
-    }
-
-    @Provides
-    @Singleton
-    AppRepository provideAppRepository(ApiInterface apiInterface, MoviesDao moviesDao, Executor executor) {
-        return new AppRepository(apiInterface, moviesDao, executor);
-    }
-
     // --- NETWORK INJECTION ---
 
     @Provides
     @Singleton
     ApiInterface provideApiInterface(Retrofit retrofit) {
         return retrofit.create(ApiInterface.class);
-    }
-
-    @Provides
-    Gson provideGson() {
-        return new GsonBuilder().create();
     }
 
     @Provides
@@ -80,6 +78,11 @@ public class AppModule {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(liveDataCallAdapterFactory)
                 .build();
+    }
+
+    @Provides
+    Gson provideGson() {
+        return new GsonBuilder().create();
     }
 
     @Provides

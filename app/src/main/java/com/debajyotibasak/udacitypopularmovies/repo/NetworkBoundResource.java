@@ -8,10 +8,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
+import com.debajyotibasak.udacitypopularmovies.utils.AppExecutor;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 
 import java.util.Objects;
-import java.util.concurrent.Executor;
 
 /**
  * Created by debajyotibasak on 12/03/18.
@@ -19,12 +19,12 @@ import java.util.concurrent.Executor;
 
 public abstract class NetworkBoundResource<ResultType, RequestType> {
 
-    private final Executor appExecutors;
+    private AppExecutor appExecutors;
 
     private final MediatorLiveData<Resource<ResultType>> result = new MediatorLiveData<>();
 
     @MainThread
-    NetworkBoundResource(Executor appExecutors) {
+    NetworkBoundResource(AppExecutor appExecutors) {
 
         this.appExecutors = appExecutors;
 
@@ -63,9 +63,9 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
             //noinspection ConstantConditions
             if (response.isSuccessful()) {
-                appExecutors.execute(() -> {
+                appExecutors.diskIO().execute(() -> {
                     saveCallResult(processResponse(response));
-                    appExecutors.execute(() ->
+                    appExecutors.mainThread().execute(() ->
                             // we specially request a new live data,
                             // otherwise we will get immediately last cached value,
                             // which may not be updated with latest results received from network.

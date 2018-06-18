@@ -1,4 +1,4 @@
-# UdacityPopularMovies
+<h1 align="center">Popular Movies App</h1>
 
 <h2>Steps to run the app</h2>
 <p>If you do not have a gradle.properties file, create one</p>

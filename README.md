@@ -7,5 +7,5 @@
 <li>Right click > New > File</li>
 <li>Put the name as gradle.properties</li>
 </ol>
-<p>Now paste THE_MOVIE_DB_API_KEY="your-api-key-here" in the grdle.properties file</p>
+<p>Now paste THE_MOVIE_DB_API_KEY="your-api-key-here" in the gradle.properties file</p>
 <p>Build the project and Run</p>

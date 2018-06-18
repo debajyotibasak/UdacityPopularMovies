@@ -32,7 +32,7 @@ public class AppRepository implements AppRepositoryInterface {
     private final AppExecutor executor;
 
     @Inject
-    public AppRepository(ApiInterface apiInterface, MoviesDao moviesDao, /*Executor executor*/AppExecutor executor) {
+    public AppRepository(ApiInterface apiInterface, MoviesDao moviesDao, AppExecutor executor) {
         this.apiInterface = apiInterface;
         this.moviesDao = moviesDao;
         this.executor = executor;

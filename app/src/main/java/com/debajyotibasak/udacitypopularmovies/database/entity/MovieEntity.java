@@ -4,13 +4,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
-import com.debajyotibasak.udacitypopularmovies.database.converter.DateConverter;
 import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListConvertor;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_NAME;
@@ -62,13 +60,11 @@ public class MovieEntity implements Serializable {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
-    @TypeConverters(DateConverter.class)
-    private Date createdAt;
 
     public MovieEntity(Integer _id, Integer movieId, Integer voteCount, Boolean video, Double voteAverage,
                        String title, Double popularity, String posterPath, String originalLanguage,
                        String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult,
-                       String overview, String releaseDate, Date createdAt) {
+                       String overview, String releaseDate) {
         this._id = _id;
         this.movieId = movieId;
         this.voteCount = voteCount;
@@ -84,7 +80,6 @@ public class MovieEntity implements Serializable {
         this.adult = adult;
         this.overview = overview;
         this.releaseDate = releaseDate;
-        this.createdAt = createdAt;
     }
 
     public Integer getId() {
@@ -147,11 +142,4 @@ public class MovieEntity implements Serializable {
         return releaseDate;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
 }

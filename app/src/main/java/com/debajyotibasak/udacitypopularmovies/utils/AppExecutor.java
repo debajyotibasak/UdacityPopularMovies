@@ -25,5 +25,4 @@ public class AppExecutor {
     public Executor mainThread() {
         return mainThread;
     }
-
 }

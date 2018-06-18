@@ -13,6 +13,12 @@
 - Design inspired from Pinterest
 - UI optimized for potrait and landscape.
 
+<h2>Screenshots</h2>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345854758.png" width="360" height="640"><br/>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345887129.png" width="360" height="640"><br/>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345905882.png" width="360" height="640"><br/>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345923626.png" width="640" height="360"><br/>
+
 <h2>Steps to run the app</h2>
 <p>The app uses themoviedb.org API to get movie information and posters. You must provide your own API key in order to build the app.</p>
 <p>If you do not have a gradle.properties file, create one</p>

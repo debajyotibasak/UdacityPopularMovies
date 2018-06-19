@@ -30,6 +30,9 @@
 <p>Now paste THE_MOVIE_DB_API_KEY="your-api-key-here" in the gradle.properties file</p>
 <p>Build the project and Run</p>
 
+## Download APK
+[Release v1.0](https://github.com/debo1994/UdacityPopularMovies/releases/download/v1.0/app-debug.apk)
+
 ## Libraries
 
 * [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/)

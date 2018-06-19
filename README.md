@@ -13,6 +13,12 @@
 - Design inspired from Pinterest
 - UI optimized for potrait and landscape.
 
+<h2>Screenshots</h2>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345854758.png" width="450" height="800"></br>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345887129.png" width="450" height="800"></br>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345905882.png" width="450" height="800"></br>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345923626.png" width="800" height="450"><br/>
+
 <h2>Steps to run the app</h2>
 <p>The app uses themoviedb.org API to get movie information and posters. You must provide your own API key in order to build the app.</p>
 <p>If you do not have a gradle.properties file, create one</p>
@@ -23,6 +29,20 @@
 </ol>
 <p>Now paste THE_MOVIE_DB_API_KEY="your-api-key-here" in the gradle.properties file</p>
 <p>Build the project and Run</p>
+
+## Download APK
+[Release v1.0](https://github.com/debo1994/UdacityPopularMovies/releases/download/v1.0/app-debug.apk)
+
+## Libraries
+
+* [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/)
+* [ButterKnife](https://github.com/JakeWharton/butterknife)
+* [Dagger2](https://github.com/google/dagger)
+* [Retrofit2](https://github.com/square/retrofit)
+* [Glide](https://github.com/bumptech/glide)
+* [Glide Transformations](https://github.com/wasabeef/glide-transformations)
+* [Android Debug Database](https://github.com/amitshekhariitbhu/Android-Debug-Database)
+* [FlowLayoutManager](https://github.com/xiaofeng-han/AndroidLibs/tree/master/flowlayoutmanager)
 
 ## License
 Copyright 2018 Debajyoti Basak

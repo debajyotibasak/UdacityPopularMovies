@@ -19,6 +19,9 @@
 <img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345905882.png" width="450" height="800"></br>
 <img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345923626.png" width="800" height="450"><br/>
 
+<h2>Screen Video</h2>
+<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/gifs/stage1.gif" width="450" height="800"></br>
+
 <h2>Steps to run the app</h2>
 <p>The app uses themoviedb.org API to get movie information and posters. You must provide your own API key in order to build the app.</p>
 <p>If you do not have a gradle.properties file, create one</p>

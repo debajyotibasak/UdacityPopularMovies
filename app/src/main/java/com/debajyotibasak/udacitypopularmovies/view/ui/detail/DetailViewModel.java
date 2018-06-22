@@ -20,11 +20,7 @@ public class DetailViewModel extends ViewModel {
         this.moviesRepo = moviesRepo;
     }
 
-//    LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds) {
-//        return moviesRepo.getGenresById(genreIds);
-//    }
-
-    LiveData<Resource<List<GenreEntity>>> getGenresById(List<Integer> genreIds){
+    LiveData<Resource<List<GenreEntity>>> getGenresById(List<Integer> genreIds) {
         return moviesRepo.loadGenres(genreIds);
     }
 

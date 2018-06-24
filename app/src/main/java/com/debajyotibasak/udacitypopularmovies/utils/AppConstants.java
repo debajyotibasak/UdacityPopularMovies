@@ -6,6 +6,7 @@ public class AppConstants {
     public static final String BASE_URL = "https://api.themoviedb.org/3/";
     public static final String POSTER_BASE_PATH = "http://image.tmdb.org/t/p/w185";
     public static final String BACKDROP_BASE_PATH = "http://image.tmdb.org/t/p/w500";
+    public static final String YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/%s/mqdefault.jpg";
     public static final String API_KEY_PARAM = "api_key";
     public static final String TABLE_NAME = "movies";
     public static final String TABLE_GENRES = "genres";

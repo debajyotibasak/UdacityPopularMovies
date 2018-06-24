@@ -61,7 +61,7 @@
             android:fontFamily="@font/worksans_regular"
             android:textColor="@color/grey_700"
             android:textSize="@dimen/txt_20"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toEndOf="@+id/imv_star"
             app:layout_constraintTop_toBottomOf="@+id/rv_genres"
             tools:text="9.9" />
 
@@ -103,11 +103,11 @@
             android:fontFamily="@font/worksans_regular"
             app:layout_constraintEnd_toStartOf="@+id/guideline_end"
             app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/txv_plot"
             tools:text="This is the plot" />
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/imv_star"
             android:layout_width="@dimen/detail_rating"
             android:layout_height="@dimen/detail_rating"
             android:layout_marginStart="@dimen/margin_16"
@@ -118,7 +118,7 @@
             app:srcCompat="@drawable/ic_star_grey" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/txv_plot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_24"
@@ -130,15 +130,15 @@
             app:layout_constraintTop_toTopOf="@+id/barrier_poster_rating_bottom" />
 
         <View
-            android:id="@+id/divider"
+            android:id="@+id/divider_plot"
             android:layout_width="@dimen/heading_view_width"
             android:layout_height="@dimen/min_height"
             android:background="@color/colorAccent"
-            app:layout_constraintBottom_toBottomOf="@+id/textView"
+            app:layout_constraintBottom_toBottomOf="@+id/txv_plot"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView" />
+            app:layout_constraintTop_toTopOf="@+id/txv_plot" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -167,7 +167,16 @@
             android:visibility="visible"
             app:layout_constraintEnd_toStartOf="@+id/guideline_end"
             app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />-->
+
+        <include
+            android:id="@+id/lay_cast"
+            layout="@layout/lay_cast"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txv_plot_details" />
 
         <include
             android:id="@+id/lay_trailer"
@@ -176,7 +185,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+            app:layout_constraintTop_toBottomOf="@+id/lay_cast" />
 
         <include
             android:id="@+id/lay_reviews"

@@ -6,8 +6,14 @@ import android.support.annotation.Nullable;
 
 import com.debajyotibasak.udacitypopularmovies.api.ApiInterface;
 import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.CastResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
+import com.debajyotibasak.udacitypopularmovies.api.model.VideoResponse;
+import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
@@ -93,6 +99,87 @@ public class AppRepository implements AppRepositoryInterface {
             @Override
             protected LiveData<ApiResponse<MoviesResponse>> createCall() {
                 return apiInterface.getMovies(sortBy, AppConstants.LANGUAGE, AppConstants.PAGE);
+            }
+        }.asLiveData();
+    }
+
+    @Override
+    public LiveData<Resource<List<CastResult>>> loadCast(int movieId) {
+        return new NetworkBoundResource<List<CastResult>, CastResponse>(executor){
+            @Override
+            protected void saveCallResult(@NonNull CastResponse item) {
+
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<CastResult> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<CastResult>> loadFromDb() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<CastResponse>> createCall() {
+                return apiInterface.getCast(AppConstants.LANGUAGE, movieId);
+            }
+        }.asLiveData();
+    }
+
+    @Override
+    public LiveData<Resource<List<VideoResults>>> loadVideos(int movieId) {
+        return new NetworkBoundResource<List<VideoResults>, VideoResponse>(executor) {
+            @Override
+            protected void saveCallResult(@NonNull VideoResponse item) {
+
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<VideoResults> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<VideoResults>> loadFromDb() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<VideoResponse>> createCall() {
+                return apiInterface.getVideos(AppConstants.LANGUAGE, movieId);
+            }
+        }.asLiveData();
+    }
+
+    @Override
+    public LiveData<Resource<List<ReviewResult>>> loadReviews(int movieId) {
+        return new NetworkBoundResource<List<ReviewResult>, ReviewResponse>(executor) {
+            @Override
+            protected void saveCallResult(@NonNull ReviewResponse item) {
+
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<ReviewResult> data) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<ReviewResult>> loadFromDb() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<ReviewResponse>> createCall() {
+                return apiInterface.getReviews(AppConstants.LANGUAGE, movieId);
             }
         }.asLiveData();
     }

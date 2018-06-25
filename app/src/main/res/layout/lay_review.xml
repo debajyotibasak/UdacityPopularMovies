@@ -16,7 +16,7 @@
         app:srcCompat="@drawable/ic_review" />
 
     <TextView
-        android:id="@+id/txv_review"
+        android:id="@+id/txv_review_body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"

@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
@@ -20,10 +21,13 @@ import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
@@ -32,8 +36,11 @@ import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
+import com.debajyotibasak.udacitypopularmovies.view.adapter.CastAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.GenreAdapter;
 import com.xiaofeng.flowlayoutmanager.FlowLayoutManager;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,6 +53,7 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDRO
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_THUMBNAIL;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -80,7 +88,35 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(android.R.id.content)
     View snackBarView;
 
+    @BindView(R.id.lay_cast)
+    View mLayCast;
+
+    @BindView(R.id.lay_trailer)
+    View mLayTrailer;
+
+    @BindView(R.id.lay_reviews)
+    View mLayReviews;
+
+    @BindView(R.id.progress_detail)
+    ProgressBar progressDetails;
+
+    @BindView(R.id.rv_cast)
+    RecyclerView mRvCast;
+
+    @BindView(R.id.imv_video_thumb)
+    ImageView mImvTrailerThumb;
+
+    @BindView(R.id.txv_trailer_title)
+    TextView mTxvVideoTitle;
+
+    @BindView(R.id.txv_review_person)
+    TextView mTxvReviewPerson;
+
+    @BindView(R.id.txv_review_body)
+    TextView mTxvReviewBody;
+
     private GenreAdapter genreAdapter;
+    private CastAdapter castAdapter;
     private MovieEntity movieEntity;
     private String transitionName;
     private RoundedBitmapDrawable roundedBitmapDrawable;
@@ -99,11 +135,21 @@ public class DetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         genreAdapter = new GenreAdapter(this);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
         flowLayoutManager.setAutoMeasureEnabled(true);
         mRvGenres.setLayoutManager(flowLayoutManager);
         mRvGenres.setAdapter(genreAdapter);
+
+        castAdapter = new CastAdapter(this);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mRvCast.setLayoutManager(llm);
+        mRvCast.setAdapter(castAdapter);
+        mRvCast.setNestedScrollingEnabled(true);
+
+
     }
 
     @Override
@@ -177,26 +223,7 @@ public class DetailActivity extends AppCompatActivity {
         mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
         mTxvPlotDetails.setText(movieEntity.getOverview());
 
-        detailViewModel.getGenresById(movieEntity.getGenreIds()).observe(this, genreResource -> {
-            if (genreResource != null) {
-                switch (genreResource.getStatus()) {
-                    case SUCCESS:
-                        mRvGenres.setVisibility(View.VISIBLE);
-                        if (genreResource.getResponse() != null) {
-                            genreAdapter.addGenres(genreResource.getResponse());
-                        }
-                        break;
-                    case LOADING:
-                        mRvGenres.setVisibility(View.GONE);
-                        break;
-                    case ERROR:
-                        mRvGenres.setVisibility(View.GONE);
-                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
-                        break;
-                }
-
-            }
-        });
+        getGenres(movieEntity.getGenreIds());
     }
 
     private void loadPosterImage(boolean retrieveFromCache) {
@@ -223,6 +250,106 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 })
                 .into(mImvPoster);
+    }
+
+    private void getGenres(List<Integer> genreIds) {
+        detailViewModel.getGenresById(genreIds).observe(this, genreResource -> {
+            if (genreResource != null) {
+                switch (genreResource.getStatus()) {
+                    case SUCCESS:
+                        if (genreResource.getResponse() != null && !genreResource.getResponse().isEmpty()) {
+                            mRvGenres.setVisibility(View.VISIBLE);
+                            genreAdapter.addGenres(genreResource.getResponse());
+                        }
+                        getCasts(movieEntity.getMovieId());
+                        break;
+                    case LOADING:
+                        mRvGenres.setVisibility(View.GONE);
+                        break;
+                    case ERROR:
+                        mRvGenres.setVisibility(View.GONE);
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+                        break;
+                }
+
+            }
+        });
+    }
+
+    private void getCasts(int movieId) {
+        detailViewModel.getCastById(movieId).observe(this, castResults -> {
+            if (castResults != null) {
+                switch (castResults.getStatus()) {
+                    case SUCCESS:
+                        if (castResults.getResponse() != null && !castResults.getResponse().isEmpty()) {
+                            mLayCast.setVisibility(View.VISIBLE);
+                            castAdapter.addCasts(castResults.getResponse());
+                        }
+                        getVideos(movieId);
+                        break;
+                    case LOADING:
+                        mLayCast.setVisibility(View.GONE);
+                        break;
+                    case ERROR:
+                        mLayCast.setVisibility(View.GONE);
+                        progressDetails.setVisibility(View.GONE);
+                        Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+    }
+
+    private void getVideos(int movieId) {
+        detailViewModel.getVideosById(movieId).observe(this, videoResults -> {
+            if (videoResults != null) {
+                switch (videoResults.getStatus()) {
+                    case SUCCESS:
+                        if (videoResults.getResponse() != null && !videoResults.getResponse().isEmpty()) {
+                            mLayTrailer.setVisibility(View.VISIBLE);
+                            mTxvVideoTitle.setText(videoResults.getResponse().get(0).getName());
+                            Glide.with(this)
+                                    .load(String.format(YOUTUBE_THUMBNAIL, videoResults.getResponse().get(0).getKey()))
+                                    .apply(new RequestOptions()
+                                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                            .placeholder(R.drawable.movie_detail_placeholder)
+                                            .error(R.drawable.movie_detail_placeholder))
+                                    .into(mImvTrailerThumb);
+                        }
+                        getReviews(movieId);
+                        break;
+                    case LOADING:
+                        break;
+                    case ERROR:
+                        progressDetails.setVisibility(View.GONE);
+                        Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+    }
+
+    private void getReviews(int movieId) {
+        detailViewModel.getReviewsById(movieId).observe(this, reviewResults -> {
+            if (reviewResults != null) {
+                switch (reviewResults.getStatus()) {
+                    case SUCCESS:
+                        if (reviewResults.getResponse() != null && !reviewResults.getResponse().isEmpty()) {
+                            mLayReviews.setVisibility(View.VISIBLE);
+                            mTxvReviewPerson.setText(reviewResults.getResponse().get(0).getAuthor());
+                            mTxvReviewBody.setText(reviewResults.getResponse().get(0).getContent());
+                        }
+                        progressDetails.setVisibility(View.GONE);
+                        break;
+                    case LOADING:
+                        break;
+                    case ERROR:
+                        progressDetails.setVisibility(View.GONE);
+                        Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
     }
 
     private void configureDagger() {

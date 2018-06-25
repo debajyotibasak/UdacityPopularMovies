@@ -52,6 +52,39 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Jurassic World : Fallen Kingdom" />
 
+
+        <TextView
+            android:id="@+id/txv_release_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:fontFamily="@font/worksans_regular"
+            android:textSize="@dimen/txt_14"
+            app:layout_constraintStart_toEndOf="@+id/imv_poster"
+            app:layout_constraintTop_toBottomOf="@+id/txv_title"
+            tools:text="July 7, 2017" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_genres"
+            android:layout_width="@dimen/min_width"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_16"
+            android:layout_marginTop="@dimen/margin_8"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+            app:layout_constraintStart_toEndOf="@+id/imv_poster"
+            app:layout_constraintTop_toBottomOf="@+id/txv_release_date" />
+
+        <ImageView
+            android:id="@+id/imv_star"
+            android:layout_width="@dimen/detail_rating"
+            android:layout_height="@dimen/detail_rating"
+            android:layout_marginStart="@dimen/margin_16"
+            android:contentDescription="@string/rating"
+            app:layout_constraintBottom_toTopOf="@+id/txv_ratings"
+            app:layout_constraintStart_toEndOf="@+id/imv_poster"
+            app:layout_constraintTop_toBottomOf="@+id/txv_ratings"
+            app:srcCompat="@drawable/ic_star_grey" />
+
         <TextView
             android:id="@+id/txv_ratings"
             android:layout_width="wrap_content"
@@ -74,49 +107,6 @@
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="658dp" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_genres"
-            android:layout_width="@dimen/min_width"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_16"
-            android:layout_marginTop="@dimen/margin_8"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
-            app:layout_constraintStart_toEndOf="@+id/imv_poster"
-            app:layout_constraintTop_toBottomOf="@+id/txv_release_date" />
-
-        <TextView
-            android:id="@+id/txv_release_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_16"
-            android:fontFamily="@font/worksans_regular"
-            android:textSize="@dimen/txt_14"
-            app:layout_constraintStart_toEndOf="@+id/imv_poster"
-            app:layout_constraintTop_toBottomOf="@+id/txv_title"
-            tools:text="July 7, 2017" />
-
-        <TextView
-            android:id="@+id/txv_plot_details"
-            android:layout_width="@dimen/min_width"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/worksans_regular"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
-            app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-            app:layout_constraintTop_toBottomOf="@+id/txv_plot"
-            tools:text="This is the plot" />
-
-        <ImageView
-            android:id="@+id/imv_star"
-            android:layout_width="@dimen/detail_rating"
-            android:layout_height="@dimen/detail_rating"
-            android:layout_marginStart="@dimen/margin_16"
-            android:contentDescription="@string/rating"
-            app:layout_constraintBottom_toTopOf="@+id/txv_ratings"
-            app:layout_constraintStart_toEndOf="@+id/imv_poster"
-            app:layout_constraintTop_toBottomOf="@+id/txv_ratings"
-            app:srcCompat="@drawable/ic_star_grey" />
-
         <TextView
             android:id="@+id/txv_plot"
             android:layout_width="wrap_content"
@@ -137,6 +127,18 @@
             app:layout_constraintBottom_toBottomOf="@+id/txv_plot"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/txv_plot" />
+
+        <TextView
+            android:id="@+id/txv_plot_details"
+            android:layout_width="@dimen/min_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/worksans_regular"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+            app:layout_constraintStart_toStartOf="@+id/guideline_begin"
+            app:layout_constraintTop_toBottomOf="@+id/txv_plot"
+            tools:text="This is the plot" />
+
 
         <!--<TextView
             android:id="@+id/textView2"
@@ -174,6 +176,8 @@
             layout="@layout/lay_cast"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txv_plot_details" />
@@ -183,6 +187,7 @@
             layout="@layout/lay_trailer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lay_cast" />
@@ -192,9 +197,22 @@
             layout="@layout/lay_review"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lay_trailer" />
+
+        <ProgressBar
+            android:id="@+id/progress_detail"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+            app:layout_constraintStart_toStartOf="@+id/guideline_begin"
+            app:layout_constraintTop_toBottomOf="@+id/lay_reviews" />
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>

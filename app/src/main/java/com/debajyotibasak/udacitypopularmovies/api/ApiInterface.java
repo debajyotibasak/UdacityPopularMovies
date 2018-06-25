@@ -22,15 +22,15 @@ public interface ApiInterface {
     @GET("genre/movie/list")
     LiveData<ApiResponse<GenreResponse>> getGenres(@Query("language") String language);
 
-    @GET("movie/{movieId}/credit")
-    LiveData<ApiResponse<CastResponse>> getCast(@Query("language") String language,
-                                                @Path(value = "movieId", encoded = true) int movieId);
+    @GET("movie/{movieId}/credits")
+    LiveData<ApiResponse<CastResponse>> getCast(@Path(value = "movieId", encoded = true) int movieId,
+                                                @Query("language") String language);
 
     @GET("movie/{movieId}/videos")
-    LiveData<ApiResponse<VideoResponse>> getVideos(@Query("language") String language,
-                                                   @Path(value = "movieId", encoded = true) int movieId);
+    LiveData<ApiResponse<VideoResponse>> getVideos(@Path(value = "movieId", encoded = true) int movieId,
+                                                   @Query("language") String language);
 
     @GET("movie/{movieId}/reviews")
-    LiveData<ApiResponse<ReviewResponse>> getReviews(@Query("language") String language,
-                                                     @Path(value = "movieId", encoded = true) int movieId);
+    LiveData<ApiResponse<ReviewResponse>> getReviews(@Path(value = "movieId", encoded = true) int movieId,
+                                                     @Query("language") String language);
 }

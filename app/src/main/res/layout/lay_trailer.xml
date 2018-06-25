@@ -20,7 +20,7 @@
         app:srcCompat="@color/colorPrimary" />
 
     <TextView
-        android:id="@+id/txv_movie_title"
+        android:id="@+id/txv_trailer_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"

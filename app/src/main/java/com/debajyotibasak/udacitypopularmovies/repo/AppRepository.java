@@ -139,7 +139,7 @@ public class AppRepository implements AppRepositoryInterface {
             @NonNull
             @Override
             protected LiveData<ApiResponse<CastResponse>> createCall() {
-                return apiInterface.getCast(AppConstants.LANGUAGE, movieId);
+                return apiInterface.getCast(movieId, AppConstants.LANGUAGE);
             }
 
         }.asLiveData();
@@ -179,7 +179,7 @@ public class AppRepository implements AppRepositoryInterface {
             @NonNull
             @Override
             protected LiveData<ApiResponse<VideoResponse>> createCall() {
-                return apiInterface.getVideos(AppConstants.LANGUAGE, movieId);
+                return apiInterface.getVideos(movieId, AppConstants.LANGUAGE);
             }
         }.asLiveData();
     }
@@ -218,7 +218,7 @@ public class AppRepository implements AppRepositoryInterface {
             @NonNull
             @Override
             protected LiveData<ApiResponse<ReviewResponse>> createCall() {
-                return apiInterface.getReviews(AppConstants.LANGUAGE, movieId);
+                return apiInterface.getReviews(movieId, AppConstants.LANGUAGE);
             }
         }.asLiveData();
     }

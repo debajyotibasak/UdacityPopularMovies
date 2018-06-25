@@ -17,12 +17,14 @@ import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.utils.AbsentLiveData;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppExecutor;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -105,10 +107,12 @@ public class AppRepository implements AppRepositoryInterface {
 
     @Override
     public LiveData<Resource<List<CastResult>>> loadCast(int movieId) {
-        return new NetworkBoundResource<List<CastResult>, CastResponse>(executor){
+        return new NetworkBoundResource<List<CastResult>, CastResponse>(executor) {
+            private List<CastResult> castList = new ArrayList<>();
+
             @Override
             protected void saveCallResult(@NonNull CastResponse item) {
-
+                castList = item.getCast();
             }
 
             @Override
@@ -119,7 +123,17 @@ public class AppRepository implements AppRepositoryInterface {
             @NonNull
             @Override
             protected LiveData<List<CastResult>> loadFromDb() {
-                return null;
+                if (castList == null) {
+                    return AbsentLiveData.create();
+                } else {
+                    return new LiveData<List<CastResult>>() {
+                        @Override
+                        protected void onActive() {
+                            super.onActive();
+                            setValue(castList);
+                        }
+                    };
+                }
             }
 
             @NonNull
@@ -127,15 +141,18 @@ public class AppRepository implements AppRepositoryInterface {
             protected LiveData<ApiResponse<CastResponse>> createCall() {
                 return apiInterface.getCast(AppConstants.LANGUAGE, movieId);
             }
+
         }.asLiveData();
     }
 
     @Override
     public LiveData<Resource<List<VideoResults>>> loadVideos(int movieId) {
         return new NetworkBoundResource<List<VideoResults>, VideoResponse>(executor) {
+            private List<VideoResults> videoResultsList = new ArrayList<>();
+
             @Override
             protected void saveCallResult(@NonNull VideoResponse item) {
-
+                videoResultsList = item.getResults();
             }
 
             @Override
@@ -146,7 +163,17 @@ public class AppRepository implements AppRepositoryInterface {
             @NonNull
             @Override
             protected LiveData<List<VideoResults>> loadFromDb() {
-                return null;
+                if (videoResultsList == null) {
+                    return AbsentLiveData.create();
+                } else {
+                    return new LiveData<List<VideoResults>>() {
+                        @Override
+                        protected void onActive() {
+                            super.onActive();
+                            setValue(videoResultsList);
+                        }
+                    };
+                }
             }
 
             @NonNull
@@ -160,9 +187,11 @@ public class AppRepository implements AppRepositoryInterface {
     @Override
     public LiveData<Resource<List<ReviewResult>>> loadReviews(int movieId) {
         return new NetworkBoundResource<List<ReviewResult>, ReviewResponse>(executor) {
+            private List<ReviewResult> reviewResultsList = new ArrayList<>();
+
             @Override
             protected void saveCallResult(@NonNull ReviewResponse item) {
-
+                reviewResultsList = item.getResults();
             }
 
             @Override
@@ -173,7 +202,17 @@ public class AppRepository implements AppRepositoryInterface {
             @NonNull
             @Override
             protected LiveData<List<ReviewResult>> loadFromDb() {
-                return null;
+                if (reviewResultsList == null) {
+                    return AbsentLiveData.create();
+                } else {
+                    return new LiveData<List<ReviewResult>>() {
+                        @Override
+                        protected void onActive() {
+                            super.onActive();
+                            setValue(reviewResultsList);
+                        }
+                    };
+                }
             }
 
             @NonNull

@@ -4,8 +4,8 @@ public class AppConstants {
 
     public static final String PREF_FILE = "Preferences";
     public static final String BASE_URL = "https://api.themoviedb.org/3/";
-    public static final String POSTER_BASE_PATH = "http://image.tmdb.org/t/p/w185";
-    public static final String BACKDROP_BASE_PATH = "http://image.tmdb.org/t/p/w500";
+    public static final String POSTER_BASE_PATH = "http://image.tmdb.org/t/p/w342";
+    public static final String BACKDROP_BASE_PATH = "http://image.tmdb.org/t/p/w780";
     public static final String YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/%s/mqdefault.jpg";
     public static final String API_KEY_PARAM = "api_key";
     public static final String TABLE_NAME = "movies";
@@ -20,6 +20,8 @@ public class AppConstants {
     public static final int PAGE = 1;
     public static final int FRESH_TIMEOUT_IN_MINUTES = 60;
     public static final String DATA_SAVED_TIME = "data_saved_time";
+    public static final String YOUTUBE = "YouTube";
+    public static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
 
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";

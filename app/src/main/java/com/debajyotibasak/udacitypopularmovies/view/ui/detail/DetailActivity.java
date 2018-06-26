@@ -3,11 +3,13 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.detail;
 import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -56,7 +58,9 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDRO
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_THUMBNAIL;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_URL;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -327,6 +331,13 @@ public class DetailActivity extends AppCompatActivity {
                                             .error(R.drawable.movie_detail_placeholder))
                                     .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
                                     .into(mImvTrailerThumb);
+                            mImvTrailerThumb.setOnClickListener(view -> {
+                                if (videoResults.getResponse().get(0) != null && videoResults.getResponse().get(0).getSite().equals(YOUTUBE)) {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                                            Uri.parse(YOUTUBE_URL + videoResults.getResponse().get(0).getKey()));
+                                    startActivity(intent);
+                                }
+                            });
                         }
                         getReviews(movieId);
                         break;

@@ -35,13 +35,16 @@
 
     <TextView
         android:id="@+id/txv_review_person"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/worksans_bold"
         android:textColor="@color/grey_700"
-        android:textSize="18sp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imv_review_person"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="44dp"
         tools:text="Mr. Lorem Ipsum" />
 </android.support.constraint.ConstraintLayout>

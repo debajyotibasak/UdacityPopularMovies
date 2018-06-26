@@ -1,6 +1,7 @@
 package com.debajyotibasak.udacitypopularmovies.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.debajyotibasak.udacitypopularmovies.R;
 import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
 
@@ -71,6 +75,10 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.MyViewHolder> 
 
             final CastResult data = castList.get(position);
 
+            MultiTransformation<Bitmap> multi = new MultiTransformation<>(
+                    new CenterCrop(),
+                    new RoundedCornersTransformation(36, 0, RoundedCornersTransformation.CornerType.ALL));
+
             if (data.getProfilePath() != null) {
                 Glide.with(context)
                         .load(POSTER_BASE_PATH + data.getProfilePath())
@@ -78,6 +86,8 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.MyViewHolder> 
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                                 .placeholder(R.drawable.movie_detail_placeholder)
                                 .error(R.drawable.movie_detail_placeholder))
+                        .apply(RequestOptions
+                                .bitmapTransform(multi))
                         .into(imvCast);
             }
 

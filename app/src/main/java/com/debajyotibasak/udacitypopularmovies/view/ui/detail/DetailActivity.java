@@ -3,8 +3,10 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.detail;
 import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.Transition;
 import android.transition.TransitionSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -147,9 +150,17 @@ public class DetailActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRvCast.setLayoutManager(llm);
         mRvCast.setAdapter(castAdapter);
+        mRvCast.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.left = dpToPx();
+                outRect.right = dpToPx() == state.getItemCount() - 1 ? dpToPx() : 0;
+                outRect.top = 0;
+                outRect.bottom = 0;
+            }
+        });
         mRvCast.setNestedScrollingEnabled(true);
-
-
     }
 
     @Override
@@ -314,6 +325,7 @@ public class DetailActivity extends AppCompatActivity {
                                             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                                             .placeholder(R.drawable.movie_detail_placeholder)
                                             .error(R.drawable.movie_detail_placeholder))
+                                    .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
                                     .into(mImvTrailerThumb);
                         }
                         getReviews(movieId);
@@ -354,5 +366,10 @@ public class DetailActivity extends AppCompatActivity {
 
     private void configureDagger() {
         AndroidInjection.inject(this);
+    }
+
+    private int dpToPx() {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
     }
 }

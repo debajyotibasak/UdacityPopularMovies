@@ -1,6 +1,8 @@
 package com.debajyotibasak.udacitypopularmovies.view.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,9 +21,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_THUMBNAIL;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_URL;
 
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyViewHolder> {
 
@@ -32,7 +37,7 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyView
         this.context = context;
     }
 
-    public void addCasts(List<VideoResults> videoList) {
+    public void addTrailers(List<VideoResults> videoList) {
         this.videoList = videoList;
         notifyDataSetChanged();
     }
@@ -90,6 +95,16 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyView
                         .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
                         .into(imvVideoThumb);
             }
+
+            imvVideoThumb.setOnClickListener(v -> {
+                if (videoList.isEmpty() && videoList.get(getAdapterPosition()).getSite().equals(YOUTUBE)) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(YOUTUBE_URL + videoList.get(getAdapterPosition()).getKey()));
+                    context.startActivity(intent);
+                }
+            });
         }
+
+
     }
 }

@@ -3,7 +3,9 @@ package com.debajyotibasak.udacitypopularmovies.api.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class VideoResults {
+import java.io.Serializable;
+
+public class VideoResults implements Serializable {
     @SerializedName("id")
     @Expose
     private String id;

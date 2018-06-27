@@ -1,6 +1,8 @@
 package com.debajyotibasak.udacitypopularmovies.di.module;
 
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailActivity;
+import com.debajyotibasak.udacitypopularmovies.view.ui.detail.reviews.ReviewsActivity;
+import com.debajyotibasak.udacitypopularmovies.view.ui.detail.trailers.TrailerActivity;
 import com.debajyotibasak.udacitypopularmovies.view.ui.home.HomeActivity;
 
 import dagger.Module;
@@ -14,4 +16,10 @@ public abstract class ActivityModule {
 
     @ContributesAndroidInjector
     abstract DetailActivity contributeDetailActivity();
+
+    @ContributesAndroidInjector
+    abstract ReviewsActivity contributeReviewsActivity();
+
+    @ContributesAndroidInjector
+    abstract TrailerActivity contributeTrailerActivity();
 }

@@ -38,13 +38,18 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.debajyotibasak.udacitypopularmovies.R;
+import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
+import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.CastAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.GenreAdapter;
+import com.debajyotibasak.udacitypopularmovies.view.ui.detail.reviews.ReviewsActivity;
+import com.debajyotibasak.udacitypopularmovies.view.ui.detail.trailers.TrailerActivity;
 import com.xiaofeng.flowlayoutmanager.FlowLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -58,6 +63,8 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDRO
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.REVIEWS_PARCELABLE;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TRAILERS_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_THUMBNAIL;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.YOUTUBE_URL;
@@ -121,6 +128,12 @@ public class DetailActivity extends AppCompatActivity {
 
     @BindView(R.id.txv_review_body)
     TextView mTxvReviewBody;
+
+    @BindView(R.id.txv_see_all_reviews)
+    TextView mTxvSeeAllReviews;
+
+    @BindView(R.id.txv_see_all_trailers)
+    TextView mTxvSeeAllTrailers;
 
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
@@ -338,6 +351,15 @@ public class DetailActivity extends AppCompatActivity {
                                     startActivity(intent);
                                 }
                             });
+                            if (videoResults.getResponse().size() < 2) {
+                                mTxvSeeAllTrailers.setVisibility(View.GONE);
+                            }
+                            mTxvSeeAllTrailers.setOnClickListener(v -> {
+                                Intent intent = new Intent(this, TrailerActivity.class);
+                                ArrayList<VideoResults> mList = new ArrayList<>(videoResults.getResponse());
+                                intent.putExtra(TRAILERS_PARCELABLE, mList);
+                                startActivity(intent);
+                            });
                         }
                         getReviews(movieId);
                         break;
@@ -361,8 +383,18 @@ public class DetailActivity extends AppCompatActivity {
                             mLayReviews.setVisibility(View.VISIBLE);
                             mTxvReviewPerson.setText(reviewResults.getResponse().get(0).getAuthor());
                             mTxvReviewBody.setText(reviewResults.getResponse().get(0).getContent());
+                            if (reviewResults.getResponse().size() < 2) {
+                                mTxvSeeAllReviews.setVisibility(View.GONE);
+                            }
+                            mTxvSeeAllReviews.setOnClickListener(v -> {
+                                Intent intent = new Intent(this, ReviewsActivity.class);
+                                ArrayList<ReviewResult> mList = new ArrayList<>(reviewResults.getResponse());
+                                intent.putExtra(REVIEWS_PARCELABLE, mList);
+                                startActivity(intent);
+                            });
                         }
                         progressDetails.setVisibility(View.GONE);
+
                         break;
                     case LOADING:
                         break;

@@ -22,6 +22,8 @@ public class AppConstants {
     public static final String DATA_SAVED_TIME = "data_saved_time";
     public static final String YOUTUBE = "YouTube";
     public static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
+    public static final String REVIEWS_PARCELABLE = "reviews_parcelable";
+    public static final String TRAILERS_PARCELABLE = "trailers_parcelable";
 
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";

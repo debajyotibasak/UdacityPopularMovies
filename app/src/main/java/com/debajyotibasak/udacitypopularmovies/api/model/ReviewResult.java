@@ -3,7 +3,9 @@ package com.debajyotibasak.udacitypopularmovies.api.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ReviewResult {
+import java.io.Serializable;
+
+public class ReviewResult implements Serializable{
 
     @SerializedName("author")
     @Expose

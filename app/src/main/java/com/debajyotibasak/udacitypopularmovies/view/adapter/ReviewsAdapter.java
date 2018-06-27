@@ -36,7 +36,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.MyViewHo
         this.context = context;
     }
 
-    public void addCasts(List<ReviewResult> reviewList) {
+    public void addReviews(List<ReviewResult> reviewList) {
         this.reviewList = reviewList;
         notifyDataSetChanged();
     }

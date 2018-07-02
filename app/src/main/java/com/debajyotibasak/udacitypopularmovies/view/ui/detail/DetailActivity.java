@@ -60,6 +60,7 @@ import dagger.android.AndroidInjection;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDROP_BASE_PATH;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIES_STATE_DETAILS;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
@@ -138,8 +139,11 @@ public class DetailActivity extends AppCompatActivity {
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
     private MovieEntity movieEntity;
-    private String transitionName;
     private RoundedBitmapDrawable roundedBitmapDrawable;
+    private String transitionName;
+    private int movieId;
+    private List<Integer> genreId;
+
 
     private void initViews() {
         setContentView(R.layout.activity_detail);
@@ -190,17 +194,38 @@ public class DetailActivity extends AppCompatActivity {
         if (extras != null) {
             movieEntity = (MovieEntity) extras.getSerializable(MOVIE_PARCELABLE);
             transitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
+            movieId = movieEntity.getMovieId();
+            genreId = movieEntity.getGenreIds();
         }
 
         supportPostponeEnterTransition();
 
-        populateUi(movieEntity, transitionName);
+        populateUi(transitionName);
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("transition", transitionName);
+        outState.putInt("movieId", movieId);
+        outState.putIntegerArrayList("genreId", new ArrayList<>(genreId));
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            transitionName = savedInstanceState.getString("transition");
+            movieId = savedInstanceState.getInt("movieId");
+            genreId = savedInstanceState.getIntegerArrayList("genreId");
+            Toast.makeText(this, "Restored" + transitionName + " " + movieId + " " + genreId, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void populateUi(MovieEntity movieEntity, String transitionName) {
+    private void populateUi(String transitionName) {
         Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.movie_placeholder);
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
         roundedBitmapDrawable.setCornerRadius(25F);
@@ -251,7 +276,7 @@ public class DetailActivity extends AppCompatActivity {
         mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
         mTxvPlotDetails.setText(movieEntity.getOverview());
 
-        getGenres(movieEntity.getGenreIds());
+        getData();
     }
 
     private void loadPosterImage(boolean retrieveFromCache) {
@@ -280,8 +305,8 @@ public class DetailActivity extends AppCompatActivity {
                 .into(mImvPoster);
     }
 
-    private void getGenres(List<Integer> genreIds) {
-        detailViewModel.getGenresById(genreIds).observe(this, genreResource -> {
+    private void getData() {
+        detailViewModel.getGenresById(genreId).observe(this, genreResource -> {
             if (genreResource != null) {
                 switch (genreResource.getStatus()) {
                     case SUCCESS:
@@ -289,7 +314,6 @@ public class DetailActivity extends AppCompatActivity {
                             mRvGenres.setVisibility(View.VISIBLE);
                             genreAdapter.addGenres(genreResource.getResponse());
                         }
-                        getCasts(movieEntity.getMovieId());
                         break;
                     case LOADING:
                         mRvGenres.setVisibility(View.GONE);
@@ -302,9 +326,7 @@ public class DetailActivity extends AppCompatActivity {
 
             }
         });
-    }
 
-    private void getCasts(int movieId) {
         detailViewModel.getCastById(movieId).observe(this, castResults -> {
             if (castResults != null) {
                 switch (castResults.getStatus()) {
@@ -313,7 +335,6 @@ public class DetailActivity extends AppCompatActivity {
                             mLayCast.setVisibility(View.VISIBLE);
                             castAdapter.addCasts(castResults.getResponse());
                         }
-                        getVideos(movieId);
                         break;
                     case LOADING:
                         mLayCast.setVisibility(View.GONE);
@@ -326,9 +347,7 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         });
-    }
 
-    private void getVideos(int movieId) {
         detailViewModel.getVideosById(movieId).observe(this, videoResults -> {
             if (videoResults != null) {
                 switch (videoResults.getStatus()) {
@@ -361,7 +380,6 @@ public class DetailActivity extends AppCompatActivity {
                                 startActivity(intent);
                             });
                         }
-                        getReviews(movieId);
                         break;
                     case LOADING:
                         break;
@@ -372,9 +390,7 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         });
-    }
 
-    private void getReviews(int movieId) {
         detailViewModel.getReviewsById(movieId).observe(this, reviewResults -> {
             if (reviewResults != null) {
                 switch (reviewResults.getStatus()) {
@@ -394,7 +410,6 @@ public class DetailActivity extends AppCompatActivity {
                             });
                         }
                         progressDetails.setVisibility(View.GONE);
-
                         break;
                     case LOADING:
                         break;

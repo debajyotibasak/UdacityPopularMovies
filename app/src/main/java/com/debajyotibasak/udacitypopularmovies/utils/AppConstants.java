@@ -8,8 +8,12 @@ public class AppConstants {
     public static final String BACKDROP_BASE_PATH = "http://image.tmdb.org/t/p/w780";
     public static final String YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/%s/mqdefault.jpg";
     public static final String API_KEY_PARAM = "api_key";
-    public static final String TABLE_NAME = "movies";
+    public static final String TABLE_MOVIES = "movies";
     public static final String TABLE_GENRES = "genres";
+    public static final String TABLE_FAVORITE_MOVIES = "fav_movies";
+    public static final String TABLE_VIDEOS = "videos";
+    public static final String TABLE_REVIEWS = "reviews";
+    public static final String TABLE_CAST = "cast";
     public static final String DB_NAME = "movies.db";
     public static final String SORT_BY_POPULAR = "popular";
     public static final String SORT_BY_TOP_RATED = "top_rated";
@@ -24,6 +28,7 @@ public class AppConstants {
     public static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
     public static final String REVIEWS_PARCELABLE = "reviews_parcelable";
     public static final String TRAILERS_PARCELABLE = "trailers_parcelable";
+    public static final String MOVIES_STATE_DETAILS = "movies_state_details";
 
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";

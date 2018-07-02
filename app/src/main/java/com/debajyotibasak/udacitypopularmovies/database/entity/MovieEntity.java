@@ -11,9 +11,9 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_NAME;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_MOVIES;
 
-@Entity(tableName = TABLE_NAME)
+@Entity(tableName = TABLE_MOVIES)
 public class MovieEntity implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Integer _id;

@@ -28,4 +28,5 @@ public interface MoviesDao {
 
     @Query("SELECT * FROM genres WHERE genreId IN (:genreIds)")
     LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds);
+
 }

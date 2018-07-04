@@ -5,7 +5,12 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Transaction;
 
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 
@@ -28,5 +33,35 @@ public interface MoviesDao {
 
     @Query("SELECT * FROM genres WHERE genreId IN (:genreIds)")
     LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds);
+
+    // Click on favorite
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveFavMovie(FavMovieEntity favMovieEntity);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveFavMovieCasts(List<FavMovieCastEntity> castList);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveFavReviews(List<FavMovieReviewEntity> movieReviewList);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveFavTrailers(List<FavMovieVideoEntity> movieVideoList);
+
+    // Get from Favorite tables
+    @Query("SELECT * FROM fav_movies ORDER BY createdAt ASC")
+    LiveData<List<FavMovieEntity>> loadFavMoviesFromDb();
+
+    @Query("SELECT * FROM fav_movies_cast WHERE id IN (:castIds)")
+    LiveData<List<FavMovieCastEntity>> getCastsById(List<Integer> castIds);
+
+    @Query("SELECT * FROM fav_movies_reviews where favMovieId = :favMovieId")
+    LiveData<List<FavMovieReviewEntity>> getReviewsByMovie(int favMovieId);
+
+    @Query("SELECT * FROM fav_movies_videos where favMovieId = :favMovieId")
+    LiveData<List<FavMovieVideoEntity>> getVideosByMovie(int favMovieId);
+
+    // Click on remove from favourite
+    @Query("DELETE FROM fav_movies WHERE movieId = :favMovieId")
+    int deleteMovieById(int favMovieId);
 
 }

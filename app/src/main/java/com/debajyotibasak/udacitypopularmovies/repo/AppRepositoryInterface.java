@@ -22,5 +22,4 @@ public interface AppRepositoryInterface {
     LiveData<Resource<List<VideoResults>>> loadVideos(int movieId);
 
     LiveData<Resource<List<ReviewResult>>> loadReviews(int movieId);
-
 }

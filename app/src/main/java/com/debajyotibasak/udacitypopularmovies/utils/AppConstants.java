@@ -11,9 +11,9 @@ public class AppConstants {
     public static final String TABLE_MOVIES = "movies";
     public static final String TABLE_GENRES = "genres";
     public static final String TABLE_FAVORITE_MOVIES = "fav_movies";
-    public static final String TABLE_VIDEOS = "videos";
-    public static final String TABLE_REVIEWS = "reviews";
-    public static final String TABLE_CAST = "cast";
+    public static final String TABLE_VIDEOS = "fav_movies_videos";
+    public static final String TABLE_REVIEWS = "fav_movies_reviews";
+    public static final String TABLE_CAST = "fav_movies_cast";
     public static final String DB_NAME = "movies.db";
     public static final String SORT_BY_POPULAR = "popular";
     public static final String SORT_BY_TOP_RATED = "top_rated";

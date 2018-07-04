@@ -25,7 +25,6 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
     @MainThread
     NetworkBoundResource(AppExecutor appExecutors) {
-
         this.appExecutors = appExecutors;
 
         result.setValue(Resource.loading(null));
@@ -44,7 +43,6 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
     @MainThread
     private void setValue(Resource<ResultType> newValue) {
-
         if (!Objects.equals(result.getValue(), newValue)) {
             result.setValue(newValue);
         }

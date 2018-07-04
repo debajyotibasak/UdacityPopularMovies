@@ -255,6 +255,8 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
         intent.putExtras(bundle);
 
+        SharedPreferenceHelper.setSharedPreferenceInt("mId", movieEntity.getMovieId());
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     this,

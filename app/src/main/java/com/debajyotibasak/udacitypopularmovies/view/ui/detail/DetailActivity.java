@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -60,7 +62,6 @@ import dagger.android.AndroidInjection;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDROP_BASE_PATH;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIES_STATE_DETAILS;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
@@ -136,6 +137,12 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.txv_see_all_trailers)
     TextView mTxvSeeAllTrailers;
 
+    @BindView(R.id.app_bar)
+    AppBarLayout appBarLayout;
+
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
     private MovieEntity movieEntity;
@@ -143,7 +150,7 @@ public class DetailActivity extends AppCompatActivity {
     private String transitionName;
     private int movieId;
     private List<Integer> genreId;
-
+    private String movieName;
 
     private void initViews() {
         setContentView(R.layout.activity_detail);
@@ -159,13 +166,12 @@ public class DetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.AppBarCollapsed);
         genreAdapter = new GenreAdapter(this);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
         flowLayoutManager.setAutoMeasureEnabled(true);
         mRvGenres.setLayoutManager(flowLayoutManager);
         mRvGenres.setAdapter(genreAdapter);
-
         castAdapter = new CastAdapter(this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -184,6 +190,27 @@ public class DetailActivity extends AppCompatActivity {
         mRvCast.setNestedScrollingEnabled(true);
     }
 
+    private void setUpToolbarTitle(String movieName) {
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle(movieName);
+                    isShow = true;
+                } else if (isShow) {
+                    collapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,8 +222,11 @@ public class DetailActivity extends AppCompatActivity {
             movieEntity = (MovieEntity) extras.getSerializable(MOVIE_PARCELABLE);
             transitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
             movieId = movieEntity.getMovieId();
+            movieName = movieEntity.getTitle();
             genreId = movieEntity.getGenreIds();
         }
+
+        setUpToolbarTitle(movieName);
 
         supportPostponeEnterTransition();
 
@@ -209,6 +239,7 @@ public class DetailActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("transition", transitionName);
         outState.putInt("movieId", movieId);
+        outState.putString("movieName", movieName);
         outState.putIntegerArrayList("genreId", new ArrayList<>(genreId));
         super.onSaveInstanceState(outState);
     }
@@ -220,7 +251,7 @@ public class DetailActivity extends AppCompatActivity {
             transitionName = savedInstanceState.getString("transition");
             movieId = savedInstanceState.getInt("movieId");
             genreId = savedInstanceState.getIntegerArrayList("genreId");
-            Toast.makeText(this, "Restored" + transitionName + " " + movieId + " " + genreId, Toast.LENGTH_SHORT).show();
+            movieName = savedInstanceState.getString("movieName");
         }
     }
 
@@ -327,7 +358,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        detailViewModel.getCastById(movieId).observe(this, castResults -> {
+        detailViewModel.getCastResults().observe(this, castResults -> {
             if (castResults != null) {
                 switch (castResults.getStatus()) {
                     case SUCCESS:
@@ -342,13 +373,13 @@ public class DetailActivity extends AppCompatActivity {
                     case ERROR:
                         mLayCast.setVisibility(View.GONE);
                         progressDetails.setVisibility(View.GONE);
-                        Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
             }
         });
 
-        detailViewModel.getVideosById(movieId).observe(this, videoResults -> {
+        detailViewModel.getVideoResults().observe(this, videoResults -> {
             if (videoResults != null) {
                 switch (videoResults.getStatus()) {
                     case SUCCESS:
@@ -385,13 +416,13 @@ public class DetailActivity extends AppCompatActivity {
                         break;
                     case ERROR:
                         progressDetails.setVisibility(View.GONE);
-                        Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
             }
         });
 
-        detailViewModel.getReviewsById(movieId).observe(this, reviewResults -> {
+        detailViewModel.getReviewResult().observe(this, reviewResults -> {
             if (reviewResults != null) {
                 switch (reviewResults.getStatus()) {
                     case SUCCESS:
@@ -415,7 +446,7 @@ public class DetailActivity extends AppCompatActivity {
                         break;
                     case ERROR:
                         progressDetails.setVisibility(View.GONE);
-                        Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
             }
@@ -429,5 +460,13 @@ public class DetailActivity extends AppCompatActivity {
     private int dpToPx() {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (progressDetails.getVisibility() == View.VISIBLE) {
+            progressDetails.setVisibility(View.GONE);
+        }
     }
 }

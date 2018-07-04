@@ -6,6 +6,18 @@ import com.debajyotibasak.udacitypopularmovies.MoviesApp;
 
 public class SharedPreferenceHelper {
 
+    public static void setSharedPreferenceInt(String key, int value) {
+        SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
+    public static int getSharedPreferenceInt(String key) {
+        SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
+        return settings.getInt(key, 0);
+    }
+
     public static void setSharedPreferenceString(String key, String value) {
         SharedPreferences settings = MoviesApp.getContext().getSharedPreferences(AppConstants.PREF_FILE, 0);
         SharedPreferences.Editor editor = settings.edit();

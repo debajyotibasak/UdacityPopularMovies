@@ -34,6 +34,12 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <style name="AppBarCollapsed" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/worksans_bold</item>
+    </style>
+
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
 
     <style name="AppThemeDetails.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

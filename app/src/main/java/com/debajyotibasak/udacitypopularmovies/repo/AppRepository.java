@@ -1,6 +1,7 @@
 package com.debajyotibasak.udacitypopularmovies.repo;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -15,6 +16,10 @@ import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.VideoResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AbsentLiveData;
@@ -239,5 +244,60 @@ public class AppRepository implements AppRepositoryInterface {
         return shouldFetch;
     }
 
+    @Override
+    public void saveFavouriteMovie(FavMovieEntity favMovieEntity) {
+        executor.diskIO().execute(() -> moviesDao.saveFavMovie(favMovieEntity));
+    }
 
+    @Override
+    public void saveFavMovieCast(List<FavMovieCastEntity> favMovieCastEntities) {
+        executor.diskIO().execute(() -> moviesDao.saveFavMovieCasts(favMovieCastEntities));
+    }
+
+    @Override
+    public void saveFavMovieReviews(List<FavMovieReviewEntity> favMovieReviewEntities) {
+        executor.diskIO().execute(() -> moviesDao.saveFavReviews(favMovieReviewEntities));
+    }
+
+    @Override
+    public void saveFavMovieVideos(List<FavMovieVideoEntity> favMovieVideoEntities) {
+        executor.diskIO().execute(() -> moviesDao.saveFavTrailers(favMovieVideoEntities));
+    }
+
+    @Override
+    public LiveData<Integer> containsMovie(int movieId) {
+        return moviesDao.containsMovie(movieId);
+    }
+
+    @Override
+    public LiveData<List<FavMovieEntity>> loadFavMoviesFromDb() {
+        return moviesDao.loadFavMoviesFromDb();
+    }
+
+    @Override
+    public LiveData<FavMovieEntity> loadFavMovieById(int movieId) {
+        return moviesDao.loadFavMoviesById(movieId);
+    }
+
+    @Override
+    public LiveData<List<FavMovieCastEntity>> getCastsById(List<Integer> castIds) {
+        return moviesDao.getCastsById(castIds);
+    }
+
+    @Override
+    public LiveData<List<FavMovieReviewEntity>> getReviewsByMovie(int favMovieId) {
+        return moviesDao.getReviewsByMovie(favMovieId);
+    }
+
+    @Override
+    public LiveData<List<FavMovieVideoEntity>> getVideosByMovie(int favMovieId) {
+        return moviesDao.getVideosByMovie(favMovieId);
+    }
+
+    @Override
+    public LiveData<Integer> deleteMovieById(int favMovieId) {
+        MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        executor.diskIO().execute(() -> liveData.postValue(moviesDao.deleteMovieById(favMovieId)));
+        return liveData;
+    }
 }

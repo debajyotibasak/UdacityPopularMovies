@@ -19,26 +19,16 @@
         android:id="@+id/txv_cast_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/worksans_bold"
         android:textAlignment="center"
         android:textColor="@color/grey_700"
         android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/imv_cast"
         app:layout_constraintStart_toStartOf="@+id/imv_cast"
         app:layout_constraintTop_toBottomOf="@+id/imv_cast"
         tools:text="Chris Hemsworth" />
 
-    <TextView
-        android:id="@+id/txv_character_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/worksans_regular"
-        android:textAlignment="center"
-        android:textColor="@color/grey_700"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/txv_cast_name"
-        app:layout_constraintStart_toStartOf="@+id/txv_cast_name"
-        app:layout_constraintTop_toBottomOf="@+id/txv_cast_name"
-        tools:text="Thor / Avenger / Odison" />
 </android.support.constraint.ConstraintLayout>

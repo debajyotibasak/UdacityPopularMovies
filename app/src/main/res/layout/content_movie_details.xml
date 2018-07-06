@@ -213,6 +213,16 @@
             app:layout_constraintStart_toStartOf="@+id/guideline_begin"
             app:layout_constraintTop_toBottomOf="@+id/lay_reviews" />
 
+        <ImageView
+            android:id="@+id/imv_favourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/barrier_poster_rating_bottom"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+            app:layout_constraintStart_toEndOf="@+id/txv_ratings"
+            app:layout_constraintTop_toTopOf="@+id/txv_ratings"
+            app:srcCompat="@drawable/ic_favorite_border" />
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>

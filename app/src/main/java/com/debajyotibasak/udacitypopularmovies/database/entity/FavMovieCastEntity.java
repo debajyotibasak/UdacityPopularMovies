@@ -2,6 +2,8 @@ package com.debajyotibasak.udacitypopularmovies.database.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -11,16 +13,18 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_C
 public class FavMovieCastEntity implements Serializable{
 
     @PrimaryKey
-    private final int id;
+    @NonNull
+    private final Integer id;
     private String name;
     private String profilePath;
 
-    public FavMovieCastEntity(final int id, String name, String profilePath) {
+    public FavMovieCastEntity(@NonNull final Integer id, String name, String profilePath) {
         this.id = id;
         this.name = name;
         this.profilePath = profilePath;
     }
 
+    @NonNull
     public Integer getId() {
         return id;
     }

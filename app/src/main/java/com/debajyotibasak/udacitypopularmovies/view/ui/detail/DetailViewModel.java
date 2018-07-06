@@ -7,13 +7,16 @@ import android.arch.lifecycle.ViewModel;
 import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -23,6 +26,7 @@ public class DetailViewModel extends ViewModel {
     private MutableLiveData<Resource<List<CastResult>>> castResults = new MutableLiveData<>();
     private MutableLiveData<Resource<List<VideoResults>>> videoResults = new MutableLiveData<>();
     private MutableLiveData<Resource<List<ReviewResult>>> reviewResult = new MutableLiveData<>();
+    private MutableLiveData<Integer> isFavorite = new MutableLiveData<>();
 
     @Inject
     public DetailViewModel(AppRepository moviesRepo) {
@@ -37,6 +41,8 @@ public class DetailViewModel extends ViewModel {
         moviesRepo.loadVideos(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
                 .observeForever(listResource -> videoResults.setValue(listResource));
 
+        moviesRepo.containsMovie(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
+                .observeForever(containsMovie -> isFavorite.setValue(containsMovie));
     }
 
     LiveData<Resource<List<GenreEntity>>> getGenresById(List<Integer> genreIds) {
@@ -55,4 +61,47 @@ public class DetailViewModel extends ViewModel {
         return reviewResult;
     }
 
+    public MutableLiveData<Integer> getIsFavorite() {
+        return isFavorite;
+    }
+
+    void saveFavMovies(FavMovieEntity favMovieEntity) {
+        moviesRepo.saveFavouriteMovie(favMovieEntity);
+    }
+
+    void saveFavCast(List<FavMovieCastEntity> favCast) {
+        moviesRepo.saveFavMovieCast(favCast);
+    }
+
+    void saveFavReviews(List<FavMovieReviewEntity> favReviews) {
+        moviesRepo.saveFavMovieReviews(favReviews);
+    }
+
+    void saveFavTrailers(List<FavMovieVideoEntity> favTrailers) {
+        moviesRepo.saveFavMovieVideos(favTrailers);
+    }
+
+    LiveData<List<FavMovieEntity>> loadFavMoviesFromDb() {
+        return moviesRepo.loadFavMoviesFromDb();
+    }
+
+    LiveData<FavMovieEntity> loadFavMoviesById(int favMovieId) {
+        return moviesRepo.loadFavMovieById(favMovieId);
+    }
+
+    LiveData<List<FavMovieCastEntity>> getFavCasts(List<Integer> castIds) {
+        return moviesRepo.getCastsById(castIds);
+    }
+
+    LiveData<List<FavMovieReviewEntity>> getFavReviews(int favMovieId) {
+        return moviesRepo.getReviewsByMovie(favMovieId);
+    }
+
+    LiveData<List<FavMovieVideoEntity>> getFavVideos(int favMovieId) {
+        return moviesRepo.getVideosByMovie(favMovieId);
+    }
+
+    LiveData<Integer> deleteMovieById(int favMovieId) {
+        return moviesRepo.deleteMovieById(favMovieId);
+    }
 }

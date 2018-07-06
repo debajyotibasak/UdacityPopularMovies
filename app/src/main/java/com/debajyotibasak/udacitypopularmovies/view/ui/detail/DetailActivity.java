@@ -30,7 +30,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -40,12 +39,19 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.debajyotibasak.udacitypopularmovies.R;
+import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
+import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.CastAdapter;
+import com.debajyotibasak.udacitypopularmovies.view.adapter.FavCastAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.GenreAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.reviews.ReviewsActivity;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.trailers.TrailerActivity;
@@ -143,14 +149,19 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
 
+    @BindView(R.id.imv_favourite)
+    ImageView mImvFavourite;
+
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
+    private FavCastAdapter favCastAdapter;
     private MovieEntity movieEntity;
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private String transitionName;
     private int movieId;
     private List<Integer> genreId;
     private String movieName;
+    private Boolean isMovieFav;
 
     private void initViews() {
         setContentView(R.layout.activity_detail);
@@ -172,11 +183,9 @@ public class DetailActivity extends AppCompatActivity {
         flowLayoutManager.setAutoMeasureEnabled(true);
         mRvGenres.setLayoutManager(flowLayoutManager);
         mRvGenres.setAdapter(genreAdapter);
-        castAdapter = new CastAdapter(this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRvCast.setLayoutManager(llm);
-        mRvCast.setAdapter(castAdapter);
         mRvCast.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -233,6 +242,17 @@ public class DetailActivity extends AppCompatActivity {
         populateUi(transitionName);
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        mImvFavourite.setOnClickListener(v -> {
+            if (isMovieFav) {
+                isMovieFav = false;
+                deleteFavMovies();
+                getData();
+            } else {
+                isMovieFav = true;
+                saveFavMovies();
+            }
+        });
     }
 
     @Override
@@ -307,7 +327,29 @@ public class DetailActivity extends AppCompatActivity {
         mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
         mTxvPlotDetails.setText(movieEntity.getOverview());
 
-        getData();
+        detailViewModel.getGenresById(genreId).observe(this, genreResource -> {
+            if (genreResource != null) {
+                switch (genreResource.getStatus()) {
+                    case SUCCESS:
+                        if (genreResource.getResponse() != null && !genreResource.getResponse().isEmpty()) {
+                            mRvGenres.setVisibility(View.VISIBLE);
+                            genreAdapter.addGenres(genreResource.getResponse());
+                        }
+                        break;
+                    case LOADING:
+                        mRvGenres.setVisibility(View.GONE);
+                        break;
+                    case ERROR:
+                        mRvGenres.setVisibility(View.GONE);
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+                        break;
+                }
+
+            }
+        });
+
+        getMovieData();
+
     }
 
     private void loadPosterImage(boolean retrieveFromCache) {
@@ -336,33 +378,91 @@ public class DetailActivity extends AppCompatActivity {
                 .into(mImvPoster);
     }
 
-    private void getData() {
-        detailViewModel.getGenresById(genreId).observe(this, genreResource -> {
-            if (genreResource != null) {
-                switch (genreResource.getStatus()) {
-                    case SUCCESS:
-                        if (genreResource.getResponse() != null && !genreResource.getResponse().isEmpty()) {
-                            mRvGenres.setVisibility(View.VISIBLE);
-                            genreAdapter.addGenres(genreResource.getResponse());
-                        }
-                        break;
-                    case LOADING:
-                        mRvGenres.setVisibility(View.GONE);
-                        break;
-                    case ERROR:
-                        mRvGenres.setVisibility(View.GONE);
-                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
-                        break;
-                }
+    private void getMovieData() {
+        progressDetails.setVisibility(View.GONE);
 
-            }
-        });
+        detailViewModel.loadFavMoviesById(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
+                .observe(this, favMovie -> {
+                    if (favMovie != null) {
+                        isMovieFav = true;
+
+                        mImvFavourite.setImageResource(R.drawable.ic_favorite);
+
+                        detailViewModel.getFavCasts(favMovie.getCastIds()).observe(this, favMovieCasts -> {
+                            if (favMovieCasts != null && !favMovieCasts.isEmpty()) {
+                                favCastAdapter = new FavCastAdapter(this);
+                                mRvCast.setAdapter(favCastAdapter);
+                                mLayCast.setVisibility(View.VISIBLE);
+                                favCastAdapter.addCasts(favMovieCasts);
+                            }
+                        });
+
+                        detailViewModel.getFavReviews(favMovie.getMovieId()).observe(this, favMovieReviews -> {
+                            if (favMovieReviews != null && !favMovieReviews.isEmpty()) {
+                                mLayReviews.setVisibility(View.VISIBLE);
+                                mTxvReviewPerson.setText(favMovieReviews.get(0).getAuthor());
+                                mTxvReviewBody.setText(favMovieReviews.get(0).getContent());
+                                if (favMovieReviews.size() < 2) {
+                                    mTxvSeeAllReviews.setVisibility(View.GONE);
+                                }
+                                mTxvSeeAllReviews.setOnClickListener(v -> {
+//                                        Intent intent = new Intent(this, ReviewsActivity.class);
+//                                        ArrayList<ReviewResult> mList = new ArrayList<>(reviewResults.getResponse());
+//                                        intent.putExtra(REVIEWS_PARCELABLE, mList);
+//                                        startActivity(intent);
+                                });
+                            }
+                        });
+
+                        detailViewModel.getFavVideos(favMovie.getMovieId()).observe(this, favMoviesVideo -> {
+                            if (favMoviesVideo != null && !favMoviesVideo.isEmpty()) {
+                                mLayTrailer.setVisibility(View.VISIBLE);
+                                mTxvVideoTitle.setText(favMoviesVideo.get(0).getName());
+                                Glide.with(this)
+                                        .load(String.format(YOUTUBE_THUMBNAIL, favMoviesVideo.get(0).getKey()))
+                                        .apply(new RequestOptions()
+                                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                                .placeholder(R.drawable.movie_detail_placeholder)
+                                                .error(R.drawable.movie_detail_placeholder))
+                                        .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                                        .into(mImvTrailerThumb);
+                                mImvTrailerThumb.setOnClickListener(view -> {
+                                    if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
+                                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                                                Uri.parse(YOUTUBE_URL + favMoviesVideo.get(0).getKey()));
+                                        startActivity(intent);
+                                    }
+                                });
+                                if (favMoviesVideo.size() < 2) {
+                                    mTxvSeeAllTrailers.setVisibility(View.GONE);
+                                }
+                                mTxvSeeAllTrailers.setOnClickListener(v -> {
+//                                    Intent intent = new Intent(this, TrailerActivity.class);
+//                                    ArrayList<VideoResults> mList = new ArrayList<>(videoResults.getResponse());
+//                                    intent.putExtra(TRAILERS_PARCELABLE, mList);
+//                                    startActivity(intent);
+                                });
+                            }
+                        });
+                    } else {
+                        isMovieFav = false;
+
+                        mImvFavourite.setImageResource(R.drawable.ic_favorite_border);
+
+                        getData();
+                    }
+                });
+    }
+
+    private void getData() {
 
         detailViewModel.getCastResults().observe(this, castResults -> {
             if (castResults != null) {
                 switch (castResults.getStatus()) {
                     case SUCCESS:
                         if (castResults.getResponse() != null && !castResults.getResponse().isEmpty()) {
+                            castAdapter = new CastAdapter(this);
+                            mRvCast.setAdapter(castAdapter);
                             mLayCast.setVisibility(View.VISIBLE);
                             castAdapter.addCasts(castResults.getResponse());
                         }
@@ -450,6 +550,120 @@ public class DetailActivity extends AppCompatActivity {
                         break;
                 }
             }
+        });
+    }
+
+    private void saveFavMovies() {
+        List<Integer> castIds = new ArrayList<>();
+        List<FavMovieCastEntity> favMovieCast = new ArrayList<>();
+        List<FavMovieReviewEntity> favMovieReviews = new ArrayList<>();
+        List<FavMovieVideoEntity> favMovieTrailers = new ArrayList<>();
+
+        detailViewModel.getCastResults().observe(this, castListResource -> {
+            if (castListResource != null) {
+                if (castListResource.getResponse() != null && !castListResource.getResponse().isEmpty()) {
+                    for (CastResult item : castListResource.getResponse()) {
+                        castIds.add(item.getId());
+                        favMovieCast.add(new FavMovieCastEntity(item.getId(), item.getName(), item.getProfilePath()));
+                    }
+                }
+            }
+        });
+
+        detailViewModel.getReviewResult().observe(this, reviewListResource -> {
+            if (reviewListResource != null) {
+                if (reviewListResource.getResponse() != null) {
+                    for (ReviewResult item : reviewListResource.getResponse()) {
+                        favMovieReviews.add(new FavMovieReviewEntity(
+                                item.getAuthor(),
+                                item.getContent(),
+                                item.getId(),
+                                item.getUrl(),
+                                movieEntity.getMovieId()));
+                    }
+                }
+            }
+        });
+
+        detailViewModel.getVideoResults().observe(this, videoListResource -> {
+            if (videoListResource != null) {
+                if (videoListResource.getResponse() != null) {
+                    for (VideoResults results : videoListResource.getResponse()) {
+                        favMovieTrailers.add(new FavMovieVideoEntity(
+                                results.getId(),
+                                results.getKey(),
+                                results.getName(),
+                                results.getSite(),
+                                results.getType(),
+                                movieEntity.getMovieId()));
+                    }
+                }
+            }
+        });
+
+        FavMovieEntity favMovieEntity = new FavMovieEntity(
+                movieEntity.getMovieId(),
+                movieEntity.getVoteCount(),
+                movieEntity.getVoteAverage(),
+                movieEntity.getTitle(),
+                movieEntity.getPosterPath(),
+                movieEntity.getGenreIds(),
+                movieEntity.getBackdropPath(),
+                movieEntity.getOverview(),
+                movieEntity.getReleaseDate(),
+                castIds, System.currentTimeMillis());
+
+        detailViewModel.saveFavMovies(favMovieEntity);
+
+        if (!castIds.isEmpty() && !favMovieCast.isEmpty()) {
+            detailViewModel.saveFavCast(favMovieCast);
+        }
+
+        if (!favMovieReviews.isEmpty()) {
+            detailViewModel.saveFavReviews(favMovieReviews);
+        }
+
+        if (!favMovieTrailers.isEmpty()) {
+            detailViewModel.saveFavTrailers(favMovieTrailers);
+        }
+
+
+//        detailViewModel.saveFavMovies(favMovieEntity).observe(this, integer -> {
+//            if (integer != null && integer > 0) {
+//                if (!castIds.isEmpty() && !favMovieCast.isEmpty()) {
+//                    detailViewModel.saveFavCast(favMovieCast).observe(this, integer1 -> {
+//                        if (integer1 != null && !integer1.isEmpty()) {
+//                            if (!favMovieReviews.isEmpty()) {
+//                                detailViewModel.saveFavReviews(favMovieReviews).observe(this, integer2 -> {
+//                                    if (integer2 != null && !integer2.isEmpty()) {
+//                                        if (!favMovieTrailers.isEmpty()) {
+//                                            detailViewModel.saveFavTrailers(favMovieTrailers).observe(this, integer3 -> {
+//                                                if (integer3 != null && !integer3.isEmpty()) {
+//
+//                                                }
+//                                            });
+//                                        }
+//                                    }
+//                                });
+//                            } else {
+//                                if (!favMovieTrailers.isEmpty()) {
+//                                    detailViewModel.saveFavTrailers(favMovieTrailers).observe(this, integer3 -> {
+//                                        if (integer3 != null && !integer3.isEmpty()) {
+//
+//                                        }
+//                                    });
+//                                }
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        });
+    }
+
+    public void deleteFavMovies() {
+        detailViewModel.deleteMovieById(SharedPreferenceHelper.getSharedPreferenceInt("mId")).observe(this, integer -> {
+            AppUtils.setSnackBar(snackBarView, "Removed from favorites");
         });
     }
 

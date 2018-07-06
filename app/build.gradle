@@ -68,11 +68,11 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
     // Room
-    implementation 'android.arch.persistence.room:runtime:1.1.0'
-    annotationProcessor "android.arch.persistence.room:compiler:1.1.0"
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 
     // Debug Database
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 
     // Flow Layout
     implementation 'com.xiaofeng.android:flowlayoutmanager:1.2.3.2'

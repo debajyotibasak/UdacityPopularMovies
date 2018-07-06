@@ -35,6 +35,7 @@ public interface MoviesDao {
     LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds);
 
     // Click on favorite
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void saveFavMovie(FavMovieEntity favMovieEntity);
 
@@ -47,20 +48,28 @@ public interface MoviesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void saveFavTrailers(List<FavMovieVideoEntity> movieVideoList);
 
+    @Query("SELECT COUNT(*) FROM fav_movies WHERE movieId =:movieId")
+    LiveData<Integer> containsMovie(int movieId);
+
     // Get from Favorite tables
+
     @Query("SELECT * FROM fav_movies ORDER BY createdAt ASC")
     LiveData<List<FavMovieEntity>> loadFavMoviesFromDb();
+
+    @Query("SELECT * FROM fav_movies WHERE movieId =:favMovieId")
+    LiveData<FavMovieEntity> loadFavMoviesById(int favMovieId);
 
     @Query("SELECT * FROM fav_movies_cast WHERE id IN (:castIds)")
     LiveData<List<FavMovieCastEntity>> getCastsById(List<Integer> castIds);
 
-    @Query("SELECT * FROM fav_movies_reviews where favMovieId = :favMovieId")
+    @Query("SELECT * FROM fav_movies_reviews where fav_movie_id = :favMovieId")
     LiveData<List<FavMovieReviewEntity>> getReviewsByMovie(int favMovieId);
 
-    @Query("SELECT * FROM fav_movies_videos where favMovieId = :favMovieId")
+    @Query("SELECT * FROM fav_movies_videos where fav_movie_id = :favMovieId")
     LiveData<List<FavMovieVideoEntity>> getVideosByMovie(int favMovieId);
 
     // Click on remove from favourite
+
     @Query("DELETE FROM fav_movies WHERE movieId = :favMovieId")
     int deleteMovieById(int favMovieId);
 

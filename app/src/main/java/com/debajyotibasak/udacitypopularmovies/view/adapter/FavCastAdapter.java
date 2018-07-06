@@ -16,7 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
 
 import java.util.List;
 
@@ -26,17 +26,17 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
 
-public class CastAdapter extends RecyclerView.Adapter<CastAdapter.MyViewHolder> {
+public class FavCastAdapter extends RecyclerView.Adapter<FavCastAdapter.MyViewHolder> {
 
-    private List<CastResult> castList;
+    private List<FavMovieCastEntity> favMovieCastList;
     private Context context;
 
-    public CastAdapter(Context context) {
+    public FavCastAdapter(Context context) {
         this.context = context;
     }
 
-    public void addCasts(List<CastResult> castList) {
-        this.castList = castList;
+    public void addCasts(List<FavMovieCastEntity> castList) {
+        this.favMovieCastList = castList;
         notifyDataSetChanged();
     }
 
@@ -53,8 +53,8 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.MyViewHolder> 
 
     @Override
     public int getItemCount() {
-        if (castList != null) {
-            return castList.size();
+        if (favMovieCastList != null) {
+            return favMovieCastList.size();
         } else {
             return 0;
         }
@@ -72,7 +72,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.MyViewHolder> 
 
         void onBind(final int position) {
 
-            final CastResult data = castList.get(position);
+            final FavMovieCastEntity data = favMovieCastList.get(position);
 
             MultiTransformation<Bitmap> multi = new MultiTransformation<>(
                     new CenterCrop(),

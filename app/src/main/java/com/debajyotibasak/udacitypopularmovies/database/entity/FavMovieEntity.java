@@ -3,6 +3,7 @@ package com.debajyotibasak.udacitypopularmovies.database.entity;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
+import android.support.annotation.NonNull;
 
 import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListConvertor;
 import com.google.gson.annotations.Expose;
@@ -16,11 +17,11 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_M
 
 @Entity(tableName = TABLE_FAVORITE_MOVIES)
 public class FavMovieEntity implements Serializable {
-
     @PrimaryKey
-    private final int movieId;
-    private final int voteCount;
-    private final double voteAverage;
+    @NonNull
+    private final Integer movieId;
+    private final Integer voteCount;
+    private final Double voteAverage;
     private final String title;
     private final String posterPath;
     @TypeConverters(IntegerListConvertor.class)
@@ -30,11 +31,11 @@ public class FavMovieEntity implements Serializable {
     private final String releaseDate;
     @TypeConverters(IntegerListConvertor.class)
     private final List<Integer> castIds;
-    private final long createdAt;
+    private final Long createdAt;
 
-    public FavMovieEntity(final int movieId, final int voteCount, final double voteAverage, String title, String posterPath,
-                          final List<Integer> genreIds, String backdropPath, String overview, String releaseDate,
-                          final List<Integer> castIds, final long createdAt) {
+    public FavMovieEntity(@NonNull final Integer movieId, final Integer voteCount, final Double voteAverage,
+                          String title, String posterPath, final List<Integer> genreIds, String backdropPath,
+                          String overview, String releaseDate, final List<Integer> castIds, final long createdAt) {
         this.movieId = movieId;
         this.voteCount = voteCount;
         this.voteAverage = voteAverage;
@@ -48,15 +49,16 @@ public class FavMovieEntity implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public int getMovieId() {
+    @NonNull
+    public Integer getMovieId() {
         return movieId;
     }
 
-    public int getVoteCount() {
+    public Integer getVoteCount() {
         return voteCount;
     }
 
-    public double getVoteAverage() {
+    public Double getVoteAverage() {
         return voteAverage;
     }
 
@@ -88,7 +90,7 @@ public class FavMovieEntity implements Serializable {
         return castIds;
     }
 
-    public long getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 }

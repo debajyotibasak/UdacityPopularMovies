@@ -21,6 +21,8 @@ public interface AppRepositoryInterface {
 
     LiveData<Resource<List<MovieEntity>>> loadMovies(boolean forceLoad, String sortBy);
 
+    LiveData<MovieEntity> loadMoviesById(int movieId);
+
     LiveData<Resource<List<CastResult>>> loadCast(int movieId);
 
     LiveData<Resource<List<VideoResults>>> loadVideos(int movieId);
@@ -34,8 +36,6 @@ public interface AppRepositoryInterface {
     void saveFavMovieReviews(List<FavMovieReviewEntity> favMovieReviewEntities);
 
     void saveFavMovieVideos(List<FavMovieVideoEntity> favMovieVideoEntities);
-
-    LiveData<Integer> containsMovie(int movieId);
 
     LiveData<List<FavMovieEntity>> loadFavMoviesFromDb();
 

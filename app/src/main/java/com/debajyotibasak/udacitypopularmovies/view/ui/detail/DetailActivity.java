@@ -68,8 +68,8 @@ import dagger.android.AndroidInjection;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDROP_BASE_PATH;
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_ID_INTENT;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.POSTER_BASE_PATH;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.REVIEWS_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TRAILERS_PARCELABLE;
@@ -161,6 +161,7 @@ public class DetailActivity extends AppCompatActivity {
     private int movieId;
     private List<Integer> genreId;
     private String movieName;
+
     private Boolean isMovieFav;
 
     private void initViews() {
@@ -228,18 +229,13 @@ public class DetailActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            movieEntity = (MovieEntity) extras.getSerializable(MOVIE_PARCELABLE);
             transitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
-            movieId = movieEntity.getMovieId();
-            movieName = movieEntity.getTitle();
-            genreId = movieEntity.getGenreIds();
+            movieId = extras.getInt(MOVIE_ID_INTENT);
         }
 
-        setUpToolbarTitle(movieName);
-
+        loadPlaceholder();
+        populateUi();
         supportPostponeEnterTransition();
-
-        populateUi(transitionName);
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
@@ -275,186 +271,95 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void populateUi(String transitionName) {
-        Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.movie_placeholder);
-        roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
-        roundedBitmapDrawable.setCornerRadius(25F);
-
-        Glide.with(this)
-                .load(BACKDROP_BASE_PATH + movieEntity.getBackdropPath())
-                .apply(new RequestOptions()
-                        .placeholder(R.drawable.movie_detail_placeholder)
-                        .error(R.drawable.movie_detail_placeholder))
-                .into(mImvBackDrop);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mImvPoster.setTransitionName(transitionName);
-        }
-
-        loadPosterImage(true);
-
-        TransitionSet set = new TransitionSet();
-        set.addTransition(new ChangeImageTransform());
-        set.addTransition(new ChangeBounds());
-        set.addListener(new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-                loadPosterImage(false);
-            }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
-            }
-        });
-
-        getWindow().setSharedElementEnterTransition(set);
-
-        mTxvMovieTitle.setText(movieEntity.getTitle());
-        mTxvRating.setText(String.valueOf(movieEntity.getVoteAverage()));
-        mTxvReleaseDate.setText(AppUtils.convertDate(movieEntity.getReleaseDate(), AppConstants.DF1, AppConstants.DF2));
-        mTxvPlotDetails.setText(movieEntity.getOverview());
-
-        detailViewModel.getGenresById(genreId).observe(this, genreResource -> {
-            if (genreResource != null) {
-                switch (genreResource.getStatus()) {
-                    case SUCCESS:
-                        if (genreResource.getResponse() != null && !genreResource.getResponse().isEmpty()) {
-                            mRvGenres.setVisibility(View.VISIBLE);
-                            genreAdapter.addGenres(genreResource.getResponse());
-                        }
-                        break;
-                    case LOADING:
-                        mRvGenres.setVisibility(View.GONE);
-                        break;
-                    case ERROR:
-                        mRvGenres.setVisibility(View.GONE);
-                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
-                        break;
-                }
-
-            }
-        });
-
-        getMovieData();
-
-    }
-
-    private void loadPosterImage(boolean retrieveFromCache) {
-        Glide.with(this)
-                .load(POSTER_BASE_PATH + movieEntity.getPosterPath())
-                .apply(new RequestOptions()
-                        .placeholder(roundedBitmapDrawable)
-                        .error(roundedBitmapDrawable)
-                        .dontAnimate()
-                        .dontTransform()
-                        .onlyRetrieveFromCache(retrieveFromCache))
-                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        supportStartPostponedEnterTransition();
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        supportStartPostponedEnterTransition();
-                        return false;
-                    }
-                })
-                .into(mImvPoster);
-    }
-
-    private void getMovieData() {
-        progressDetails.setVisibility(View.GONE);
-
-        detailViewModel.loadFavMoviesById(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
+    private void populateUi() {
+        detailViewModel.loadFavMoviesById(movieId)
                 .observe(this, favMovie -> {
+                    progressDetails.setVisibility(View.GONE);
                     if (favMovie != null) {
                         isMovieFav = true;
-
                         mImvFavourite.setImageResource(R.drawable.ic_favorite);
-
-                        detailViewModel.getFavCasts(favMovie.getCastIds()).observe(this, favMovieCasts -> {
-                            if (favMovieCasts != null && !favMovieCasts.isEmpty()) {
-                                favCastAdapter = new FavCastAdapter(this);
-                                mRvCast.setAdapter(favCastAdapter);
-                                mLayCast.setVisibility(View.VISIBLE);
-                                favCastAdapter.addCasts(favMovieCasts);
-                            }
-                        });
-
-                        detailViewModel.getFavReviews(favMovie.getMovieId()).observe(this, favMovieReviews -> {
-                            if (favMovieReviews != null && !favMovieReviews.isEmpty()) {
-                                mLayReviews.setVisibility(View.VISIBLE);
-                                mTxvReviewPerson.setText(favMovieReviews.get(0).getAuthor());
-                                mTxvReviewBody.setText(favMovieReviews.get(0).getContent());
-                                if (favMovieReviews.size() < 2) {
-                                    mTxvSeeAllReviews.setVisibility(View.GONE);
-                                }
-                                mTxvSeeAllReviews.setOnClickListener(v -> {
-//                                        Intent intent = new Intent(this, ReviewsActivity.class);
-//                                        ArrayList<ReviewResult> mList = new ArrayList<>(reviewResults.getResponse());
-//                                        intent.putExtra(REVIEWS_PARCELABLE, mList);
-//                                        startActivity(intent);
-                                });
-                            }
-                        });
-
-                        detailViewModel.getFavVideos(favMovie.getMovieId()).observe(this, favMoviesVideo -> {
-                            if (favMoviesVideo != null && !favMoviesVideo.isEmpty()) {
-                                mLayTrailer.setVisibility(View.VISIBLE);
-                                mTxvVideoTitle.setText(favMoviesVideo.get(0).getName());
-                                Glide.with(this)
-                                        .load(String.format(YOUTUBE_THUMBNAIL, favMoviesVideo.get(0).getKey()))
-                                        .apply(new RequestOptions()
-                                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                                .placeholder(R.drawable.movie_detail_placeholder)
-                                                .error(R.drawable.movie_detail_placeholder))
-                                        .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                                        .into(mImvTrailerThumb);
-                                mImvTrailerThumb.setOnClickListener(view -> {
-                                    if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
-                                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                                                Uri.parse(YOUTUBE_URL + favMoviesVideo.get(0).getKey()));
-                                        startActivity(intent);
-                                    }
-                                });
-                                if (favMoviesVideo.size() < 2) {
-                                    mTxvSeeAllTrailers.setVisibility(View.GONE);
-                                }
-                                mTxvSeeAllTrailers.setOnClickListener(v -> {
-//                                    Intent intent = new Intent(this, TrailerActivity.class);
-//                                    ArrayList<VideoResults> mList = new ArrayList<>(videoResults.getResponse());
-//                                    intent.putExtra(TRAILERS_PARCELABLE, mList);
-//                                    startActivity(intent);
-                                });
-                            }
-                        });
+                        getFavMovies(favMovie);
                     } else {
-                        isMovieFav = false;
-
-                        mImvFavourite.setImageResource(R.drawable.ic_favorite_border);
-
                         getData();
                     }
                 });
     }
 
+    private void getFavMovies(FavMovieEntity favMovie) {
+        setUpToolbarTitle(favMovie.getTitle());
+        loadBackDropImage(favMovie.getBackdropPath());
+        loadMainImage(favMovie.getPosterPath());
+        setMovieTitle(favMovie.getTitle());
+        setMovieRating(String.valueOf(favMovie.getVoteAverage()));
+        setMovieReleaseDate(favMovie.getReleaseDate());
+        setMoviePlotDetails(favMovie.getOverview());
+        loadGenres(favMovie.getGenreIds());
+
+        detailViewModel.getFavCasts(favMovie.getCastIds()).observe(this, favMovieCasts -> {
+            if (favMovieCasts != null && !favMovieCasts.isEmpty()) {
+                favCastAdapter = new FavCastAdapter(this);
+                mRvCast.setAdapter(favCastAdapter);
+                mLayCast.setVisibility(View.VISIBLE);
+                favCastAdapter.addCasts(favMovieCasts);
+            }
+        });
+
+        detailViewModel.getFavReviews(favMovie.getMovieId()).observe(this, favMovieReviews -> {
+            if (favMovieReviews != null && !favMovieReviews.isEmpty()) {
+                mLayReviews.setVisibility(View.VISIBLE);
+                mTxvReviewPerson.setText(favMovieReviews.get(0).getAuthor());
+                mTxvReviewBody.setText(favMovieReviews.get(0).getContent());
+                if (favMovieReviews.size() < 2) {
+                    mTxvSeeAllReviews.setVisibility(View.GONE);
+                }
+                mTxvSeeAllReviews.setOnClickListener(v -> {
+                });
+            }
+        });
+
+        detailViewModel.getFavVideos(favMovie.getMovieId()).observe(this, favMoviesVideo -> {
+            if (favMoviesVideo != null && !favMoviesVideo.isEmpty()) {
+                mLayTrailer.setVisibility(View.VISIBLE);
+                mTxvVideoTitle.setText(favMoviesVideo.get(0).getName());
+                Glide.with(this)
+                        .load(String.format(YOUTUBE_THUMBNAIL, favMoviesVideo.get(0).getKey()))
+                        .apply(new RequestOptions()
+                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                .placeholder(R.drawable.movie_detail_placeholder)
+                                .error(R.drawable.movie_detail_placeholder))
+                        .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                        .into(mImvTrailerThumb);
+                mImvTrailerThumb.setOnClickListener(view -> {
+                    if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(YOUTUBE_URL + favMoviesVideo.get(0).getKey()));
+                        startActivity(intent);
+                    }
+                });
+                if (favMoviesVideo.size() < 2) {
+                    mTxvSeeAllTrailers.setVisibility(View.GONE);
+                }
+                mTxvSeeAllTrailers.setOnClickListener(v -> {
+                });
+            }
+        });
+    }
+
     private void getData() {
+        detailViewModel.getMovieResult().observe(this, movie -> {
+            if (movie != null) {
+                isMovieFav = false;
+                mImvFavourite.setImageResource(R.drawable.ic_favorite_border);
+                setUpToolbarTitle(movie.getTitle());
+                loadBackDropImage(movie.getBackdropPath());
+                loadMainImage(movie.getPosterPath());
+                setMovieTitle(movie.getTitle());
+                setMovieRating(String.valueOf(movie.getVoteAverage()));
+                setMovieReleaseDate(movie.getReleaseDate());
+                setMoviePlotDetails(movie.getOverview());
+                loadGenres(movie.getGenreIds());
+            }
+        });
 
         detailViewModel.getCastResults().observe(this, castResults -> {
             if (castResults != null) {
@@ -553,6 +458,122 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
+    private void loadGenres(List<Integer> genreIds) {
+        detailViewModel.getGenresById(genreIds).observe(this, genreResource -> {
+            if (genreResource != null) {
+                switch (genreResource.getStatus()) {
+                    case SUCCESS:
+                        if (genreResource.getResponse() != null && !genreResource.getResponse().isEmpty()) {
+                            mRvGenres.setVisibility(View.VISIBLE);
+                            genreAdapter.addGenres(genreResource.getResponse());
+                        }
+                        break;
+                    case LOADING:
+                        mRvGenres.setVisibility(View.GONE);
+                        break;
+                    case ERROR:
+                        mRvGenres.setVisibility(View.GONE);
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+                        break;
+                }
+            }
+        });
+    }
+
+    private void setMoviePlotDetails(String overview) {
+        mTxvPlotDetails.setText(overview);
+    }
+
+    private void setMovieReleaseDate(String releaseDate) {
+        mTxvReleaseDate.setText(AppUtils.convertDate(releaseDate, AppConstants.DF1, AppConstants.DF2));
+    }
+
+    private void setMovieRating(String rating) {
+        mTxvRating.setText(rating);
+    }
+
+    private void setMovieTitle(String title) {
+        mTxvMovieTitle.setText(title);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void loadMainImage(String path) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mImvPoster.setTransitionName(transitionName);
+        }
+
+        loadImageFromCache(true, path);
+
+        TransitionSet set = new TransitionSet();
+        set.addTransition(new ChangeImageTransform());
+        set.addTransition(new ChangeBounds());
+        set.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                loadImageFromCache(false, path);
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+            }
+        });
+
+        getWindow().setSharedElementEnterTransition(set);
+    }
+
+    private void loadBackDropImage(String backdropPath) {
+        Glide.with(this)
+                .load(BACKDROP_BASE_PATH + backdropPath)
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.movie_detail_placeholder)
+                        .error(R.drawable.movie_detail_placeholder))
+                .into(mImvBackDrop);
+    }
+
+    private void loadImageFromCache(boolean retrieveFromCache, String path) {
+        Glide.with(this)
+                .load(POSTER_BASE_PATH + path)
+                .apply(new RequestOptions()
+                        .placeholder(roundedBitmapDrawable)
+                        .error(roundedBitmapDrawable)
+                        .dontAnimate()
+                        .dontTransform()
+                        .onlyRetrieveFromCache(retrieveFromCache))
+                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+                })
+                .into(mImvPoster);
+    }
+
+    private void loadPlaceholder() {
+        Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.drawable.movie_placeholder);
+        roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
+        roundedBitmapDrawable.setCornerRadius(25F);
+    }
+
     private void saveFavMovies() {
         List<Integer> castIds = new ArrayList<>();
         List<FavMovieCastEntity> favMovieCast = new ArrayList<>();
@@ -626,39 +647,6 @@ public class DetailActivity extends AppCompatActivity {
         if (!favMovieTrailers.isEmpty()) {
             detailViewModel.saveFavTrailers(favMovieTrailers);
         }
-
-
-//        detailViewModel.saveFavMovies(favMovieEntity).observe(this, integer -> {
-//            if (integer != null && integer > 0) {
-//                if (!castIds.isEmpty() && !favMovieCast.isEmpty()) {
-//                    detailViewModel.saveFavCast(favMovieCast).observe(this, integer1 -> {
-//                        if (integer1 != null && !integer1.isEmpty()) {
-//                            if (!favMovieReviews.isEmpty()) {
-//                                detailViewModel.saveFavReviews(favMovieReviews).observe(this, integer2 -> {
-//                                    if (integer2 != null && !integer2.isEmpty()) {
-//                                        if (!favMovieTrailers.isEmpty()) {
-//                                            detailViewModel.saveFavTrailers(favMovieTrailers).observe(this, integer3 -> {
-//                                                if (integer3 != null && !integer3.isEmpty()) {
-//
-//                                                }
-//                                            });
-//                                        }
-//                                    }
-//                                });
-//                            } else {
-//                                if (!favMovieTrailers.isEmpty()) {
-//                                    detailViewModel.saveFavTrailers(favMovieTrailers).observe(this, integer3 -> {
-//                                        if (integer3 != null && !integer3.isEmpty()) {
-//
-//                                        }
-//                                    });
-//                                }
-//                            }
-//                        }
-//                    });
-//                }
-//            }
-//        });
     }
 
     public void deleteFavMovies() {

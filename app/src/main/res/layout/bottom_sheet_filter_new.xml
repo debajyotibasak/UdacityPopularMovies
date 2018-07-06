@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white_yellow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imv_close"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_round_clear" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/worksans_bold"
+        android:paddingEnd="@dimen/margin_16"
+        android:paddingStart="@dimen/margin_16"
+        android:text="Filter"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/imv_close"
+        app:layout_constraintEnd_toStartOf="@+id/imv_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imv_close" />
+
+    <RadioGroup
+        android:id="@+id/rg_filter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+
+        <RadioButton
+            android:id="@+id/rb_popular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableEnd="@drawable/bg_filter_check"
+            android:fontFamily="@font/worksans_bold"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical|end"
+            android:paddingBottom="@dimen/margin_8"
+            android:paddingEnd="@dimen/margin_16"
+            android:paddingStart="@dimen/margin_16"
+            android:paddingTop="@dimen/margin_8"
+            android:text="Popular"
+            android:textColor="@color/grey_700"
+            android:textSize="24sp" />
+
+        <RadioButton
+            android:id="@+id/rb_top_rated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableEnd="@drawable/bg_filter_check"
+            android:fontFamily="@font/worksans_bold"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical|end"
+            android:paddingBottom="@dimen/margin_8"
+            android:paddingEnd="@dimen/margin_16"
+            android:paddingStart="@dimen/margin_16"
+            android:paddingTop="@dimen/margin_8"
+            android:text="Top Rated"
+            android:textColor="@color/grey_700"
+            android:textSize="24sp" />
+
+        <RadioButton
+            android:id="@+id/rb_favorite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableEnd="@drawable/bg_filter_check"
+            android:fontFamily="@font/worksans_bold"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical|end"
+            android:paddingBottom="@dimen/margin_16"
+            android:paddingEnd="@dimen/margin_16"
+            android:paddingStart="@dimen/margin_16"
+            android:paddingTop="@dimen/margin_8"
+            android:text="Favorites"
+            android:textColor="@color/grey_700"
+            android:textSize="24sp" />
+    </RadioGroup>
+</android.support.constraint.ConstraintLayout>

@@ -23,15 +23,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.interfaces.MovieItemClickListener;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.utils.GridSpacingItemDecoration;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
+import com.debajyotibasak.udacitypopularmovies.view.adapter.FavMoviesAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.MoviesAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailActivity;
 
@@ -44,8 +46,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dagger.android.AndroidInjection;
 
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_ID_INTENT;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_PARCELABLE;
 
 public class HomeActivity extends AppCompatActivity implements MovieItemClickListener {
 
@@ -53,8 +55,8 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     ViewModelProvider.Factory viewModelFactory;
     private HomeViewModel homeViewModel;
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    @BindView(R.id.rv_movies)
+    RecyclerView rvMovies;
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -74,7 +76,11 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     @BindView(R.id.btn_refresh)
     Button btnRefresh;
 
+    @BindView(R.id.rv_favorites)
+    RecyclerView rvFavMovies;
+
     private MoviesAdapter mAdapter;
+    private FavMoviesAdapter mFavAdapter;
 
     private void initViews() {
         setContentView(R.layout.activity_main);
@@ -89,12 +95,18 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         txvToolbar.setText(R.string.txt_movies);
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         mAdapter = new MoviesAdapter(this);
+        mFavAdapter = new FavMoviesAdapter(this);
         int recyclerViewSpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 2 : 4;
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, recyclerViewSpanCount);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(recyclerViewSpanCount, dpToPx(), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
+        RecyclerView.LayoutManager mMoviesLayoutManager = new GridLayoutManager(this, recyclerViewSpanCount);
+        RecyclerView.LayoutManager mFavMoviesLayoutManager = new GridLayoutManager(this, recyclerViewSpanCount);
+        rvMovies.setLayoutManager(mMoviesLayoutManager);
+        rvMovies.addItemDecoration(new GridSpacingItemDecoration(recyclerViewSpanCount, dpToPx(), true));
+        rvMovies.setItemAnimator(new DefaultItemAnimator());
+        rvMovies.setAdapter(mAdapter);
+        rvFavMovies.setLayoutManager(mFavMoviesLayoutManager);
+        rvFavMovies.addItemDecoration(new GridSpacingItemDecoration(recyclerViewSpanCount, dpToPx(), true));
+        rvFavMovies.setItemAnimator(new DefaultItemAnimator());
+        rvFavMovies.setAdapter(mFavAdapter);
     }
 
     @Override
@@ -120,6 +132,8 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                     loadMovies(AppConstants.SORT_BY_TOP_RATED, 2);
                 } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
                     loadMovies(AppConstants.SORT_BY_POPULAR, 2);
+                } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_FAVORITE)) {
+                    loadMovies(AppConstants.SORT_BY_FAVORITE, 2);
                 }
                 break;
             default:
@@ -131,36 +145,50 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
 
         boolean forceLoad = loadingIdentifier == 1;
 
-        homeViewModel.loadMovies(forceLoad, sort).observe(this, movieResource -> {
-            if (movieResource != null) {
-                switch (movieResource.getStatus()) {
-                    case SUCCESS:
-                        hideProgress();
-                        if (movieResource.getResponse() != null) {
-                            mAdapter.addMoviesList(movieResource.getResponse());
-                        }
-                        break;
-                    case LOADING:
-                        showProgress();
-                        break;
-                    case ERROR:
-                        hideProgress();
-                        checkNetConnectivity();
-                        break;
+        if (sort.equalsIgnoreCase(AppConstants.SORT_BY_FAVORITE)) {
+            rvFavMovies.setVisibility(View.VISIBLE);
+            rvMovies.setVisibility(View.GONE);
+            homeViewModel.loadFavMoviesFromDb().observe(this, favMovieList -> {
+                if (favMovieList != null) {
+                    mFavAdapter.addMoviesList(favMovieList);
                 }
-            }
-        });
+            });
+        } else {
+            rvMovies.setVisibility(View.VISIBLE);
+            rvFavMovies.setVisibility(View.GONE);
+            homeViewModel.loadMovies(forceLoad, sort).observe(this, movieResource -> {
+                if (movieResource != null) {
+                    switch (movieResource.getStatus()) {
+                        case SUCCESS:
+                            hideProgress();
+                            if (movieResource.getResponse() != null) {
+                                mAdapter.addMoviesList(movieResource.getResponse());
+                            }
+                            break;
+                        case LOADING:
+                            showProgress();
+                            break;
+                        case ERROR:
+                            hideProgress();
+                            checkNetConnectivity();
+                            break;
+                    }
+                }
+            });
+        }
     }
 
     private void hideProgress() {
         progressBar.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
+        rvMovies.setVisibility(View.VISIBLE);
+        rvFavMovies.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
     }
 
     private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
+        rvMovies.setVisibility(View.GONE);
+        rvFavMovies.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
     }
 
@@ -184,78 +212,72 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     }
 
     private void filterMovies() {
-        View view = View.inflate(this, R.layout.bottom_sheet_filter, null);
+        View view = View.inflate(this, R.layout.bottom_sheet_filter_new, null);
 
         BottomSheetDialog dialog = new BottomSheetDialog(this, R.style.BottomSheetDialogTheme);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(view);
 
-        TextView txvPopular = view.findViewById(R.id.txv_popular);
-        TextView txvTopRated = view.findViewById(R.id.txv_top_rated);
-        ImageView imvPopular = view.findViewById(R.id.imv_popular);
-        ImageView imvTopRated = view.findViewById(R.id.imv_top_rated);
         ImageView close = view.findViewById(R.id.imv_close);
+        RadioGroup rgFilter = view.findViewById(R.id.rg_filter);
+        RadioButton rbPopular = view.findViewById(R.id.rb_popular);
+        RadioButton rbTopRated = view.findViewById(R.id.rb_top_rated);
+        RadioButton rbFavorite = view.findViewById(R.id.rb_favorite);
 
-        int filterIdentifier = SharedPreferenceHelper.contains(AppConstants.PREF_FILTER) ? 2 : 1;
-
-        switch (filterIdentifier) {
-            case 1:
-                imvPopular.setVisibility(View.VISIBLE);
-                imvTopRated.setVisibility(View.GONE);
-                break;
-            case 2:
-                if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
-                    imvTopRated.setVisibility(View.VISIBLE);
-                    imvPopular.setVisibility(View.GONE);
-                } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
-                    imvTopRated.setVisibility(View.GONE);
-                    imvPopular.setVisibility(View.VISIBLE);
-                }
-                break;
-            default:
-                break;
+        if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
+            rbTopRated.setChecked(true);
+        } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
+            rbPopular.setChecked(true);
+        } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_FAVORITE)) {
+            rbFavorite.setChecked(true);
         }
 
-        txvPopular.setOnClickListener(v -> {
-            dialog.dismiss();
-            if (AppUtils.isNetworkAvailable()) {
-                SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
-                imvPopular.setVisibility(View.VISIBLE);
-                imvTopRated.setVisibility(View.GONE);
-                loadMovies(AppConstants.SORT_BY_POPULAR, 1);
-            } else {
-                AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
-            }
-        });
-
-        txvTopRated.setOnClickListener(v -> {
-            dialog.dismiss();
-            if (AppUtils.isNetworkAvailable()) {
-                SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
-                imvPopular.setVisibility(View.GONE);
-                imvTopRated.setVisibility(View.VISIBLE);
-                loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
-            } else {
-                AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+        rgFilter.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            switch (checkedId) {
+                case R.id.rb_popular:
+                    dialog.dismiss();
+                    if (AppUtils.isNetworkAvailable()) {
+                        SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
+                        loadMovies(AppConstants.SORT_BY_POPULAR, 1);
+                    } else {
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+                    }
+                    break;
+                case R.id.rb_top_rated:
+                    dialog.dismiss();
+                    if (AppUtils.isNetworkAvailable()) {
+                        SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
+                        loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
+                    } else {
+                        AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+                    }
+                    break;
+                case R.id.rb_favorite:
+                    SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_FAVORITE);
+                    loadMovies(AppConstants.SORT_BY_FAVORITE, 1);
+                    dialog.dismiss();
+                    break;
+                default:
+                    dialog.dismiss();
+                    break;
             }
         });
 
         close.setOnClickListener(view1 -> dialog.dismiss());
-
         dialog.setCancelable(true);
         dialog.show();
     }
 
     @Override
-    public void onMovieItemClick(int position, MovieEntity movieEntity, ImageView shareImageView, String transitionName) {
+    public void onMovieItemClick(int position, int movieId, ImageView shareImageView, String transitionName) {
         Intent intent = new Intent(this, DetailActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable(MOVIE_PARCELABLE, movieEntity);
+        bundle.putInt(MOVIE_ID_INTENT, movieId);
         bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
         intent.putExtras(bundle);
 
-        SharedPreferenceHelper.setSharedPreferenceInt("mId", movieEntity.getMovieId());
+        SharedPreferenceHelper.setSharedPreferenceInt("mId", movieId);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -266,7 +288,6 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         } else {
             startActivity(intent);
         }
-
     }
 
     private int dpToPx() {

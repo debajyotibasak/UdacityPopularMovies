@@ -12,6 +12,7 @@ import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
@@ -26,6 +27,7 @@ public class DetailViewModel extends ViewModel {
     private MutableLiveData<Resource<List<CastResult>>> castResults = new MutableLiveData<>();
     private MutableLiveData<Resource<List<VideoResults>>> videoResults = new MutableLiveData<>();
     private MutableLiveData<Resource<List<ReviewResult>>> reviewResult = new MutableLiveData<>();
+    private MutableLiveData<MovieEntity> movieResult = new MutableLiveData<>();
     private MutableLiveData<Integer> isFavorite = new MutableLiveData<>();
 
     @Inject
@@ -41,12 +43,16 @@ public class DetailViewModel extends ViewModel {
         moviesRepo.loadVideos(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
                 .observeForever(listResource -> videoResults.setValue(listResource));
 
-        moviesRepo.containsMovie(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
-                .observeForever(containsMovie -> isFavorite.setValue(containsMovie));
+        moviesRepo.loadMoviesById(SharedPreferenceHelper.getSharedPreferenceInt("mId"))
+                .observeForever(movieEntity -> movieResult.setValue(movieEntity));
     }
 
     LiveData<Resource<List<GenreEntity>>> getGenresById(List<Integer> genreIds) {
         return moviesRepo.loadGenres(genreIds);
+    }
+
+    public MutableLiveData<MovieEntity> getMovieResult() {
+        return movieResult;
     }
 
     public MutableLiveData<Resource<List<CastResult>>> getCastResults() {
@@ -59,10 +65,6 @@ public class DetailViewModel extends ViewModel {
 
     public MutableLiveData<Resource<List<ReviewResult>>> getReviewResult() {
         return reviewResult;
-    }
-
-    public MutableLiveData<Integer> getIsFavorite() {
-        return isFavorite;
     }
 
     void saveFavMovies(FavMovieEntity favMovieEntity) {

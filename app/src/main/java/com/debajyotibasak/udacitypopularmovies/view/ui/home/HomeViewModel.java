@@ -3,6 +3,7 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.home;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
@@ -22,5 +23,9 @@ public class HomeViewModel extends ViewModel {
 
     LiveData<Resource<List<MovieEntity>>> loadMovies(boolean forceLoad, String sortBy){
         return moviesRepo.loadMovies(forceLoad, sortBy);
+    }
+
+    LiveData<List<FavMovieEntity>> loadFavMoviesFromDb(){
+        return moviesRepo.loadFavMoviesFromDb();
     }
 }

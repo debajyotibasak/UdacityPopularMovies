@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
 import com.debajyotibasak.udacitypopularmovies.interfaces.MovieItemClickListener;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
@@ -29,13 +29,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> {
+public class FavMoviesAdapter extends RecyclerView.Adapter<FavMoviesAdapter.MyViewHolder> {
 
-    private List<MovieEntity> movieList;
+    private List<FavMovieEntity> movieList;
     private Context context;
     private final MovieItemClickListener movieItemClickListener;
 
-    public MoviesAdapter(Context context) {
+    public FavMoviesAdapter(Context context) {
         this.context = context;
         try {
             this.movieItemClickListener = ((MovieItemClickListener) context);
@@ -44,7 +44,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         }
     }
 
-    public void addMoviesList(List<MovieEntity> movieList) {
+    public void addMoviesList(List<FavMovieEntity> movieList) {
         this.movieList = movieList;
         notifyDataSetChanged();
     }
@@ -90,7 +90,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
         void onBind(final int position) {
 
-            final MovieEntity data = movieList.get(position);
+            final FavMovieEntity data = movieList.get(position);
 
             Bitmap placeholder = BitmapFactory.decodeResource(context.getResources(), R.drawable.movie_placeholder);
             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), placeholder);

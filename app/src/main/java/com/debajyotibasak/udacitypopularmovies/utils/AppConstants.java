@@ -17,9 +17,11 @@ public class AppConstants {
     public static final String DB_NAME = "movies.db";
     public static final String SORT_BY_POPULAR = "popular";
     public static final String SORT_BY_TOP_RATED = "top_rated";
+    public static final String SORT_BY_FAVORITE = "favorite";
     public static final String LANGUAGE = "en-US";
     public static final String PREF_FILTER = "pref_filter";
     public static final String MOVIE_PARCELABLE = "movie_parcelable";
+    public static final String MOVIE_ID_INTENT = "movie_id_intent";
     public static final String MOVIE_IMAGE_TRANSITION = "movie_image_transition";
     public static final int PAGE = 1;
     public static final int FRESH_TIMEOUT_IN_MINUTES = 60;

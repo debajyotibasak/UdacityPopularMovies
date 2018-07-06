@@ -34,6 +34,9 @@ public interface MoviesDao {
     @Query("SELECT * FROM genres WHERE genreId IN (:genreIds)")
     LiveData<List<GenreEntity>> getGenresById(List<Integer> genreIds);
 
+    @Query("SELECT * FROM movies WHERE movieId =:movieId")
+    LiveData<MovieEntity> getMovieById(int movieId);
+
     // Click on favorite
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

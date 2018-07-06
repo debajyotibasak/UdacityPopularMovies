@@ -245,6 +245,11 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
+    public LiveData<MovieEntity> loadMoviesById(int movieId) {
+        return moviesDao.getMovieById(movieId);
+    }
+
+    @Override
     public void saveFavouriteMovie(FavMovieEntity favMovieEntity) {
         executor.diskIO().execute(() -> moviesDao.saveFavMovie(favMovieEntity));
     }
@@ -262,11 +267,6 @@ public class AppRepository implements AppRepositoryInterface {
     @Override
     public void saveFavMovieVideos(List<FavMovieVideoEntity> favMovieVideoEntities) {
         executor.diskIO().execute(() -> moviesDao.saveFavTrailers(favMovieVideoEntities));
-    }
-
-    @Override
-    public LiveData<Integer> containsMovie(int movieId) {
-        return moviesDao.containsMovie(movieId);
     }
 
     @Override

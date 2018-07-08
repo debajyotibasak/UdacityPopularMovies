@@ -1,6 +1,5 @@
 package com.debajyotibasak.udacitypopularmovies.view.ui.detail;
 
-import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -65,6 +64,7 @@ import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.ACTIVITY_TYPE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.BACKDROP_BASE_PATH;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_ID_INTENT;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
@@ -155,6 +155,7 @@ public class DetailActivity extends AppCompatActivity {
     private FavCastAdapter favCastAdapter;
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private String transitionName;
+    private String activityType;
     private int movieId;
 
     private Boolean isMovieFav;
@@ -227,6 +228,7 @@ public class DetailActivity extends AppCompatActivity {
         if (extras != null) {
             transitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
             movieId = extras.getInt(MOVIE_ID_INTENT);
+            activityType = extras.getString(ACTIVITY_TYPE);
         }
 
         loadPlaceholder();
@@ -493,7 +495,6 @@ public class DetailActivity extends AppCompatActivity {
         mTxvMovieTitle.setText(title);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void loadMainImage(String path) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mImvPoster.setTransitionName(transitionName);
@@ -502,7 +503,9 @@ public class DetailActivity extends AppCompatActivity {
         loadImageFromCache(true, path);
 
         TransitionSet set = new TransitionSet();
-        set.addTransition(new ChangeImageTransform());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            set.addTransition(new ChangeImageTransform());
+        }
         set.addTransition(new ChangeBounds());
         set.addListener(new Transition.TransitionListener() {
             @Override
@@ -527,8 +530,18 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        getWindow().setSharedElementEnterTransition(set);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setSharedElementEnterTransition(set);
+        }
+
+        if (activityType.equalsIgnoreCase(AppConstants.ACTIVITY_FAVOURITE)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setSharedElementExitTransition(null);
+                mImvPoster.setTransitionName(null);
+            }
+        }
     }
+
 
     private void loadBackDropImage(String backdropPath) {
         Glide.with(this)

@@ -46,6 +46,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dagger.android.AndroidInjection;
 
+import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.ACTIVITY_TYPE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_ID_INTENT;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 
@@ -270,12 +271,13 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     }
 
     @Override
-    public void onMovieItemClick(int position, int movieId, ImageView shareImageView, String transitionName) {
+    public void onMovieItemClick(int position, int movieId, ImageView shareImageView, String transitionName, String activityType) {
         Intent intent = new Intent(this, DetailActivity.class);
 
         Bundle bundle = new Bundle();
         bundle.putInt(MOVIE_ID_INTENT, movieId);
         bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
+        bundle.putString(ACTIVITY_TYPE, activityType);
         intent.putExtras(bundle);
 
         SharedPreferenceHelper.setSharedPreferenceInt("mId", movieId);

@@ -18,9 +18,11 @@ public class AppConstants {
     public static final String SORT_BY_POPULAR = "popular";
     public static final String SORT_BY_TOP_RATED = "top_rated";
     public static final String SORT_BY_FAVORITE = "favorite";
+    public static final String ACTIVITY_TYPE = "activity_type";
+    public static final String ACTIVITY_NORMAL = "activity_normal";
+    public static final String ACTIVITY_FAVOURITE = "activity_favorite";
     public static final String LANGUAGE = "en-US";
     public static final String PREF_FILTER = "pref_filter";
-    public static final String MOVIE_PARCELABLE = "movie_parcelable";
     public static final String MOVIE_ID_INTENT = "movie_id_intent";
     public static final String MOVIE_IMAGE_TRANSITION = "movie_image_transition";
     public static final int PAGE = 1;

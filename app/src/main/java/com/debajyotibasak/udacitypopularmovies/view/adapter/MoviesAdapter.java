@@ -124,7 +124,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         @OnClick
         void onClick(View view) {
             String transitionName = "movie_item_" + String.valueOf(getAdapterPosition());
-            movieItemClickListener.onMovieItemClick(getAdapterPosition(), movieList.get(getAdapterPosition()).getMovieId(), mImvMovieImage, transitionName);
+            movieItemClickListener.onMovieItemClick(
+                    getAdapterPosition(),
+                    movieList.get(getAdapterPosition()).getMovieId(),
+                    mImvMovieImage,
+                    transitionName,
+                    AppConstants.ACTIVITY_NORMAL);
         }
     }
 }

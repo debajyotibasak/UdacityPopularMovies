@@ -224,18 +224,22 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         RadioButton rbTopRated = view.findViewById(R.id.rb_top_rated);
         RadioButton rbFavorite = view.findViewById(R.id.rb_favorite);
 
-        if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_TOP_RATED)) {
-            rbTopRated.setChecked(true);
-        } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_POPULAR)) {
-            rbPopular.setChecked(true);
-        } else if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null).equals(AppConstants.SORT_BY_FAVORITE)) {
-            rbFavorite.setChecked(true);
+        switch (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null)) {
+            case AppConstants.SORT_BY_TOP_RATED:
+                rbTopRated.setChecked(true);
+                break;
+            case AppConstants.SORT_BY_POPULAR:
+                rbPopular.setChecked(true);
+                break;
+            case AppConstants.SORT_BY_FAVORITE:
+                rbFavorite.setChecked(true);
+                break;
         }
 
         rgFilter.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            dialog.dismiss();
             switch (checkedId) {
                 case R.id.rb_popular:
-                    dialog.dismiss();
                     if (AppUtils.isNetworkAvailable()) {
                         SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
                         loadMovies(AppConstants.SORT_BY_POPULAR, 1);
@@ -244,7 +248,6 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                     }
                     break;
                 case R.id.rb_top_rated:
-                    dialog.dismiss();
                     if (AppUtils.isNetworkAvailable()) {
                         SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
                         loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
@@ -255,10 +258,8 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                 case R.id.rb_favorite:
                     SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_FAVORITE);
                     loadMovies(AppConstants.SORT_BY_FAVORITE, 1);
-                    dialog.dismiss();
                     break;
                 default:
-                    dialog.dismiss();
                     break;
             }
         });

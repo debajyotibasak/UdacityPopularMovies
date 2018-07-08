@@ -46,10 +46,8 @@ import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntit
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
-import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.CastAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.FavCastAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.GenreAdapter;
@@ -155,14 +153,12 @@ public class DetailActivity extends AppCompatActivity {
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
     private FavCastAdapter favCastAdapter;
-    private MovieEntity movieEntity;
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private String transitionName;
     private int movieId;
-    private List<Integer> genreId;
-    private String movieName;
 
     private Boolean isMovieFav;
+    private FavMovieEntity favMovieEntity, tempFavMovieEntity;
 
     private void initViews() {
         setContentView(R.layout.activity_detail);
@@ -246,7 +242,7 @@ public class DetailActivity extends AppCompatActivity {
                 getData();
             } else {
                 isMovieFav = true;
-                saveFavMovies();
+                saveFavMovies(movieId);
             }
         });
     }
@@ -255,8 +251,6 @@ public class DetailActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("transition", transitionName);
         outState.putInt("movieId", movieId);
-        outState.putString("movieName", movieName);
-        outState.putIntegerArrayList("genreId", new ArrayList<>(genreId));
         super.onSaveInstanceState(outState);
     }
 
@@ -266,12 +260,37 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             transitionName = savedInstanceState.getString("transition");
             movieId = savedInstanceState.getInt("movieId");
-            genreId = savedInstanceState.getIntegerArrayList("genreId");
-            movieName = savedInstanceState.getString("movieName");
         }
     }
 
     private void populateUi() {
+        detailViewModel.getMovieResult().observe(this, movie -> {
+            if (movie != null) {
+                setUpToolbarTitle(movie.getTitle());
+                loadBackDropImage(movie.getBackdropPath());
+                loadMainImage(movie.getPosterPath());
+                setMovieTitle(movie.getTitle());
+                setMovieRating(String.valueOf(movie.getVoteAverage()));
+                setMovieReleaseDate(movie.getReleaseDate());
+                setMoviePlotDetails(movie.getOverview());
+                loadGenres(movie.getGenreIds());
+            } else {
+                detailViewModel.loadFavMoviesById(movieId).observe(this, favMovies -> {
+                    if (favMovies != null) {
+                        setUpToolbarTitle(favMovies.getTitle());
+                        loadBackDropImage(favMovies.getBackdropPath());
+                        loadMainImage(favMovies.getPosterPath());
+                        setMovieTitle(favMovies.getTitle());
+                        setMovieRating(String.valueOf(favMovies.getVoteAverage()));
+                        setMovieReleaseDate(favMovies.getReleaseDate());
+                        setMoviePlotDetails(favMovies.getOverview());
+                        loadGenres(favMovies.getGenreIds());
+                        saveTempFavMovies(favMovies);
+                    }
+                });
+            }
+        });
+
         detailViewModel.loadFavMoviesById(movieId)
                 .observe(this, favMovie -> {
                     progressDetails.setVisibility(View.GONE);
@@ -280,21 +299,14 @@ public class DetailActivity extends AppCompatActivity {
                         mImvFavourite.setImageResource(R.drawable.ic_favorite);
                         getFavMovies(favMovie);
                     } else {
+                        isMovieFav = false;
+                        mImvFavourite.setImageResource(R.drawable.ic_favorite_border);
                         getData();
                     }
                 });
     }
 
     private void getFavMovies(FavMovieEntity favMovie) {
-        setUpToolbarTitle(favMovie.getTitle());
-        loadBackDropImage(favMovie.getBackdropPath());
-        loadMainImage(favMovie.getPosterPath());
-        setMovieTitle(favMovie.getTitle());
-        setMovieRating(String.valueOf(favMovie.getVoteAverage()));
-        setMovieReleaseDate(favMovie.getReleaseDate());
-        setMoviePlotDetails(favMovie.getOverview());
-        loadGenres(favMovie.getGenreIds());
-
         detailViewModel.getFavCasts(favMovie.getCastIds()).observe(this, favMovieCasts -> {
             if (favMovieCasts != null && !favMovieCasts.isEmpty()) {
                 favCastAdapter = new FavCastAdapter(this);
@@ -346,21 +358,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void getData() {
-        detailViewModel.getMovieResult().observe(this, movie -> {
-            if (movie != null) {
-                isMovieFav = false;
-                mImvFavourite.setImageResource(R.drawable.ic_favorite_border);
-                setUpToolbarTitle(movie.getTitle());
-                loadBackDropImage(movie.getBackdropPath());
-                loadMainImage(movie.getPosterPath());
-                setMovieTitle(movie.getTitle());
-                setMovieRating(String.valueOf(movie.getVoteAverage()));
-                setMovieReleaseDate(movie.getReleaseDate());
-                setMoviePlotDetails(movie.getOverview());
-                loadGenres(movie.getGenreIds());
-            }
-        });
-
         detailViewModel.getCastResults().observe(this, castResults -> {
             if (castResults != null) {
                 switch (castResults.getStatus()) {
@@ -574,7 +571,7 @@ public class DetailActivity extends AppCompatActivity {
         roundedBitmapDrawable.setCornerRadius(25F);
     }
 
-    private void saveFavMovies() {
+    private void saveFavMovies(int movieId) {
         List<Integer> castIds = new ArrayList<>();
         List<FavMovieCastEntity> favMovieCast = new ArrayList<>();
         List<FavMovieReviewEntity> favMovieReviews = new ArrayList<>();
@@ -600,7 +597,7 @@ public class DetailActivity extends AppCompatActivity {
                                 item.getContent(),
                                 item.getId(),
                                 item.getUrl(),
-                                movieEntity.getMovieId()));
+                                movieId));
                     }
                 }
             }
@@ -616,25 +613,49 @@ public class DetailActivity extends AppCompatActivity {
                                 results.getName(),
                                 results.getSite(),
                                 results.getType(),
-                                movieEntity.getMovieId()));
+                                movieId));
                     }
                 }
             }
         });
 
-        FavMovieEntity favMovieEntity = new FavMovieEntity(
-                movieEntity.getMovieId(),
-                movieEntity.getVoteCount(),
-                movieEntity.getVoteAverage(),
-                movieEntity.getTitle(),
-                movieEntity.getPosterPath(),
-                movieEntity.getGenreIds(),
-                movieEntity.getBackdropPath(),
-                movieEntity.getOverview(),
-                movieEntity.getReleaseDate(),
-                castIds, System.currentTimeMillis());
+        detailViewModel.getMovieResult().observe(this, movie -> {
+            if (movie != null) {
+                favMovieEntity = new FavMovieEntity(
+                        movie.getMovieId(),
+                        movie.getVoteCount(),
+                        movie.getVoteAverage(),
+                        movie.getTitle(),
+                        movie.getPosterPath(),
+                        movie.getGenreIds(),
+                        movie.getBackdropPath(),
+                        movie.getOverview(),
+                        movie.getReleaseDate(),
+                        castIds, System.currentTimeMillis());
+            } else {
+                detailViewModel.loadFavMoviesById(movieId).observe(this, favMovie -> {
+                    if (favMovie != null) {
+                        favMovieEntity = new FavMovieEntity(
+                                favMovie.getMovieId(),
+                                favMovie.getVoteCount(),
+                                favMovie.getVoteAverage(),
+                                favMovie.getTitle(),
+                                favMovie.getPosterPath(),
+                                favMovie.getGenreIds(),
+                                favMovie.getBackdropPath(),
+                                favMovie.getOverview(),
+                                favMovie.getReleaseDate(),
+                                castIds, System.currentTimeMillis());
+                    }
+                });
+            }
+        });
 
-        detailViewModel.saveFavMovies(favMovieEntity);
+        if (favMovieEntity != null) {
+            detailViewModel.saveFavMovies(favMovieEntity);
+        } else {
+            detailViewModel.saveFavMovies(tempFavMovieEntity);
+        }
 
         if (!castIds.isEmpty() && !favMovieCast.isEmpty()) {
             detailViewModel.saveFavCast(favMovieCast);
@@ -647,12 +668,18 @@ public class DetailActivity extends AppCompatActivity {
         if (!favMovieTrailers.isEmpty()) {
             detailViewModel.saveFavTrailers(favMovieTrailers);
         }
+
+        AppUtils.setSnackBar(snackBarView, "Added to favorites");
     }
 
     public void deleteFavMovies() {
-        detailViewModel.deleteMovieById(SharedPreferenceHelper.getSharedPreferenceInt("mId")).observe(this, integer -> {
+        detailViewModel.deleteMovieById(movieId).observe(this, integer -> {
             AppUtils.setSnackBar(snackBarView, "Removed from favorites");
         });
+    }
+
+    public void saveTempFavMovies(FavMovieEntity favMovieEntity) {
+        tempFavMovieEntity = favMovieEntity;
     }
 
     private void configureDagger() {
@@ -663,6 +690,7 @@ public class DetailActivity extends AppCompatActivity {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
     }
+
 
     @Override
     protected void onRestart() {

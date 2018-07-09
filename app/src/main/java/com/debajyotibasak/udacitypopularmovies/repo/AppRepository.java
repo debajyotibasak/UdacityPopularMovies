@@ -8,20 +8,17 @@ import android.support.annotation.Nullable;
 import com.debajyotibasak.udacitypopularmovies.api.ApiInterface;
 import com.debajyotibasak.udacitypopularmovies.api.ApiResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.CastResponse;
-import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.GenreResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.MoviesResponse;
 import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResponse;
-import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
 import com.debajyotibasak.udacitypopularmovies.api.model.VideoResponse;
-import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
 import com.debajyotibasak.udacitypopularmovies.database.dao.MoviesDao;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.CastEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.ReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.VideoEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AbsentLiveData;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppExecutor;
@@ -111,9 +108,9 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public LiveData<Resource<List<CastResult>>> loadCast(int movieId) {
-        return new NetworkBoundResource<List<CastResult>, CastResponse>(executor) {
-            private List<CastResult> castList = new ArrayList<>();
+    public LiveData<Resource<List<CastEntity>>> loadCast(int movieId) {
+        return new NetworkBoundResource<List<CastEntity>, CastResponse>(executor) {
+            private List<CastEntity> castList = new ArrayList<>();
 
             @Override
             protected void saveCallResult(@NonNull CastResponse item) {
@@ -121,17 +118,17 @@ public class AppRepository implements AppRepositoryInterface {
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable List<CastResult> data) {
+            protected boolean shouldFetch(@Nullable List<CastEntity> data) {
                 return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<List<CastResult>> loadFromDb() {
+            protected LiveData<List<CastEntity>> loadFromDb() {
                 if (castList == null) {
                     return AbsentLiveData.create();
                 } else {
-                    return new LiveData<List<CastResult>>() {
+                    return new LiveData<List<CastEntity>>() {
                         @Override
                         protected void onActive() {
                             super.onActive();
@@ -151,9 +148,9 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public LiveData<Resource<List<VideoResults>>> loadVideos(int movieId) {
-        return new NetworkBoundResource<List<VideoResults>, VideoResponse>(executor) {
-            private List<VideoResults> videoResultsList = new ArrayList<>();
+    public LiveData<Resource<List<VideoEntity>>> loadVideos(int movieId) {
+        return new NetworkBoundResource<List<VideoEntity>, VideoResponse>(executor) {
+            private List<VideoEntity> videoResultsList = new ArrayList<>();
 
             @Override
             protected void saveCallResult(@NonNull VideoResponse item) {
@@ -161,17 +158,17 @@ public class AppRepository implements AppRepositoryInterface {
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable List<VideoResults> data) {
+            protected boolean shouldFetch(@Nullable List<VideoEntity> data) {
                 return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<List<VideoResults>> loadFromDb() {
+            protected LiveData<List<VideoEntity>> loadFromDb() {
                 if (videoResultsList == null) {
                     return AbsentLiveData.create();
                 } else {
-                    return new LiveData<List<VideoResults>>() {
+                    return new LiveData<List<VideoEntity>>() {
                         @Override
                         protected void onActive() {
                             super.onActive();
@@ -190,9 +187,9 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public LiveData<Resource<List<ReviewResult>>> loadReviews(int movieId) {
-        return new NetworkBoundResource<List<ReviewResult>, ReviewResponse>(executor) {
-            private List<ReviewResult> reviewResultsList = new ArrayList<>();
+    public LiveData<Resource<List<ReviewEntity>>> loadReviews(int movieId) {
+        return new NetworkBoundResource<List<ReviewEntity>, ReviewResponse>(executor) {
+            private List<ReviewEntity> reviewResultsList = new ArrayList<>();
 
             @Override
             protected void saveCallResult(@NonNull ReviewResponse item) {
@@ -200,17 +197,17 @@ public class AppRepository implements AppRepositoryInterface {
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable List<ReviewResult> data) {
+            protected boolean shouldFetch(@Nullable List<ReviewEntity> data) {
                 return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<List<ReviewResult>> loadFromDb() {
+            protected LiveData<List<ReviewEntity>> loadFromDb() {
                 if (reviewResultsList == null) {
                     return AbsentLiveData.create();
                 } else {
-                    return new LiveData<List<ReviewResult>>() {
+                    return new LiveData<List<ReviewEntity>>() {
                         @Override
                         protected void onActive() {
                             super.onActive();
@@ -255,17 +252,17 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public void saveFavMovieCast(List<FavMovieCastEntity> favMovieCastEntities) {
+    public void saveFavMovieCast(List<CastEntity> favMovieCastEntities) {
         executor.diskIO().execute(() -> moviesDao.saveFavMovieCasts(favMovieCastEntities));
     }
 
     @Override
-    public void saveFavMovieReviews(List<FavMovieReviewEntity> favMovieReviewEntities) {
+    public void saveFavMovieReviews(List<ReviewEntity> favMovieReviewEntities) {
         executor.diskIO().execute(() -> moviesDao.saveFavReviews(favMovieReviewEntities));
     }
 
     @Override
-    public void saveFavMovieVideos(List<FavMovieVideoEntity> favMovieVideoEntities) {
+    public void saveFavMovieVideos(List<VideoEntity> favMovieVideoEntities) {
         executor.diskIO().execute(() -> moviesDao.saveFavTrailers(favMovieVideoEntities));
     }
 
@@ -280,17 +277,17 @@ public class AppRepository implements AppRepositoryInterface {
     }
 
     @Override
-    public LiveData<List<FavMovieCastEntity>> getCastsById(List<Integer> castIds) {
+    public LiveData<List<CastEntity>> getCastsById(List<Integer> castIds) {
         return moviesDao.getCastsById(castIds);
     }
 
     @Override
-    public LiveData<List<FavMovieReviewEntity>> getReviewsByMovie(int favMovieId) {
+    public LiveData<List<ReviewEntity>> getReviewsByMovie(int favMovieId) {
         return moviesDao.getReviewsByMovie(favMovieId);
     }
 
     @Override
-    public LiveData<List<FavMovieVideoEntity>> getVideosByMovie(int favMovieId) {
+    public LiveData<List<VideoEntity>> getVideosByMovie(int favMovieId) {
         return moviesDao.getVideosByMovie(favMovieId);
     }
 

@@ -1,5 +1,6 @@
 package com.debajyotibasak.udacitypopularmovies.api.model;
 
+import com.debajyotibasak.udacitypopularmovies.database.entity.ReviewEntity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -15,7 +16,7 @@ public class ReviewResponse {
     private Integer page;
     @SerializedName("results")
     @Expose
-    private List<ReviewResult> results;
+    private List<ReviewEntity> results;
     @SerializedName("total_pages")
     @Expose
     private Integer totalPages;
@@ -23,7 +24,7 @@ public class ReviewResponse {
     @Expose
     private Integer totalResults;
 
-    public ReviewResponse(Integer id, Integer page, List<ReviewResult> results, Integer totalPages, Integer totalResults) {
+    public ReviewResponse(Integer id, Integer page, List<ReviewEntity> results, Integer totalPages, Integer totalResults) {
         this.id = id;
         this.page = page;
         this.results = results;
@@ -39,7 +40,7 @@ public class ReviewResponse {
         return page;
     }
 
-    public List<ReviewResult> getResults() {
+    public List<ReviewEntity> getResults() {
         return results;
     }
 

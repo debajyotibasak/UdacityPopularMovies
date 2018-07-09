@@ -5,12 +5,11 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Transaction;
 
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.CastEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.ReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.VideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
 
@@ -43,16 +42,13 @@ public interface MoviesDao {
     void saveFavMovie(FavMovieEntity favMovieEntity);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveFavMovieCasts(List<FavMovieCastEntity> castList);
+    void saveFavMovieCasts(List<CastEntity> castList);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveFavReviews(List<FavMovieReviewEntity> movieReviewList);
+    void saveFavReviews(List<ReviewEntity> movieReviewList);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveFavTrailers(List<FavMovieVideoEntity> movieVideoList);
-
-    @Query("SELECT COUNT(*) FROM fav_movies WHERE movieId =:movieId")
-    LiveData<Integer> containsMovie(int movieId);
+    void saveFavTrailers(List<VideoEntity> movieVideoList);
 
     // Get from Favorite tables
 
@@ -63,13 +59,13 @@ public interface MoviesDao {
     LiveData<FavMovieEntity> loadFavMoviesById(int favMovieId);
 
     @Query("SELECT * FROM fav_movies_cast WHERE id IN (:castIds)")
-    LiveData<List<FavMovieCastEntity>> getCastsById(List<Integer> castIds);
+    LiveData<List<CastEntity>> getCastsById(List<Integer> castIds);
 
     @Query("SELECT * FROM fav_movies_reviews where fav_movie_id = :favMovieId")
-    LiveData<List<FavMovieReviewEntity>> getReviewsByMovie(int favMovieId);
+    LiveData<List<ReviewEntity>> getReviewsByMovie(int favMovieId);
 
     @Query("SELECT * FROM fav_movies_videos where fav_movie_id = :favMovieId")
-    LiveData<List<FavMovieVideoEntity>> getVideosByMovie(int favMovieId);
+    LiveData<List<VideoEntity>> getVideosByMovie(int favMovieId);
 
     // Click on remove from favourite
 

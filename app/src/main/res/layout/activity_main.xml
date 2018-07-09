@@ -30,7 +30,6 @@
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="9dp"
             tools:text="Movie" />
-
     </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView

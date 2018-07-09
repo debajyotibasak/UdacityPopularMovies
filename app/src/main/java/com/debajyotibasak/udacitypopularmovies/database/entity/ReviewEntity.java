@@ -13,9 +13,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_CAST;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_FAVORITE_MOVIES;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_MOVIES;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_REVIEWS;
 
 @Entity(tableName = TABLE_REVIEWS,
@@ -25,18 +22,25 @@ import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_R
                 parentColumns = "movieId",
                 childColumns = "fav_movie_id",
                 onDelete = CASCADE))
-public class FavMovieReviewEntity implements Serializable{
-
+public class ReviewEntity implements Serializable {
     @PrimaryKey
     @NonNull
+    @SerializedName("id")
+    @Expose
     private final String id;
+    @SerializedName("author")
+    @Expose
     private final String author;
+    @SerializedName("content")
+    @Expose
     private final String content;
+    @SerializedName("url")
+    @Expose
     private final String url;
     @ColumnInfo(name = "fav_movie_id")
     private final Integer favMovieId;
 
-    public FavMovieReviewEntity(String author, String content, @NonNull String id, String url, final Integer favMovieId) {
+    public ReviewEntity(String author, String content, @NonNull String id, String url, final Integer favMovieId) {
         this.author = author;
         this.content = content;
         this.id = id;

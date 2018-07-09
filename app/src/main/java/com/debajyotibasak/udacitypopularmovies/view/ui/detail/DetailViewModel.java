@@ -4,15 +4,12 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
-import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
-import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.CastEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.GenreEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.MovieEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.ReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.VideoEntity;
 import com.debajyotibasak.udacitypopularmovies.repo.AppRepository;
 import com.debajyotibasak.udacitypopularmovies.utils.Resource;
 import com.debajyotibasak.udacitypopularmovies.utils.SharedPreferenceHelper;
@@ -24,11 +21,10 @@ import javax.inject.Inject;
 public class DetailViewModel extends ViewModel {
 
     private AppRepository moviesRepo;
-    private MutableLiveData<Resource<List<CastResult>>> castResults = new MutableLiveData<>();
-    private MutableLiveData<Resource<List<VideoResults>>> videoResults = new MutableLiveData<>();
-    private MutableLiveData<Resource<List<ReviewResult>>> reviewResult = new MutableLiveData<>();
+    private MutableLiveData<Resource<List<CastEntity>>> castResults = new MutableLiveData<>();
+    private MutableLiveData<Resource<List<VideoEntity>>> videoResults = new MutableLiveData<>();
+    private MutableLiveData<Resource<List<ReviewEntity>>> reviewResult = new MutableLiveData<>();
     private MutableLiveData<MovieEntity> movieResult = new MutableLiveData<>();
-    private MutableLiveData<Integer> isFavorite = new MutableLiveData<>();
 
     @Inject
     public DetailViewModel(AppRepository moviesRepo) {
@@ -55,15 +51,15 @@ public class DetailViewModel extends ViewModel {
         return movieResult;
     }
 
-    public MutableLiveData<Resource<List<CastResult>>> getCastResults() {
+    public MutableLiveData<Resource<List<CastEntity>>> getCastResults() {
         return castResults;
     }
 
-    public MutableLiveData<Resource<List<VideoResults>>> getVideoResults() {
+    public MutableLiveData<Resource<List<VideoEntity>>> getVideoResults() {
         return videoResults;
     }
 
-    public MutableLiveData<Resource<List<ReviewResult>>> getReviewResult() {
+    public MutableLiveData<Resource<List<ReviewEntity>>> getReviewResult() {
         return reviewResult;
     }
 
@@ -71,35 +67,31 @@ public class DetailViewModel extends ViewModel {
         moviesRepo.saveFavouriteMovie(favMovieEntity);
     }
 
-    void saveFavCast(List<FavMovieCastEntity> favCast) {
+    void saveFavCast(List<CastEntity> favCast) {
         moviesRepo.saveFavMovieCast(favCast);
     }
 
-    void saveFavReviews(List<FavMovieReviewEntity> favReviews) {
+    void saveFavReviews(List<ReviewEntity> favReviews) {
         moviesRepo.saveFavMovieReviews(favReviews);
     }
 
-    void saveFavTrailers(List<FavMovieVideoEntity> favTrailers) {
+    void saveFavTrailers(List<VideoEntity> favTrailers) {
         moviesRepo.saveFavMovieVideos(favTrailers);
-    }
-
-    LiveData<List<FavMovieEntity>> loadFavMoviesFromDb() {
-        return moviesRepo.loadFavMoviesFromDb();
     }
 
     LiveData<FavMovieEntity> loadFavMoviesById(int favMovieId) {
         return moviesRepo.loadFavMovieById(favMovieId);
     }
 
-    LiveData<List<FavMovieCastEntity>> getFavCasts(List<Integer> castIds) {
+    LiveData<List<CastEntity>> getFavCasts(List<Integer> castIds) {
         return moviesRepo.getCastsById(castIds);
     }
 
-    LiveData<List<FavMovieReviewEntity>> getFavReviews(int favMovieId) {
+    LiveData<List<ReviewEntity>> getFavReviews(int favMovieId) {
         return moviesRepo.getReviewsByMovie(favMovieId);
     }
 
-    LiveData<List<FavMovieVideoEntity>> getFavVideos(int favMovieId) {
+    LiveData<List<VideoEntity>> getFavVideos(int favMovieId) {
         return moviesRepo.getVideosByMovie(favMovieId);
     }
 

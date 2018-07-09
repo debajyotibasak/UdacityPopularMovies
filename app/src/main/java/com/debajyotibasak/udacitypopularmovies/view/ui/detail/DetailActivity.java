@@ -38,17 +38,13 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.api.model.CastResult;
-import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
-import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieCastEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.CastEntity;
 import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieReviewEntity;
-import com.debajyotibasak.udacitypopularmovies.database.entity.FavMovieVideoEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.ReviewEntity;
+import com.debajyotibasak.udacitypopularmovies.database.entity.VideoEntity;
 import com.debajyotibasak.udacitypopularmovies.utils.AppConstants;
 import com.debajyotibasak.udacitypopularmovies.utils.AppUtils;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.CastAdapter;
-import com.debajyotibasak.udacitypopularmovies.view.adapter.FavCastAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.GenreAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.reviews.ReviewsActivity;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.trailers.TrailerActivity;
@@ -150,9 +146,11 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.imv_favourite)
     ImageView mImvFavourite;
 
+    @BindView(R.id.progress_rating)
+    ProgressBar progressRating;
+
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
-    private FavCastAdapter favCastAdapter;
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private String transitionName;
     private String activityType;
@@ -184,6 +182,8 @@ public class DetailActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRvCast.setLayoutManager(llm);
+        castAdapter = new CastAdapter(this);
+        mRvCast.setAdapter(castAdapter);
         mRvCast.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -311,10 +311,8 @@ public class DetailActivity extends AppCompatActivity {
     private void getFavMovies(FavMovieEntity favMovie) {
         detailViewModel.getFavCasts(favMovie.getCastIds()).observe(this, favMovieCasts -> {
             if (favMovieCasts != null && !favMovieCasts.isEmpty()) {
-                favCastAdapter = new FavCastAdapter(this);
-                mRvCast.setAdapter(favCastAdapter);
                 mLayCast.setVisibility(View.VISIBLE);
-                favCastAdapter.addCasts(favMovieCasts);
+                castAdapter.addCasts(favMovieCasts);
             }
         });
 
@@ -327,6 +325,9 @@ public class DetailActivity extends AppCompatActivity {
                     mTxvSeeAllReviews.setVisibility(View.GONE);
                 }
                 mTxvSeeAllReviews.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, ReviewsActivity.class);
+                    intent.putExtra(REVIEWS_PARCELABLE, new ArrayList<>(favMovieReviews));
+                    startActivity(intent);
                 });
             }
         });
@@ -345,8 +346,7 @@ public class DetailActivity extends AppCompatActivity {
                         .into(mImvTrailerThumb);
                 mImvTrailerThumb.setOnClickListener(view -> {
                     if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(YOUTUBE_URL + favMoviesVideo.get(0).getKey()));
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + favMoviesVideo.get(0).getKey()));
                         startActivity(intent);
                     }
                 });
@@ -354,6 +354,9 @@ public class DetailActivity extends AppCompatActivity {
                     mTxvSeeAllTrailers.setVisibility(View.GONE);
                 }
                 mTxvSeeAllTrailers.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, TrailerActivity.class);
+                    intent.putExtra(TRAILERS_PARCELABLE, new ArrayList<>(favMoviesVideo));
+                    startActivity(intent);
                 });
             }
         });
@@ -365,8 +368,6 @@ public class DetailActivity extends AppCompatActivity {
                 switch (castResults.getStatus()) {
                     case SUCCESS:
                         if (castResults.getResponse() != null && !castResults.getResponse().isEmpty()) {
-                            castAdapter = new CastAdapter(this);
-                            mRvCast.setAdapter(castAdapter);
                             mLayCast.setVisibility(View.VISIBLE);
                             castAdapter.addCasts(castResults.getResponse());
                         }
@@ -410,8 +411,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                             mTxvSeeAllTrailers.setOnClickListener(v -> {
                                 Intent intent = new Intent(this, TrailerActivity.class);
-                                ArrayList<VideoResults> mList = new ArrayList<>(videoResults.getResponse());
-                                intent.putExtra(TRAILERS_PARCELABLE, mList);
+                                intent.putExtra(TRAILERS_PARCELABLE, new ArrayList<>(videoResults.getResponse()));
                                 startActivity(intent);
                             });
                         }
@@ -439,8 +439,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                             mTxvSeeAllReviews.setOnClickListener(v -> {
                                 Intent intent = new Intent(this, ReviewsActivity.class);
-                                ArrayList<ReviewResult> mList = new ArrayList<>(reviewResults.getResponse());
-                                intent.putExtra(REVIEWS_PARCELABLE, mList);
+                                intent.putExtra(REVIEWS_PARCELABLE, new ArrayList<>(reviewResults.getResponse()));
                                 startActivity(intent);
                             });
                         }
@@ -489,6 +488,9 @@ public class DetailActivity extends AppCompatActivity {
 
     private void setMovieRating(String rating) {
         mTxvRating.setText(rating);
+        Double ratingVal = Double.parseDouble(rating) * 10;
+        Integer ratingInt = ratingVal.intValue();
+        progressRating.setProgress(ratingInt);
     }
 
     private void setMovieTitle(String title) {
@@ -586,16 +588,16 @@ public class DetailActivity extends AppCompatActivity {
 
     private void saveFavMovies(int movieId) {
         List<Integer> castIds = new ArrayList<>();
-        List<FavMovieCastEntity> favMovieCast = new ArrayList<>();
-        List<FavMovieReviewEntity> favMovieReviews = new ArrayList<>();
-        List<FavMovieVideoEntity> favMovieTrailers = new ArrayList<>();
+        List<CastEntity> favMovieCast = new ArrayList<>();
+        List<ReviewEntity> favMovieReviews = new ArrayList<>();
+        List<VideoEntity> favMovieTrailers = new ArrayList<>();
 
         detailViewModel.getCastResults().observe(this, castListResource -> {
             if (castListResource != null) {
                 if (castListResource.getResponse() != null && !castListResource.getResponse().isEmpty()) {
-                    for (CastResult item : castListResource.getResponse()) {
+                    for (CastEntity item : castListResource.getResponse()) {
                         castIds.add(item.getId());
-                        favMovieCast.add(new FavMovieCastEntity(item.getId(), item.getName(), item.getProfilePath()));
+                        favMovieCast.add(new CastEntity(item.getId(), item.getName(), item.getProfilePath()));
                     }
                 }
             }
@@ -604,8 +606,8 @@ public class DetailActivity extends AppCompatActivity {
         detailViewModel.getReviewResult().observe(this, reviewListResource -> {
             if (reviewListResource != null) {
                 if (reviewListResource.getResponse() != null) {
-                    for (ReviewResult item : reviewListResource.getResponse()) {
-                        favMovieReviews.add(new FavMovieReviewEntity(
+                    for (ReviewEntity item : reviewListResource.getResponse()) {
+                        favMovieReviews.add(new ReviewEntity(
                                 item.getAuthor(),
                                 item.getContent(),
                                 item.getId(),
@@ -619,8 +621,8 @@ public class DetailActivity extends AppCompatActivity {
         detailViewModel.getVideoResults().observe(this, videoListResource -> {
             if (videoListResource != null) {
                 if (videoListResource.getResponse() != null) {
-                    for (VideoResults results : videoListResource.getResponse()) {
-                        favMovieTrailers.add(new FavMovieVideoEntity(
+                    for (VideoEntity results : videoListResource.getResponse()) {
+                        favMovieTrailers.add(new VideoEntity(
                                 results.getId(),
                                 results.getKey(),
                                 results.getName(),
@@ -644,7 +646,8 @@ public class DetailActivity extends AppCompatActivity {
                         movie.getBackdropPath(),
                         movie.getOverview(),
                         movie.getReleaseDate(),
-                        castIds, System.currentTimeMillis());
+                        castIds,
+                        System.currentTimeMillis());
             } else {
                 detailViewModel.loadFavMoviesById(movieId).observe(this, favMovie -> {
                     if (favMovie != null) {
@@ -658,7 +661,8 @@ public class DetailActivity extends AppCompatActivity {
                                 favMovie.getBackdropPath(),
                                 favMovie.getOverview(),
                                 favMovie.getReleaseDate(),
-                                castIds, System.currentTimeMillis());
+                                castIds,
+                                System.currentTimeMillis());
                     }
                 });
             }
@@ -703,7 +707,6 @@ public class DetailActivity extends AppCompatActivity {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
     }
-
 
     @Override
     protected void onRestart() {

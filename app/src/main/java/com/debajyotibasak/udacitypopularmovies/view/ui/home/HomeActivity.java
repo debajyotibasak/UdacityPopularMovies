@@ -91,8 +91,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     private void initData() {
         this.configureDagger();
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(R.string.txt_empty_string);
+        if (getSupportActionBar() != null) getSupportActionBar().setTitle(R.string.txt_empty_string);
         txvToolbar.setText(R.string.txt_movies);
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         mAdapter = new MoviesAdapter(this);

@@ -31,7 +31,9 @@ public class AppConstants {
     public static final String YOUTUBE = "YouTube";
     public static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
     public static final String REVIEWS_PARCELABLE = "reviews_parcelable";
+    public static final String FAV_REVIEWS_PARCELABLE = "fav_reviews_parcelable";
     public static final String TRAILERS_PARCELABLE = "trailers_parcelable";
+    public static final String FAV_TRAILERS_PARCELABLE = "fav_trailers_parcelable";
     public static final String MOVIES_STATE_DETAILS = "movies_state_details";
 
     // Date Formats

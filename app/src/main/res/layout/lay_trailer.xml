@@ -43,7 +43,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="@+id/imv_video_thumb"
         app:layout_constraintTop_toBottomOf="@+id/imv_video_thumb"
-        app:srcCompat="@drawable/ic_share" />
+        app:srcCompat="@drawable/ic_more" />
 
     <ImageView
         android:id="@+id/imv_play_thumb"

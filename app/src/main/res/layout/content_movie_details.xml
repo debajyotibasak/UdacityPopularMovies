@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white_yellow"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -52,7 +53,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Jurassic World : Fallen Kingdom" />
 
-
         <TextView
             android:id="@+id/txv_release_date"
             android:layout_width="wrap_content"
@@ -74,50 +74,35 @@
             app:layout_constraintStart_toEndOf="@+id/imv_poster"
             app:layout_constraintTop_toBottomOf="@+id/txv_release_date" />
 
-        <ImageView
-            android:id="@+id/imv_star"
-            android:layout_width="@dimen/detail_rating"
-            android:layout_height="@dimen/detail_rating"
-            android:layout_marginStart="@dimen/margin_16"
-            android:contentDescription="@string/rating"
-            app:layout_constraintBottom_toTopOf="@+id/txv_ratings"
-            app:layout_constraintStart_toEndOf="@+id/imv_poster"
-            app:layout_constraintTop_toBottomOf="@+id/txv_ratings"
-            app:srcCompat="@drawable/ic_star_grey" />
-
-        <TextView
-            android:id="@+id/txv_ratings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_4"
-            android:layout_marginTop="@dimen/margin_8"
-            android:fontFamily="@font/worksans_regular"
-            android:textColor="@color/grey_700"
-            android:textSize="@dimen/txt_20"
-            app:layout_constraintStart_toEndOf="@+id/imv_star"
-            app:layout_constraintTop_toBottomOf="@+id/rv_genres"
-            tools:text="9.9" />
-
         <android.support.constraint.Barrier
             android:id="@+id/barrier_poster_rating_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="imv_poster,txv_ratings"
+            app:constraint_referenced_ids="imv_poster,rv_genres"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="658dp" />
+
+        <include
+            android:id="@+id/lay_rating"
+            layout="@layout/lay_rating"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/barrier_poster_rating_bottom" />
 
         <TextView
             android:id="@+id/txv_plot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_24"
             android:fontFamily="@font/worksans_bold"
             android:text="@string/txt_plot"
             android:textColor="@color/grey_700"
             android:textSize="@dimen/txt_20"
             app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-            app:layout_constraintTop_toTopOf="@+id/barrier_poster_rating_bottom" />
+            app:layout_constraintTop_toBottomOf="@+id/lay_rating" />
 
         <View
             android:id="@+id/divider_plot"
@@ -138,38 +123,6 @@
             app:layout_constraintStart_toStartOf="@+id/guideline_begin"
             app:layout_constraintTop_toBottomOf="@+id/txv_plot"
             tools:text="This is the plot" />
-
-
-        <!--<TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/worksans_bold"
-            android:text="Cast"
-            android:textColor="@color/grey_700"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-            app:layout_constraintTop_toBottomOf="@+id/txv_plot_details" />
-
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="5dp"
-            android:layout_height="0dp"
-            android:background="@color/colorAccent"
-            app:layout_constraintBottom_toBottomOf="@+id/textView2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView2" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
-            app:layout_constraintStart_toStartOf="@+id/guideline_begin"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />-->
 
         <include
             android:id="@+id/lay_cast"
@@ -212,17 +165,6 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline_end"
             app:layout_constraintStart_toStartOf="@+id/guideline_begin"
             app:layout_constraintTop_toBottomOf="@+id/lay_reviews" />
-
-        <ImageView
-            android:id="@+id/imv_favourite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/barrier_poster_rating_bottom"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_end"
-            app:layout_constraintStart_toEndOf="@+id/txv_ratings"
-            app:layout_constraintTop_toTopOf="@+id/txv_ratings"
-            app:srcCompat="@drawable/ic_favorite_border" />
-
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>

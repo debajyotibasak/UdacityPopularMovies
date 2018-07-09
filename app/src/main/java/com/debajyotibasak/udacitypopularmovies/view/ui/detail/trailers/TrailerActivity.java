@@ -2,16 +2,15 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.detail.trailers;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
-import com.debajyotibasak.udacitypopularmovies.api.model.VideoResponse;
-import com.debajyotibasak.udacitypopularmovies.api.model.VideoResults;
-import com.debajyotibasak.udacitypopularmovies.view.adapter.ReviewsAdapter;
+import com.debajyotibasak.udacitypopularmovies.database.entity.VideoEntity;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.TrailersAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailViewModel;
 
@@ -24,7 +23,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.REVIEWS_PARCELABLE;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TRAILERS_PARCELABLE;
 
 public class TrailerActivity extends AppCompatActivity {
@@ -38,6 +36,12 @@ public class TrailerActivity extends AppCompatActivity {
     @BindView(R.id.rv_trailers)
     RecyclerView mRvTrailers;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.txv_toolbar_title)
+    TextView txvToolbar;
+
     private void initViews() {
         setContentView(R.layout.activity_trailer);
         ButterKnife.bind(this);
@@ -45,6 +49,12 @@ public class TrailerActivity extends AppCompatActivity {
 
     private void initData() {
         this.configureDagger();
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.txt_empty_string);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        txvToolbar.setText("Trailers");
         detailViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailViewModel.class);
         adapter = new TrailersAdapter(this);
         mRvTrailers.setLayoutManager(new LinearLayoutManager(this));
@@ -56,19 +66,25 @@ public class TrailerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initViews();
         initData();
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         @SuppressWarnings("unchecked")
-        ArrayList<VideoResults> trailers = (ArrayList<VideoResults>) getIntent().getSerializableExtra(TRAILERS_PARCELABLE);
-        List<VideoResults> trailerList = new ArrayList<>(trailers);
+        ArrayList<VideoEntity> trailers = (ArrayList<VideoEntity>) getIntent().getSerializableExtra(TRAILERS_PARCELABLE);
+        List<VideoEntity> trailerList = new ArrayList<>(trailers);
 
         populateUI(trailerList);
     }
 
-    private void populateUI(List<VideoResults> trailerList) {
+    private void populateUI(List<VideoEntity> trailerList) {
         adapter.addTrailers(trailerList);
     }
 
     private void configureDagger() {
         AndroidInjection.inject(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

@@ -2,16 +2,17 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.detail.reviews;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.debajyotibasak.udacitypopularmovies.R;
-import com.debajyotibasak.udacitypopularmovies.api.model.ReviewResult;
+import com.debajyotibasak.udacitypopularmovies.database.entity.ReviewEntity;
 import com.debajyotibasak.udacitypopularmovies.view.adapter.ReviewsAdapter;
 import com.debajyotibasak.udacitypopularmovies.view.ui.detail.DetailViewModel;
-import com.debajyotibasak.udacitypopularmovies.view.ui.home.HomeViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,12 @@ public class ReviewsActivity extends AppCompatActivity {
     @BindView(R.id.rv_reviews)
     RecyclerView mRvReviews;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.txv_toolbar_title)
+    TextView txvToolbar;
+
     private void initViews() {
         setContentView(R.layout.activity_reviews);
         ButterKnife.bind(this);
@@ -42,6 +49,12 @@ public class ReviewsActivity extends AppCompatActivity {
 
     private void initData() {
         this.configureDagger();
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.txt_empty_string);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        txvToolbar.setText("Reviews");
         detailViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailViewModel.class);
         adapter = new ReviewsAdapter(this);
         mRvReviews.setLayoutManager(new LinearLayoutManager(this));
@@ -53,15 +66,16 @@ public class ReviewsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initViews();
         initData();
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         @SuppressWarnings("unchecked")
-        ArrayList<ReviewResult> reviews = (ArrayList<ReviewResult>) getIntent().getSerializableExtra(REVIEWS_PARCELABLE);
-        List<ReviewResult> reviewList = new ArrayList<>(reviews);
+        ArrayList<ReviewEntity> reviews = (ArrayList<ReviewEntity>) getIntent().getSerializableExtra(REVIEWS_PARCELABLE);
+        List<ReviewEntity> reviewList = new ArrayList<>(reviews);
 
         populateUI(reviewList);
     }
 
-    private void populateUI(List<ReviewResult> reviewList) {
+    private void populateUI(List<ReviewEntity> reviewList) {
         adapter.addReviews(reviewList);
     }
 
@@ -69,4 +83,8 @@ public class ReviewsActivity extends AppCompatActivity {
         AndroidInjection.inject(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

@@ -1,5 +1,6 @@
 package com.debajyotibasak.udacitypopularmovies.api.model;
 
+import com.debajyotibasak.udacitypopularmovies.database.entity.VideoEntity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -11,9 +12,9 @@ public class VideoResponse {
     private Integer id;
     @SerializedName("results")
     @Expose
-    private List<VideoResults> results;
+    private List<VideoEntity> results;
 
-    public VideoResponse(Integer id, List<VideoResults> results) {
+    public VideoResponse(Integer id, List<VideoEntity> results) {
         this.id = id;
         this.results = results;
     }
@@ -22,7 +23,7 @@ public class VideoResponse {
         return id;
     }
 
-    public List<VideoResults> getResults() {
+    public List<VideoEntity> getResults() {
         return results;
     }
 }

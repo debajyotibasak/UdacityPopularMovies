@@ -1,5 +1,6 @@
 package com.debajyotibasak.udacitypopularmovies.api.model;
 
+import com.debajyotibasak.udacitypopularmovies.database.entity.CastEntity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -11,26 +12,19 @@ public class CastResponse {
     private Integer id;
     @SerializedName("cast")
     @Expose
-    private List<CastResult> cast;
-    @SerializedName("crew")
-    @Expose
-    private List<CrewResult> crew;
+    private List<CastEntity> cast;
 
-    public CastResponse(Integer id, List<CastResult> cast, List<CrewResult> crew) {
+    public CastResponse(Integer id, List<CastEntity> cast) {
         this.id = id;
         this.cast = cast;
-        this.crew = crew;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public List<CastResult> getCast() {
+    public List<CastEntity> getCast() {
         return cast;
     }
 
-    public List<CrewResult> getCrew() {
-        return crew;
-    }
 }

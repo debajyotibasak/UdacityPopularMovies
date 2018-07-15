@@ -33,14 +33,9 @@ public class TrailerActivity extends AppCompatActivity {
 
     private TrailersAdapter adapter;
 
-    @BindView(R.id.rv_trailers)
-    RecyclerView mRvTrailers;
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    @BindView(R.id.txv_toolbar_title)
-    TextView txvToolbar;
+    @BindView(R.id.rv_trailers) RecyclerView mRvTrailers;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.txv_toolbar_title) TextView txvToolbar;
 
     private void initViews() {
         setContentView(R.layout.activity_trailer);

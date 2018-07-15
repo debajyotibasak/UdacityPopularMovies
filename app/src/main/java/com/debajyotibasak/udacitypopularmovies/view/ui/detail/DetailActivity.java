@@ -3,7 +3,6 @@ package com.debajyotibasak.udacitypopularmovies.view.ui.detail;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -57,6 +56,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import dagger.android.AndroidInjection;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
@@ -79,73 +79,50 @@ public class DetailActivity extends AppCompatActivity {
 
     @BindView(R.id.imv_back_drop)
     ImageView mImvBackDrop;
-
     @BindView(R.id.imv_poster)
     ImageView mImvPoster;
-
     @BindView(R.id.txv_title)
     TextView mTxvMovieTitle;
-
     @BindView(R.id.txv_ratings)
     TextView mTxvRating;
-
     @BindView(R.id.rv_genres)
     RecyclerView mRvGenres;
-
     @BindView(R.id.txv_release_date)
     TextView mTxvReleaseDate;
-
     @BindView(R.id.txv_plot_details)
     TextView mTxvPlotDetails;
-
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
-
     @BindView(android.R.id.content)
     View snackBarView;
-
     @BindView(R.id.lay_cast)
     View mLayCast;
-
     @BindView(R.id.lay_trailer)
     View mLayTrailer;
-
     @BindView(R.id.lay_reviews)
     View mLayReviews;
-
     @BindView(R.id.progress_detail)
     ProgressBar progressDetails;
-
     @BindView(R.id.rv_cast)
     RecyclerView mRvCast;
-
     @BindView(R.id.imv_video_thumb)
     ImageView mImvTrailerThumb;
-
     @BindView(R.id.txv_trailer_title)
     TextView mTxvVideoTitle;
-
     @BindView(R.id.txv_review_person)
     TextView mTxvReviewPerson;
-
     @BindView(R.id.txv_review_body)
     TextView mTxvReviewBody;
-
     @BindView(R.id.txv_see_all_reviews)
     TextView mTxvSeeAllReviews;
-
     @BindView(R.id.txv_see_all_trailers)
     TextView mTxvSeeAllTrailers;
-
     @BindView(R.id.app_bar)
     AppBarLayout appBarLayout;
-
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
-
     @BindView(R.id.imv_favourite)
     ImageView mImvFavourite;
-
     @BindView(R.id.progress_rating)
     ProgressBar progressRating;
 
@@ -154,6 +131,9 @@ public class DetailActivity extends AppCompatActivity {
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private String transitionName;
     private String activityType;
+    private List<ReviewEntity> reviews = new ArrayList<>();
+    private List<VideoEntity> videos = new ArrayList<>();
+    private String videoKey;
     private int movieId;
 
     private Boolean isMovieFav;
@@ -168,22 +148,27 @@ public class DetailActivity extends AppCompatActivity {
     private void initData() {
         this.configureDagger();
         detailViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailViewModel.class);
+
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.AppBarCollapsed);
+
         genreAdapter = new GenreAdapter(this);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
         flowLayoutManager.setAutoMeasureEnabled(true);
         mRvGenres.setLayoutManager(flowLayoutManager);
         mRvGenres.setAdapter(genreAdapter);
+
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRvCast.setLayoutManager(llm);
         castAdapter = new CastAdapter(this);
         mRvCast.setAdapter(castAdapter);
+
         mRvCast.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -236,17 +221,6 @@ public class DetailActivity extends AppCompatActivity {
         supportPostponeEnterTransition();
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-
-        mImvFavourite.setOnClickListener(v -> {
-            if (isMovieFav) {
-                isMovieFav = false;
-                deleteFavMovies();
-                getData();
-            } else {
-                isMovieFav = true;
-                saveFavMovies(movieId);
-            }
-        });
     }
 
     @Override
@@ -295,7 +269,7 @@ public class DetailActivity extends AppCompatActivity {
 
         detailViewModel.loadFavMoviesById(movieId)
                 .observe(this, favMovie -> {
-                    progressDetails.setVisibility(View.GONE);
+                    progressDetails.setVisibility(View.VISIBLE);
                     if (favMovie != null) {
                         isMovieFav = true;
                         mImvFavourite.setImageResource(R.drawable.ic_favorite);
@@ -321,14 +295,8 @@ public class DetailActivity extends AppCompatActivity {
                 mLayReviews.setVisibility(View.VISIBLE);
                 mTxvReviewPerson.setText(favMovieReviews.get(0).getAuthor());
                 mTxvReviewBody.setText(favMovieReviews.get(0).getContent());
-                if (favMovieReviews.size() < 2) {
-                    mTxvSeeAllReviews.setVisibility(View.GONE);
-                }
-                mTxvSeeAllReviews.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, ReviewsActivity.class);
-                    intent.putExtra(REVIEWS_PARCELABLE, new ArrayList<>(favMovieReviews));
-                    startActivity(intent);
-                });
+                mTxvSeeAllReviews.setVisibility(favMovieReviews.size() < 2 ? View.GONE : View.VISIBLE);
+                setReviews(favMovieReviews);
             }
         });
 
@@ -336,28 +304,12 @@ public class DetailActivity extends AppCompatActivity {
             if (favMoviesVideo != null && !favMoviesVideo.isEmpty()) {
                 mLayTrailer.setVisibility(View.VISIBLE);
                 mTxvVideoTitle.setText(favMoviesVideo.get(0).getName());
-                Glide.with(this)
-                        .load(String.format(YOUTUBE_THUMBNAIL, favMoviesVideo.get(0).getKey()))
-                        .apply(new RequestOptions()
-                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                .placeholder(R.drawable.movie_detail_placeholder)
-                                .error(R.drawable.movie_detail_placeholder))
-                        .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                        .into(mImvTrailerThumb);
-                mImvTrailerThumb.setOnClickListener(view -> {
-                    if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + favMoviesVideo.get(0).getKey()));
-                        startActivity(intent);
-                    }
-                });
-                if (favMoviesVideo.size() < 2) {
-                    mTxvSeeAllTrailers.setVisibility(View.GONE);
+                loadVideoThumb(favMoviesVideo.get(0).getKey());
+                if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
+                    setVideoKey(favMoviesVideo.get(0).getKey());
                 }
-                mTxvSeeAllTrailers.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, TrailerActivity.class);
-                    intent.putExtra(TRAILERS_PARCELABLE, new ArrayList<>(favMoviesVideo));
-                    startActivity(intent);
-                });
+                mTxvSeeAllTrailers.setVisibility(favMoviesVideo.size() < 2 ? View.GONE : View.VISIBLE);
+                setVideos(favMoviesVideo);
             }
         });
     }
@@ -369,7 +321,11 @@ public class DetailActivity extends AppCompatActivity {
                     case SUCCESS:
                         if (castResults.getResponse() != null && !castResults.getResponse().isEmpty()) {
                             mLayCast.setVisibility(View.VISIBLE);
-                            castAdapter.addCasts(castResults.getResponse());
+                            List<CastEntity> castEntities = new ArrayList<>();
+                            for (int castIndex = 0; castIndex < 10; castIndex++) {
+                                castEntities.add(castResults.getResponse().get(castIndex));
+                            }
+                            castAdapter.addCasts(castEntities);
                         }
                         break;
                     case LOADING:
@@ -391,29 +347,12 @@ public class DetailActivity extends AppCompatActivity {
                         if (videoResults.getResponse() != null && !videoResults.getResponse().isEmpty()) {
                             mLayTrailer.setVisibility(View.VISIBLE);
                             mTxvVideoTitle.setText(videoResults.getResponse().get(0).getName());
-                            Glide.with(this)
-                                    .load(String.format(YOUTUBE_THUMBNAIL, videoResults.getResponse().get(0).getKey()))
-                                    .apply(new RequestOptions()
-                                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                            .placeholder(R.drawable.movie_detail_placeholder)
-                                            .error(R.drawable.movie_detail_placeholder))
-                                    .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                                    .into(mImvTrailerThumb);
-                            mImvTrailerThumb.setOnClickListener(view -> {
-                                if (videoResults.getResponse().get(0) != null && videoResults.getResponse().get(0).getSite().equals(YOUTUBE)) {
-                                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse(YOUTUBE_URL + videoResults.getResponse().get(0).getKey()));
-                                    startActivity(intent);
-                                }
-                            });
-                            if (videoResults.getResponse().size() < 2) {
-                                mTxvSeeAllTrailers.setVisibility(View.GONE);
+                            loadVideoThumb(videoResults.getResponse().get(0).getKey());
+                            if (videoResults.getResponse().get(0) != null && videoResults.getResponse().get(0).getSite().equals(YOUTUBE)) {
+                                setVideoKey(videoResults.getResponse().get(0).getKey());
                             }
-                            mTxvSeeAllTrailers.setOnClickListener(v -> {
-                                Intent intent = new Intent(this, TrailerActivity.class);
-                                intent.putExtra(TRAILERS_PARCELABLE, new ArrayList<>(videoResults.getResponse()));
-                                startActivity(intent);
-                            });
+                            mTxvSeeAllTrailers.setVisibility(videoResults.getResponse().size() < 2 ? View.GONE : View.VISIBLE);
+                            setVideos(videoResults.getResponse());
                         }
                         break;
                     case LOADING:
@@ -434,14 +373,8 @@ public class DetailActivity extends AppCompatActivity {
                             mLayReviews.setVisibility(View.VISIBLE);
                             mTxvReviewPerson.setText(reviewResults.getResponse().get(0).getAuthor());
                             mTxvReviewBody.setText(reviewResults.getResponse().get(0).getContent());
-                            if (reviewResults.getResponse().size() < 2) {
-                                mTxvSeeAllReviews.setVisibility(View.GONE);
-                            }
-                            mTxvSeeAllReviews.setOnClickListener(v -> {
-                                Intent intent = new Intent(this, ReviewsActivity.class);
-                                intent.putExtra(REVIEWS_PARCELABLE, new ArrayList<>(reviewResults.getResponse()));
-                                startActivity(intent);
-                            });
+                            mTxvSeeAllReviews.setVisibility(reviewResults.getResponse().size() < 2 ? View.GONE : View.VISIBLE);
+                            setReviews(reviewResults.getResponse());
                         }
                         progressDetails.setVisibility(View.GONE);
                         break;
@@ -544,7 +477,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-
     private void loadBackDropImage(String backdropPath) {
         Glide.with(this)
                 .load(BACKDROP_BASE_PATH + backdropPath)
@@ -598,6 +530,7 @@ public class DetailActivity extends AppCompatActivity {
                     for (CastEntity item : castListResource.getResponse()) {
                         castIds.add(item.getId());
                         favMovieCast.add(new CastEntity(item.getId(), item.getName(), item.getProfilePath()));
+                        if (castIds.size() > 10) break;
                     }
                 }
             }
@@ -689,14 +622,56 @@ public class DetailActivity extends AppCompatActivity {
         AppUtils.setSnackBar(snackBarView, "Added to favorites");
     }
 
-    public void deleteFavMovies() {
+    private void loadVideoThumb(String videoKey) {
+        Glide.with(this)
+                .load(String.format(YOUTUBE_THUMBNAIL, videoKey))
+                .apply(new RequestOptions()
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .placeholder(R.drawable.movie_detail_placeholder)
+                        .error(R.drawable.movie_detail_placeholder))
+                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                .into(mImvTrailerThumb);
+    }
+
+    private void deleteFavMovies() {
         detailViewModel.deleteMovieById(movieId).observe(this, integer -> {
             AppUtils.setSnackBar(snackBarView, "Removed from favorites");
         });
     }
 
-    public void saveTempFavMovies(FavMovieEntity favMovieEntity) {
+    private void saveTempFavMovies(FavMovieEntity favMovieEntity) {
         tempFavMovieEntity = favMovieEntity;
+    }
+
+    @OnClick(R.id.imv_favourite)
+    public void onFavClicked() {
+        if (isMovieFav) {
+            isMovieFav = false;
+            deleteFavMovies();
+            getData();
+        } else {
+            isMovieFav = true;
+            saveFavMovies(movieId);
+        }
+    }
+
+    @OnClick(R.id.txv_see_all_reviews)
+    public void showAllReviews() {
+        Intent intent = new Intent(this, ReviewsActivity.class);
+        intent.putExtra(REVIEWS_PARCELABLE, new ArrayList<>(getReviews()));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.txv_see_all_trailers)
+    public void showAllTrailers() {
+        Intent intent = new Intent(this, TrailerActivity.class);
+        intent.putExtra(TRAILERS_PARCELABLE, new ArrayList<>(getVideos()));
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.imv_video_thumb)
+    public void showVideo() {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + getVideoKey())));
     }
 
     private void configureDagger() {
@@ -704,8 +679,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private int dpToPx() {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics()));
     }
 
     @Override
@@ -714,5 +688,35 @@ public class DetailActivity extends AppCompatActivity {
         if (progressDetails.getVisibility() == View.VISIBLE) {
             progressDetails.setVisibility(View.GONE);
         }
+    }
+
+    public List<ReviewEntity> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<ReviewEntity> reviews) {
+        if (!this.reviews.isEmpty()) {
+            this.reviews.clear();
+        }
+        this.reviews = reviews;
+    }
+
+    public List<VideoEntity> getVideos() {
+        return videos;
+    }
+
+    public String getVideoKey() {
+        return videoKey;
+    }
+
+    public void setVideoKey(String videoKey) {
+        this.videoKey = videoKey;
+    }
+
+    public void setVideos(List<VideoEntity> videos) {
+        if (!this.videos.isEmpty()) {
+            this.videos.clear();
+        }
+        this.videos = videos;
     }
 }

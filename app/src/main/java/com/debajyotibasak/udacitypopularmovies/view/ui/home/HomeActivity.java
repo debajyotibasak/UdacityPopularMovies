@@ -56,29 +56,14 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     ViewModelProvider.Factory viewModelFactory;
     private HomeViewModel homeViewModel;
 
-    @BindView(R.id.rv_movies)
-    RecyclerView rvMovies;
-
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    @BindView(R.id.txv_toolbar_title)
-    TextView txvToolbar;
-
-    @BindView(android.R.id.content)
-    View snackBarView;
-
-    @BindView(R.id.no_internet_layout)
-    View noInternet;
-
-    @BindView(R.id.btn_refresh)
-    Button btnRefresh;
-
-    @BindView(R.id.rv_favorites)
-    RecyclerView rvFavMovies;
+    @BindView(R.id.rv_movies) RecyclerView rvMovies;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.txv_toolbar_title) TextView txvToolbar;
+    @BindView(android.R.id.content) View snackBarView;
+    @BindView(R.id.no_internet_layout) View noInternet;
+    @BindView(R.id.btn_refresh) Button btnRefresh;
+    @BindView(R.id.rv_favorites) RecyclerView rvFavMovies;
 
     private MoviesAdapter mAdapter;
     private FavMoviesAdapter mFavAdapter;
@@ -293,8 +278,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     }
 
     private int dpToPx() {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, r.getDisplayMetrics()));
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics()));
     }
 
     @OnClick(R.id.btn_refresh)

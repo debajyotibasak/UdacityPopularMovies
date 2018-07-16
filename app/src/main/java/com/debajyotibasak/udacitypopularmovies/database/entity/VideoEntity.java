@@ -13,7 +13,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_REVIEWS;
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_VIDEOS;
 
 @Entity(tableName = TABLE_VIDEOS,

@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/worksans_regular"
                     android:textColor="@color/white_yellow"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
                     android:visibility="gone"
                     tools:text="Movie" />
             </android.support.v7.widget.Toolbar>

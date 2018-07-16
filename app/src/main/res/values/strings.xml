@@ -9,7 +9,16 @@
     <string name="txt_filter">Filter</string>
     <string name="txt_popular">Popular</string>
     <string name="txt_top_rated">Top Rated</string>
+    <string name="txt_favorites">Favorites</string>
+    <string name="txt_favorite">Favorite</string>
+    <string name="txt_rating">Rating</string>
     <string name="txt_plot">Plot</string>
+    <string name="txt_reviews">Reviews</string>
+    <string name="txt_see_all">See All</string>
+    <string name="txt_trailers">Trailers</string>
+    <string name="txt_to_add_favorites">to add favorites</string>
+    <string name="txv_please_click">Please click</string>
+    <string name="txt_no_fav_one">You seem to have no favorite movies</string>
 
     // Accessibility
     <string name="no_internet">No internet</string>
@@ -20,6 +29,17 @@
     <string name="rating">Rating</string>
     <string name="list_movie_poster">list_movie_poster</string>
     <string name="item_rating_star">item_rating_star</string>
+    <string name="review_person">review_person_img</string>
+    <string name="img_video_thumb">video_thumb</string>
+    <string name="share">share</string>
+    <string name="play_thumb">play_thumb</string>
+    <string name="cast">cast</string>
+    <string name="video_play">video_play</string>
+    <string name="more">more</string>
+    <string name="close_filter">close_filter</string>
+    <string name="favorite">favorite</string>
+    <string name="no_fav">no_fav</string>
+    <string name="love">love</string>
 
     <string name="review_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,

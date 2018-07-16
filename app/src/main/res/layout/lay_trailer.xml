@@ -17,7 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8"
-        app:srcCompat="@color/colorPrimary" />
+        app:srcCompat="@color/colorPrimary"
+        android:contentDescription="@string/img_video_thumb" />
 
     <TextView
         android:id="@+id/txv_trailer_title"
@@ -43,7 +44,8 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="@+id/imv_video_thumb"
         app:layout_constraintTop_toBottomOf="@+id/imv_video_thumb"
-        app:srcCompat="@drawable/ic_more" />
+        app:srcCompat="@drawable/ic_more"
+        android:contentDescription="@string/share" />
 
     <ImageView
         android:id="@+id/imv_play_thumb"
@@ -53,7 +55,8 @@
         app:layout_constraintEnd_toEndOf="@+id/imv_video_thumb"
         app:layout_constraintStart_toStartOf="@+id/imv_video_thumb"
         app:layout_constraintTop_toTopOf="@+id/imv_video_thumb"
-        app:srcCompat="@drawable/ic_video_thumbnail" />
+        app:srcCompat="@drawable/ic_video_thumbnail"
+        android:contentDescription="@string/play_thumb" />
 
     <TextView
         android:id="@+id/textView8"
@@ -62,7 +65,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/worksans_bold"
-        android:text="Trailers"
+        android:text="@string/txt_trailers"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -82,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:fontFamily="@font/worksans_bold"
-        android:text="See All"
+        android:text="@string/txt_see_all"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/textView8"

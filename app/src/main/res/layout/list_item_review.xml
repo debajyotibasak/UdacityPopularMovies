@@ -10,6 +10,7 @@
         android:layout_width="20dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
+        android:contentDescription="@string/review_person"
         app:layout_constraintBottom_toBottomOf="@+id/txv_review_person"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/txv_review_person"

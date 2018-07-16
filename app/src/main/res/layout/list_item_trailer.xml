@@ -18,7 +18,8 @@
         app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/colorPrimary" />
+        app:srcCompat="@color/colorPrimary"
+        android:contentDescription="@string/img_video_thumb" />
 
     <ImageView
         android:id="@+id/imv_thumb_play"
@@ -29,7 +30,8 @@
         app:layout_constraintEnd_toEndOf="@+id/imv_video_thumbnail"
         app:layout_constraintStart_toStartOf="@+id/imv_video_thumbnail"
         app:layout_constraintTop_toTopOf="@+id/imv_video_thumbnail"
-        app:srcCompat="@drawable/ic_video_thumbnail" />
+        app:srcCompat="@drawable/ic_video_thumbnail"
+        android:contentDescription="@string/video_play" />
 
     <TextView
         android:id="@+id/txv_trailer_title"
@@ -67,5 +69,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txv_trailer_type"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/ic_more" />
+        app:srcCompat="@drawable/ic_more"
+        android:contentDescription="@string/more" />
 </android.support.constraint.ConstraintLayout>

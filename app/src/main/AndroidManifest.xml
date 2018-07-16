@@ -22,7 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -30,8 +29,12 @@
         <activity
             android:name=".view.ui.detail.DetailActivity"
             android:theme="@style/AppThemeDetails.NoActionBar" />
-        <activity android:name=".view.ui.detail.reviews.ReviewsActivity" />
-        <activity android:name=".view.ui.detail.trailers.TrailerActivity"></activity>
+        <activity
+            android:name=".view.ui.detail.reviews.ReviewsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.ui.detail.trailers.TrailerActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

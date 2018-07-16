@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white_yellow"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white_yellow">
 
     <ImageView
         android:id="@+id/imv_close"
@@ -11,6 +11,7 @@
         android:layout_height="24dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
+        android:contentDescription="@string/close_filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_round_clear" />
@@ -22,7 +23,7 @@
         android:fontFamily="@font/worksans_bold"
         android:paddingEnd="@dimen/margin_16"
         android:paddingStart="@dimen/margin_16"
-        android:text="Filter"
+        android:text="@string/txt_filter"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/imv_close"
         app:layout_constraintEnd_toStartOf="@+id/imv_close"
@@ -53,7 +54,7 @@
             android:paddingEnd="@dimen/margin_16"
             android:paddingStart="@dimen/margin_16"
             android:paddingTop="@dimen/margin_8"
-            android:text="Popular"
+            android:text="@string/txt_popular"
             android:textColor="@color/grey_700"
             android:textSize="24sp" />
 
@@ -71,7 +72,7 @@
             android:paddingEnd="@dimen/margin_16"
             android:paddingStart="@dimen/margin_16"
             android:paddingTop="@dimen/margin_8"
-            android:text="Top Rated"
+            android:text="@string/txt_top_rated"
             android:textColor="@color/grey_700"
             android:textSize="24sp" />
 
@@ -89,7 +90,7 @@
             android:paddingEnd="@dimen/margin_16"
             android:paddingStart="@dimen/margin_16"
             android:paddingTop="@dimen/margin_8"
-            android:text="Favorites"
+            android:text="@string/txt_favorites"
             android:textColor="@color/grey_700"
             android:textSize="24sp" />
     </RadioGroup>

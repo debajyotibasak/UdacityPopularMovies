@@ -626,9 +626,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void deleteFavMovies() {
-        detailViewModel.deleteMovieById(movieId).observe(this, integer -> {
-            AppUtils.setSnackBar(snackBarView, "Removed from favorites");
-        });
+        detailViewModel.deleteMovieById(movieId).observe(this, integer -> AppUtils.setSnackBar(snackBarView, "Removed from favorites"));
     }
 
     private void saveTempFavMovies(FavMovieEntity favMovieEntity) {

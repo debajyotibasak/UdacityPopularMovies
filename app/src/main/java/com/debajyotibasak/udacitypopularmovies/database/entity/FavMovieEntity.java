@@ -6,14 +6,11 @@ import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
 import com.debajyotibasak.udacitypopularmovies.database.converter.IntegerListConvertor;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
 import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_FAVORITE_MOVIES;
-import static com.debajyotibasak.udacitypopularmovies.utils.AppConstants.TABLE_MOVIES;
 
 @Entity(tableName = TABLE_FAVORITE_MOVIES)
 public class FavMovieEntity implements Serializable {

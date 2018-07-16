@@ -64,14 +64,10 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.imv_video_thumbnail)
-        ImageView imvVideoThumb;
-        @BindView(R.id.txv_trailer_title)
-        TextView txvTrailerTitle;
-        @BindView(R.id.txv_trailer_type)
-        TextView txvTrailerType;
-        @BindView(R.id.imv_more)
-        ImageView imvMore;
+        @BindView(R.id.imv_video_thumbnail) ImageView imvVideoThumb;
+        @BindView(R.id.txv_trailer_title) TextView txvTrailerTitle;
+        @BindView(R.id.txv_trailer_type) TextView txvTrailerType;
+        @BindView(R.id.imv_more) ImageView imvMore;
 
         MyViewHolder(View view) {
             super(view);
@@ -107,6 +103,14 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.MyView
                 popup.setOnMenuItemClickListener(item -> {
                     switch (item.getItemId()) {
                         case R.id.action_share:
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.setType("text/plain");
+                            shareIntent.putExtra(
+                                    Intent.EXTRA_TEXT,
+                                    "Check out this video! Send from Popular Movies App\n" +
+                                            Uri.parse(YOUTUBE_URL + data.getKey()));
+                            context.startActivity(Intent.createChooser(shareIntent, "Share with"));
                             return true;
                         default:
                             popup.dismiss();

@@ -27,7 +27,7 @@
         android:layout_marginEnd="@dimen/margin_8"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="@dimen/margin_8"
-        android:fontFamily="@font/worksans_bold"
+        android:fontFamily="@font/worksans_regular"
         android:text="@string/error_no_internet"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"

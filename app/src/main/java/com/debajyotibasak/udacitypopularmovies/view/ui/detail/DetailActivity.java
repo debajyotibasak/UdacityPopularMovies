@@ -17,6 +17,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
@@ -77,54 +78,32 @@ public class DetailActivity extends AppCompatActivity {
     ViewModelProvider.Factory viewModelFactory;
     private DetailViewModel detailViewModel;
 
-    @BindView(R.id.imv_back_drop)
-    ImageView mImvBackDrop;
-    @BindView(R.id.imv_poster)
-    ImageView mImvPoster;
-    @BindView(R.id.txv_title)
-    TextView mTxvMovieTitle;
-    @BindView(R.id.txv_ratings)
-    TextView mTxvRating;
-    @BindView(R.id.rv_genres)
-    RecyclerView mRvGenres;
-    @BindView(R.id.txv_release_date)
-    TextView mTxvReleaseDate;
-    @BindView(R.id.txv_plot_details)
-    TextView mTxvPlotDetails;
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(android.R.id.content)
-    View snackBarView;
-    @BindView(R.id.lay_cast)
-    View mLayCast;
-    @BindView(R.id.lay_trailer)
-    View mLayTrailer;
-    @BindView(R.id.lay_reviews)
-    View mLayReviews;
-    @BindView(R.id.progress_detail)
-    ProgressBar progressDetails;
-    @BindView(R.id.rv_cast)
-    RecyclerView mRvCast;
-    @BindView(R.id.imv_video_thumb)
-    ImageView mImvTrailerThumb;
-    @BindView(R.id.txv_trailer_title)
-    TextView mTxvVideoTitle;
-    @BindView(R.id.txv_review_person)
-    TextView mTxvReviewPerson;
-    @BindView(R.id.txv_review_body)
-    TextView mTxvReviewBody;
-    @BindView(R.id.txv_see_all_reviews)
-    TextView mTxvSeeAllReviews;
-    @BindView(R.id.txv_see_all_trailers)
-    TextView mTxvSeeAllTrailers;
-    @BindView(R.id.app_bar)
-    AppBarLayout appBarLayout;
-    @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout collapsingToolbarLayout;
-    @BindView(R.id.imv_favourite)
-    ImageView mImvFavourite;
-    @BindView(R.id.progress_rating)
-    ProgressBar progressRating;
+    @BindView(R.id.imv_back_drop) ImageView mImvBackDrop;
+    @BindView(R.id.imv_poster) ImageView mImvPoster;
+    @BindView(R.id.imv_video_thumb) ImageView mImvTrailerThumb;
+    @BindView(R.id.txv_title) TextView mTxvMovieTitle;
+    @BindView(R.id.imv_favourite) ImageView mImvFavourite;
+    @BindView(R.id.imv_share) ImageView mImvShare;
+    @BindView(R.id.txv_ratings) TextView mTxvRating;
+    @BindView(R.id.txv_release_date) TextView mTxvReleaseDate;
+    @BindView(R.id.txv_plot_details) TextView mTxvPlotDetails;
+    @BindView(R.id.txv_trailer_title) TextView mTxvVideoTitle;
+    @BindView(R.id.txv_review_person) TextView mTxvReviewPerson;
+    @BindView(R.id.txv_review_body) TextView mTxvReviewBody;
+    @BindView(R.id.txv_see_all_reviews) TextView mTxvSeeAllReviews;
+    @BindView(R.id.txv_see_all_trailers) TextView mTxvSeeAllTrailers;
+    @BindView(R.id.txv_movie_name) TextView mToolbarMovieName;
+    @BindView(R.id.rv_genres) RecyclerView mRvGenres;
+    @BindView(R.id.rv_cast) RecyclerView mRvCast;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(android.R.id.content) View snackBarView;
+    @BindView(R.id.lay_cast) View mLayCast;
+    @BindView(R.id.lay_trailer) View mLayTrailer;
+    @BindView(R.id.lay_reviews) View mLayReviews;
+    @BindView(R.id.progress_detail) ProgressBar mProgressDetails;
+    @BindView(R.id.progress_rating) ProgressBar mProgressRating;
+    @BindView(R.id.app_bar) AppBarLayout mAppBarLayout;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     private GenreAdapter genreAdapter;
     private CastAdapter castAdapter;
@@ -155,7 +134,7 @@ public class DetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.AppBarCollapsed);
+        mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.AppBarCollapsed);
 
         genreAdapter = new GenreAdapter(this);
         FlowLayoutManager flowLayoutManager = new FlowLayoutManager();
@@ -173,30 +152,37 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 super.getItemOffsets(outRect, view, parent, state);
+                int position = parent.getChildViewHolder(view).getAdapterPosition();
+                int itemCount = state.getItemCount();
+
                 outRect.left = dpToPx();
-                outRect.right = dpToPx() == state.getItemCount() - 1 ? dpToPx() : 0;
+                outRect.right = position == itemCount - 1 ? dpToPx() : 0;
                 outRect.top = 0;
                 outRect.bottom = 0;
             }
         });
+
         mRvCast.setNestedScrollingEnabled(true);
     }
 
     private void setUpToolbarTitle(String movieName) {
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
 
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                mToolbarMovieName.setText(movieName);
                 if (scrollRange == -1) {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsingToolbarLayout.setTitle(movieName);
+                    mCollapsingToolbarLayout.setTitle(" ");
+                    mToolbarMovieName.setVisibility(View.VISIBLE);
                     isShow = true;
                 } else if (isShow) {
-                    collapsingToolbarLayout.setTitle(" ");
+                    mCollapsingToolbarLayout.setTitle(" ");
+                    mToolbarMovieName.setVisibility(View.GONE);
                     isShow = false;
                 }
             }
@@ -269,7 +255,7 @@ public class DetailActivity extends AppCompatActivity {
 
         detailViewModel.loadFavMoviesById(movieId)
                 .observe(this, favMovie -> {
-                    progressDetails.setVisibility(View.VISIBLE);
+                    mProgressDetails.setVisibility(View.VISIBLE);
                     if (favMovie != null) {
                         isMovieFav = true;
                         mImvFavourite.setImageResource(R.drawable.ic_favorite);
@@ -312,6 +298,8 @@ public class DetailActivity extends AppCompatActivity {
                 setVideos(favMoviesVideo);
             }
         });
+
+        mProgressDetails.setVisibility(View.GONE);
     }
 
     private void getData() {
@@ -322,8 +310,12 @@ public class DetailActivity extends AppCompatActivity {
                         if (castResults.getResponse() != null && !castResults.getResponse().isEmpty()) {
                             mLayCast.setVisibility(View.VISIBLE);
                             List<CastEntity> castEntities = new ArrayList<>();
-                            for (int castIndex = 0; castIndex < 10; castIndex++) {
-                                castEntities.add(castResults.getResponse().get(castIndex));
+                            if (castResults.getResponse().size() > 10) {
+                                for (int castIndex = 0; castIndex < 10; castIndex++) {
+                                    castEntities.add(castResults.getResponse().get(castIndex));
+                                }
+                            } else {
+                                castEntities.addAll(castResults.getResponse());
                             }
                             castAdapter.addCasts(castEntities);
                         }
@@ -333,7 +325,7 @@ public class DetailActivity extends AppCompatActivity {
                         break;
                     case ERROR:
                         mLayCast.setVisibility(View.GONE);
-                        progressDetails.setVisibility(View.GONE);
+                        mProgressDetails.setVisibility(View.GONE);
                         AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
@@ -358,7 +350,7 @@ public class DetailActivity extends AppCompatActivity {
                     case LOADING:
                         break;
                     case ERROR:
-                        progressDetails.setVisibility(View.GONE);
+                        mProgressDetails.setVisibility(View.GONE);
                         AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
@@ -376,12 +368,12 @@ public class DetailActivity extends AppCompatActivity {
                             mTxvSeeAllReviews.setVisibility(reviewResults.getResponse().size() < 2 ? View.GONE : View.VISIBLE);
                             setReviews(reviewResults.getResponse());
                         }
-                        progressDetails.setVisibility(View.GONE);
+                        mProgressDetails.setVisibility(View.GONE);
                         break;
                     case LOADING:
                         break;
                     case ERROR:
-                        progressDetails.setVisibility(View.GONE);
+                        mProgressDetails.setVisibility(View.GONE);
                         AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
                         break;
                 }
@@ -423,7 +415,7 @@ public class DetailActivity extends AppCompatActivity {
         mTxvRating.setText(rating);
         Double ratingVal = Double.parseDouble(rating) * 10;
         Integer ratingInt = ratingVal.intValue();
-        progressRating.setProgress(ratingInt);
+        mProgressRating.setProgress(ratingInt);
     }
 
     private void setMovieTitle(String title) {
@@ -674,6 +666,30 @@ public class DetailActivity extends AppCompatActivity {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + getVideoKey())));
     }
 
+    @OnClick(R.id.imv_share)
+    public void shareVideo() {
+        PopupMenu popup = new PopupMenu(this, mImvShare);
+        popup.inflate(R.menu.share);
+        popup.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_share:
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Check out this video! Send from Popular Movies App\n" +
+                                    Uri.parse(YOUTUBE_URL + getVideoKey()));
+                    startActivity(Intent.createChooser(shareIntent, "Share with"));
+                    return true;
+                default:
+                    popup.dismiss();
+                    return false;
+            }
+        });
+        popup.show();
+    }
+
     private void configureDagger() {
         AndroidInjection.inject(this);
     }
@@ -685,8 +701,8 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (progressDetails.getVisibility() == View.VISIBLE) {
-            progressDetails.setVisibility(View.GONE);
+        if (mProgressDetails.getVisibility() == View.VISIBLE) {
+            mProgressDetails.setVisibility(View.GONE);
         }
     }
 

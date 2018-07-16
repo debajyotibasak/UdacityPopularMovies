@@ -62,6 +62,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     @BindView(R.id.txv_toolbar_title) TextView txvToolbar;
     @BindView(android.R.id.content) View snackBarView;
     @BindView(R.id.no_internet_layout) View noInternet;
+    @BindView(R.id.no_fav_layout) View noFav;
     @BindView(R.id.btn_refresh) Button btnRefresh;
     @BindView(R.id.rv_favorites) RecyclerView rvFavMovies;
 
@@ -104,6 +105,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
 
     private void loadFromSharedPrefs() {
         noInternet.setVisibility(View.GONE);
+        noFav.setVisibility(View.GONE);
 
         int loadingIdentifier = SharedPreferenceHelper.contains(AppConstants.PREF_FILTER) ? 2 : 1;
 
@@ -134,13 +136,17 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
             rvFavMovies.setVisibility(View.VISIBLE);
             rvMovies.setVisibility(View.GONE);
             homeViewModel.loadFavMoviesFromDb().observe(this, favMovieList -> {
-                if (favMovieList != null) {
+                if (favMovieList != null && !favMovieList.isEmpty()) {
                     mFavAdapter.addMoviesList(favMovieList);
+                } else {
+                    noFav.setVisibility(View.VISIBLE);
+                    rvFavMovies.setVisibility(View.GONE);
                 }
             });
         } else {
             rvMovies.setVisibility(View.VISIBLE);
             rvFavMovies.setVisibility(View.GONE);
+            noFav.setVisibility(View.GONE);
             homeViewModel.loadMovies(forceLoad, sort).observe(this, movieResource -> {
                 if (movieResource != null) {
                     switch (movieResource.getStatus()) {
@@ -168,6 +174,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         rvMovies.setVisibility(View.VISIBLE);
         rvFavMovies.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
+        noFav.setVisibility(View.GONE);
     }
 
     private void showProgress() {
@@ -175,6 +182,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         rvMovies.setVisibility(View.GONE);
         rvFavMovies.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
+        noFav.setVisibility(View.GONE);
     }
 
     private void configureDagger() {

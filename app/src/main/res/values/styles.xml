@@ -3,6 +3,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -11,6 +12,7 @@
         <item name="colorPrimary">@color/colorPrimaryDetails</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkDetails</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -38,6 +40,10 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:fontFamily">@font/worksans_bold</item>
+    </style>
+
+    <style name="TextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/worksans_regular</item>
     </style>
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />

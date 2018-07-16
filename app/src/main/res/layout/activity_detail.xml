@@ -44,7 +44,18 @@
                 android:minHeight="@dimen/min_height"
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:popupTheme="@style/AppThemeDetails.PopupOverlay" />
+                app:popupTheme="@style/AppThemeDetails.PopupOverlay">
+
+                <TextView
+                    android:id="@+id/txv_movie_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/worksans_regular"
+                    android:textColor="@color/white_yellow"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Movie" />
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

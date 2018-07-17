@@ -31,7 +31,7 @@ Constraint Layout.</p>
 <img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203545.png" width="450" height="800"><br/>
 
 <h2>Screen Video</h2>
-<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/gifs/stage1.gif" width="450" height="800"></br>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/gifs/stage2.gif" width="450" height="800"></br>
 
 <h2>Steps to run the app</h2>
 <p>The app uses themoviedb.org API to get movie information and posters. You must provide your own API key in order to build the app.</p>

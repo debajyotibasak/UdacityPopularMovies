@@ -45,8 +45,8 @@ Constraint Layout.</p>
 <p>Build the project and Run</p>
 
 ## Download APK
-[Release v1.0](https://github.com/debajyotibasak/UdacityPopularMovies/releases/download/v1.0/app-debug.apk)
-[Release v2.0](https://github.com/debajyotibasak/UdacityPopularMovies/releases/download/v2.0/app-debug.apk)
+* [Release v1.0](https://github.com/debajyotibasak/UdacityPopularMovies/releases/download/v1.0/app-debug.apk)
+* [Release v2.0](https://github.com/debajyotibasak/UdacityPopularMovies/releases/download/v2.0/app-debug.apk)
 
 ## Libraries
 

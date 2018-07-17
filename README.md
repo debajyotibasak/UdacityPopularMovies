@@ -3,15 +3,23 @@
 </p>
 
 <h1 align="center">Popular Movies App</h1>
-<p align="center">This is an App made for Udacity Android Nanodegree Project 2. Its an android app to browse the Top Rated and Popular Movies. This app uses an API provided by https://www.themoviedb.org/. It is made with latest Android Architecture Components like LiveData, ViewModel and Room. It uses Retrofit with LiveDataCallAdapter for Network Calls and uses Dagger2 for dependency Injection.</p>
+<p align="center">This is an App made for Udacity Android Nanodegree Project 2. 
+Its an Android app to browse the Top Rated and Popular Movies. We can also save our favorite
+movies and access them offline without internet.  
+This app uses an API provided by https://www.themoviedb.org/. 
+It is made with latest Android Architecture Components like LiveData, ViewModel and Room. 
+It uses Retrofit with LiveDataCallAdapter for Network Calls and 
+uses Dagger2 with Activity Injector for Dependency Injection. All the layouts are designed using 
+Constraint Layout.</p>
 
 <h2>Features</h2>
 
 - Browse through the Top Rated and Popular Movies
 - Offline access to movies list
 - Caches data from Room Database (Refreshes every 60 minutes from Network)
+- UI optimized for potrait and landscape
+- Add movies to favorite and access them offline
 - Design inspired from Pinterest
-- UI optimized for potrait and landscape.
 
 <h2>Screenshots</h2>
 <img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345854758.png" width="450" height="800"></br>
@@ -45,6 +53,7 @@
 * [Glide](https://github.com/bumptech/glide)
 * [Glide Transformations](https://github.com/wasabeef/glide-transformations)
 * [Android Debug Database](https://github.com/amitshekhariitbhu/Android-Debug-Database)
+* [Constraint Layout](https://developer.android.com/reference/android/support/constraint/ConstraintLayout)
 * [FlowLayoutManager](https://github.com/xiaofeng-han/AndroidLibs/tree/master/flowlayoutmanager)
 
 ## License

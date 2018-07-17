@@ -211,8 +211,8 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("transition", transitionName);
-        outState.putInt("movieId", movieId);
+        outState.putString(AppConstants.TRANSITION, transitionName);
+        outState.putInt(AppConstants.MOVIE_ID, movieId);
         super.onSaveInstanceState(outState);
     }
 
@@ -220,8 +220,8 @@ public class DetailActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
-            transitionName = savedInstanceState.getString("transition");
-            movieId = savedInstanceState.getInt("movieId");
+            transitionName = savedInstanceState.getString(AppConstants.TRANSITION);
+            movieId = savedInstanceState.getInt(AppConstants.MOVIE_ID);
         }
     }
 
@@ -279,8 +279,8 @@ public class DetailActivity extends AppCompatActivity {
         detailViewModel.getFavReviews(favMovie.getMovieId()).observe(this, favMovieReviews -> {
             if (favMovieReviews != null && !favMovieReviews.isEmpty()) {
                 mLayReviews.setVisibility(View.VISIBLE);
-                mTxvReviewPerson.setText(favMovieReviews.get(0).getAuthor());
-                mTxvReviewBody.setText(favMovieReviews.get(0).getContent());
+                mTxvReviewPerson.setText(favMovieReviews.get(AppConstants.FIRST_ITEM).getAuthor());
+                mTxvReviewBody.setText(favMovieReviews.get(AppConstants.FIRST_ITEM).getContent());
                 mTxvSeeAllReviews.setVisibility(favMovieReviews.size() < 2 ? View.GONE : View.VISIBLE);
                 setReviews(favMovieReviews);
             }
@@ -289,10 +289,10 @@ public class DetailActivity extends AppCompatActivity {
         detailViewModel.getFavVideos(favMovie.getMovieId()).observe(this, favMoviesVideo -> {
             if (favMoviesVideo != null && !favMoviesVideo.isEmpty()) {
                 mLayTrailer.setVisibility(View.VISIBLE);
-                mTxvVideoTitle.setText(favMoviesVideo.get(0).getName());
-                loadVideoThumb(favMoviesVideo.get(0).getKey());
-                if (favMoviesVideo.get(0) != null && favMoviesVideo.get(0).getSite().equals(YOUTUBE)) {
-                    setVideoKey(favMoviesVideo.get(0).getKey());
+                mTxvVideoTitle.setText(favMoviesVideo.get(AppConstants.FIRST_ITEM).getName());
+                loadVideoThumb(favMoviesVideo.get(AppConstants.FIRST_ITEM).getKey());
+                if (favMoviesVideo.get(AppConstants.FIRST_ITEM) != null && favMoviesVideo.get(AppConstants.FIRST_ITEM).getSite().equals(YOUTUBE)) {
+                    setVideoKey(favMoviesVideo.get(AppConstants.FIRST_ITEM).getKey());
                 }
                 mTxvSeeAllTrailers.setVisibility(favMoviesVideo.size() < 2 ? View.GONE : View.VISIBLE);
                 setVideos(favMoviesVideo);
@@ -338,10 +338,10 @@ public class DetailActivity extends AppCompatActivity {
                     case SUCCESS:
                         if (videoResults.getResponse() != null && !videoResults.getResponse().isEmpty()) {
                             mLayTrailer.setVisibility(View.VISIBLE);
-                            mTxvVideoTitle.setText(videoResults.getResponse().get(0).getName());
-                            loadVideoThumb(videoResults.getResponse().get(0).getKey());
-                            if (videoResults.getResponse().get(0) != null && videoResults.getResponse().get(0).getSite().equals(YOUTUBE)) {
-                                setVideoKey(videoResults.getResponse().get(0).getKey());
+                            mTxvVideoTitle.setText(videoResults.getResponse().get(AppConstants.FIRST_ITEM).getName());
+                            loadVideoThumb(videoResults.getResponse().get(AppConstants.FIRST_ITEM).getKey());
+                            if (videoResults.getResponse().get(AppConstants.FIRST_ITEM) != null && videoResults.getResponse().get(AppConstants.FIRST_ITEM).getSite().equals(YOUTUBE)) {
+                                setVideoKey(videoResults.getResponse().get(AppConstants.FIRST_ITEM).getKey());
                             }
                             mTxvSeeAllTrailers.setVisibility(videoResults.getResponse().size() < 2 ? View.GONE : View.VISIBLE);
                             setVideos(videoResults.getResponse());

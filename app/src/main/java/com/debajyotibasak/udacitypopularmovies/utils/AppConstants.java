@@ -25,16 +25,16 @@ public class AppConstants {
     public static final String PREF_FILTER = "pref_filter";
     public static final String MOVIE_ID_INTENT = "movie_id_intent";
     public static final String MOVIE_IMAGE_TRANSITION = "movie_image_transition";
-    public static final int PAGE = 1;
-    public static final int FRESH_TIMEOUT_IN_MINUTES = 60;
     public static final String DATA_SAVED_TIME = "data_saved_time";
     public static final String YOUTUBE = "YouTube";
     public static final String YOUTUBE_URL = "http://www.youtube.com/watch?v=";
     public static final String REVIEWS_PARCELABLE = "reviews_parcelable";
-    public static final String FAV_REVIEWS_PARCELABLE = "fav_reviews_parcelable";
     public static final String TRAILERS_PARCELABLE = "trailers_parcelable";
-    public static final String FAV_TRAILERS_PARCELABLE = "fav_trailers_parcelable";
-    public static final String MOVIES_STATE_DETAILS = "movies_state_details";
+    public static final String MOVIE_ID = "movieId";
+    public static final String TRANSITION = "transition";
+    public static final int PAGE = 1;
+    public static final int FRESH_TIMEOUT_IN_MINUTES = 60;
+    public static final int FIRST_ITEM = 0;
 
     // Date Formats
     public static final String DF1 = "yyyy-MM-dd";

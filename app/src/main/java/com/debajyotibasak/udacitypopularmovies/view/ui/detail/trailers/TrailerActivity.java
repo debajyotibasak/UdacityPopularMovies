@@ -49,7 +49,7 @@ public class TrailerActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(R.string.txt_empty_string);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        txvToolbar.setText("Trailers");
+        txvToolbar.setText(getResources().getString(R.string.txt_trailers));
         detailViewModel = ViewModelProviders.of(this, viewModelFactory).get(DetailViewModel.class);
         adapter = new TrailersAdapter(this);
         mRvTrailers.setLayoutManager(new LinearLayoutManager(this));
@@ -76,10 +76,5 @@ public class TrailerActivity extends AppCompatActivity {
 
     private void configureDagger() {
         AndroidInjection.inject(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 }

@@ -9,7 +9,7 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/min_width"
         android:layout_height="wrap_content"
         android:background="@color/white_yellow"
         android:minHeight="?android:attr/actionBarSize"
@@ -23,15 +23,15 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/worksans_bold"
             android:textColor="@color/grey_600"
-            android:textSize="28sp"
+            android:textSize="@dimen/txt_28"
             android:textStyle="bold"
             tools:text="Movie" />
     </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_reviews"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/min_width"
+        android:layout_height="@dimen/min_height"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

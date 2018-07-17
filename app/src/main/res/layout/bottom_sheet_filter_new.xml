@@ -7,10 +7,10 @@
 
     <ImageView
         android:id="@+id/imv_close"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="@dimen/filter_imv_close"
+        android:layout_height="@dimen/filter_imv_close"
+        android:layout_marginEnd="@dimen/margin_16"
+        android:layout_marginTop="@dimen/margin_16"
         android:contentDescription="@string/close_filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,13 +18,13 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/min_width"
         android:layout_height="wrap_content"
         android:fontFamily="@font/worksans_bold"
         android:paddingEnd="@dimen/margin_16"
         android:paddingStart="@dimen/margin_16"
         android:text="@string/txt_filter"
-        android:textSize="18sp"
+        android:textSize="@dimen/txt_18"
         app:layout_constraintBottom_toTopOf="@+id/imv_close"
         app:layout_constraintEnd_toStartOf="@+id/imv_close"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +32,9 @@
 
     <RadioGroup
         android:id="@+id/rg_filter"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/min_width"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/margin_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,7 @@
             android:paddingTop="@dimen/margin_8"
             android:text="@string/txt_popular"
             android:textColor="@color/grey_700"
-            android:textSize="24sp" />
+            android:textSize="@dimen/txt_24" />
 
         <RadioButton
             android:id="@+id/rb_top_rated"
@@ -74,7 +74,7 @@
             android:paddingTop="@dimen/margin_8"
             android:text="@string/txt_top_rated"
             android:textColor="@color/grey_700"
-            android:textSize="24sp" />
+            android:textSize="@dimen/txt_24" />
 
         <RadioButton
             android:id="@+id/rb_favorite"
@@ -92,6 +92,6 @@
             android:paddingTop="@dimen/margin_8"
             android:text="@string/txt_favorites"
             android:textColor="@color/grey_700"
-            android:textSize="24sp" />
+            android:textSize="@dimen/txt_24" />
     </RadioGroup>
 </android.support.constraint.ConstraintLayout>

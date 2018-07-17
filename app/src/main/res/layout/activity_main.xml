@@ -9,7 +9,7 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/min_width"
         android:layout_height="wrap_content"
         android:background="@color/white_yellow"
         android:minHeight="?android:attr/actionBarSize"
@@ -22,20 +22,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/worksans_bold"
-            android:paddingEnd="4dp"
-            android:paddingStart="4dp"
+            android:paddingEnd="@dimen/margin_4"
+            android:paddingStart="@dimen/margin_4"
             android:textColor="@color/grey_600"
-            android:textSize="28sp"
+            android:textSize="@dimen/txt_28"
             android:textStyle="bold"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="9dp"
             tools:text="Movie" />
     </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_movies"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/min_width"
+        android:layout_height="@dimen/min_height"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,10 +45,10 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_8"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,8 +75,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_favorites"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/min_width"
+        android:layout_height="@dimen/min_height"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -22,10 +22,13 @@ Constraint Layout.</p>
 - Design inspired from Pinterest
 
 <h2>Screenshots</h2>
-<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345854758.png" width="450" height="800"></br>
-<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345887129.png" width="450" height="800"></br>
-<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345905882.png" width="450" height="800"></br>
-<img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/screenshots/screener_1529345923626.png" width="800" height="450"><br/>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203333.png" width="450" height="800"></br>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203400.png" width="450" height="800"></br>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203422.png" width="450" height="800"></br>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203446.png" width="800" height="450"><br/>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203503.png" width="800" height="450"><br/>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203520.png" width="800" height="450"><br/>
+<img src="https://github.com/debajyotibasak/UdacityPopularMovies/blob/master/screenshots/appwrap-template-20180717203545.png" width="800" height="450"><br/>
 
 <h2>Screen Video</h2>
 <img src="https://github.com/debo1994/UdacityPopularMovies/blob/master/gifs/stage1.gif" width="450" height="800"></br>

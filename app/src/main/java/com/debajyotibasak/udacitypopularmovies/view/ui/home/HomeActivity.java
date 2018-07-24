@@ -55,15 +55,24 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     ViewModelProvider.Factory viewModelFactory;
     private HomeViewModel homeViewModel;
 
-    @BindView(R.id.rv_movies) RecyclerView rvMovies;
-    @BindView(R.id.progressBar) ProgressBar progressBar;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.txv_toolbar_title) TextView txvToolbar;
-    @BindView(android.R.id.content) View snackBarView;
-    @BindView(R.id.no_internet_layout) View noInternet;
-    @BindView(R.id.no_fav_layout) View noFav;
-    @BindView(R.id.btn_refresh) Button btnRefresh;
-    @BindView(R.id.rv_favorites) RecyclerView rvFavMovies;
+    @BindView(R.id.rv_movies)
+    RecyclerView rvMovies;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.txv_toolbar_title)
+    TextView txvToolbar;
+    @BindView(android.R.id.content)
+    View snackBarView;
+    @BindView(R.id.no_internet_layout)
+    View noInternet;
+    @BindView(R.id.no_fav_layout)
+    View noFav;
+    @BindView(R.id.btn_refresh)
+    Button btnRefresh;
+    @BindView(R.id.rv_favorites)
+    RecyclerView rvFavMovies;
 
     private MoviesAdapter mAdapter;
     private FavMoviesAdapter mFavAdapter;
@@ -76,7 +85,8 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     private void initData() {
         this.configureDagger();
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(R.string.txt_empty_string);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(R.string.txt_empty_string);
         txvToolbar.setText(R.string.txt_movies);
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         mAdapter = new MoviesAdapter(this);
@@ -104,7 +114,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
 
     private void loadFromSharedPrefs() {
         noInternet.setVisibility(View.GONE);
-        noFav.setVisibility(View.GONE);
+        toggleVisibilityNoFavLay(View.GONE);
 
         int loadingIdentifier = SharedPreferenceHelper.contains(AppConstants.PREF_FILTER) ? 2 : 1;
 
@@ -138,14 +148,14 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                 if (favMovieList != null && !favMovieList.isEmpty()) {
                     mFavAdapter.addMoviesList(favMovieList);
                 } else {
-                    noFav.setVisibility(View.VISIBLE);
+                    toggleVisibilityNoFavLay(View.VISIBLE);
                     rvFavMovies.setVisibility(View.GONE);
                 }
             });
         } else {
             rvMovies.setVisibility(View.VISIBLE);
             rvFavMovies.setVisibility(View.GONE);
-            noFav.setVisibility(View.GONE);
+            toggleVisibilityNoFavLay(View.GONE);
             homeViewModel.loadMovies(forceLoad, sort).observe(this, movieResource -> {
                 if (movieResource != null) {
                     switch (movieResource.getStatus()) {
@@ -173,7 +183,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         rvMovies.setVisibility(View.VISIBLE);
         rvFavMovies.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
-        noFav.setVisibility(View.GONE);
+        toggleVisibilityNoFavLay(View.GONE);
     }
 
     private void showProgress() {
@@ -181,7 +191,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         rvMovies.setVisibility(View.GONE);
         rvFavMovies.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
-        noFav.setVisibility(View.GONE);
+        toggleVisibilityNoFavLay(View.GONE);
     }
 
     private void configureDagger() {
@@ -232,6 +242,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
             dialog.dismiss();
             switch (checkedId) {
                 case R.id.rb_popular:
+                    toggleVisibilityNoFavLay(View.GONE);
                     if (AppUtils.isNetworkAvailable()) {
                         SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_POPULAR);
                         loadMovies(AppConstants.SORT_BY_POPULAR, 1);
@@ -240,6 +251,7 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
                     }
                     break;
                 case R.id.rb_top_rated:
+                    toggleVisibilityNoFavLay(View.GONE);
                     if (AppUtils.isNetworkAvailable()) {
                         SharedPreferenceHelper.setSharedPreferenceString(AppConstants.PREF_FILTER, AppConstants.SORT_BY_TOP_RATED);
                         loadMovies(AppConstants.SORT_BY_TOP_RATED, 1);
@@ -301,6 +313,22 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
         if (!AppUtils.isNetworkAvailable()) {
             noInternet.setVisibility(View.VISIBLE);
             AppUtils.setSnackBar(snackBarView, getString(R.string.error_no_internet));
+        }
+    }
+
+    private void toggleVisibilityNoFavLay(int visibility) {
+        if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null)
+                .equalsIgnoreCase(AppConstants.SORT_BY_FAVORITE)) {
+            switch (visibility) {
+                case View.VISIBLE:
+                    noFav.setVisibility(View.VISIBLE);
+                    break;
+                case View.GONE:
+                    noFav.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

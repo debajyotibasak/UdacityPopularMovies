@@ -317,17 +317,19 @@ public class HomeActivity extends AppCompatActivity implements MovieItemClickLis
     }
 
     private void toggleVisibilityNoFavLay(int visibility) {
-        if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null)
-                .equalsIgnoreCase(AppConstants.SORT_BY_FAVORITE)) {
-            switch (visibility) {
-                case View.VISIBLE:
-                    noFav.setVisibility(View.VISIBLE);
-                    break;
-                case View.GONE:
-                    noFav.setVisibility(View.GONE);
-                    break;
-                default:
-                    break;
+        if (SharedPreferenceHelper.contains(AppConstants.PREF_FILTER)) {
+            if (SharedPreferenceHelper.getSharedPreferenceString(AppConstants.PREF_FILTER, null)
+                    .equalsIgnoreCase(AppConstants.SORT_BY_FAVORITE)) {
+                switch (visibility) {
+                    case View.VISIBLE:
+                        noFav.setVisibility(View.VISIBLE);
+                        break;
+                    case View.GONE:
+                        noFav.setVisibility(View.GONE);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
